@@ -1,4 +1,5 @@
-using OfficeOpenXml;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Data.SQLite;
 
@@ -6,6 +7,9 @@ namespace DZ_Security_DataBase
 {
     public partial class Form1 : Form
     {
+        static string folderName = "datenBank";
+        static string folderPath = Path.Combine(Application.StartupPath, folderName);
+        static string stConnectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
         public Form1()
         {
             InitializeComponent();
@@ -14,8 +18,8 @@ namespace DZ_Security_DataBase
         }
         private void buildDatabase()
         {
-                string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-                using (var conn = new SQLiteConnection(connectionString))
+            Directory.CreateDirectory(folderPath);
+                using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
 
@@ -35,8 +39,7 @@ namespace DZ_Security_DataBase
             }
         private void insertDatabaseInComboBox()
         {
-            string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-            using (var conn = new SQLiteConnection(connectionString))
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
@@ -55,8 +58,7 @@ namespace DZ_Security_DataBase
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             object oCurrentID = cbMitarbeiterID.SelectedItem;
-            string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-            using (var conn = new SQLiteConnection(connectionString))
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
@@ -80,10 +82,29 @@ namespace DZ_Security_DataBase
         private void button1_Click(object sender, EventArgs e)
         {
             object oCurrentID = cbMitarbeiterID.SelectedItem;
-            string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-            try
+            if (oCurrentID == null)
             {
-                using (var conn = new SQLiteConnection(connectionString))
+                MessageBox.Show("Bitte wähle zuerst oben einen Mitarbeiter über seine MitarbeiterID aus", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            bool bDoesEmployeeExist = false;
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                {
+                    cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+
+                    int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    bDoesEmployeeExist = rowCount > 0 ? true : false;
+                }
+                conn.Close();
+            }
+            if (bDoesEmployeeExist)
+            {
+                using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
 
@@ -98,26 +119,27 @@ namespace DZ_Security_DataBase
 
                         cmd.ExecuteNonQuery();
                     }
+                    conn.Close();
                 }
             }
-            catch (Exception)
+            else
             {
-
-                using (var conn = new SQLiteConnection(connectionString))
+                using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
 
                     using (var cmd = new SQLiteCommand(conn))
                     {
                         cmd.CommandText = @"
-                    UPDATE Arbeitszeiten
-                    SET ZeitstempelEingetragen = @eingetragen
-                    WHERE MitarbeiterID = @id";
+                        UPDATE Arbeitszeiten
+                        SET ZeitstempelEingetragen = @eingetragen
+                        WHERE MitarbeiterID = @id";
                         cmd.Parameters.AddWithValue("@eingetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         cmd.Parameters.AddWithValue("@id", oCurrentID);
 
                         cmd.ExecuteNonQuery();
                     }
+                    conn.Close();
                 }
             }
             buildDatabase();
@@ -125,39 +147,114 @@ namespace DZ_Security_DataBase
 
         private void button2_Click(object sender, EventArgs e)
         {
+            bool bDoesEmployeeExist = false;
             object oCurrentID = cbMitarbeiterID.SelectedItem;
-            string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-            using (var conn = new SQLiteConnection(connectionString))
+            if(oCurrentID == null)
+            {
+                MessageBox.Show("Bitte wähle zuerst oben einen Mitarbeiter über seine MitarbeiterID aus", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand(conn))
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
                 {
-                    cmd.CommandText = @"
+                    cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+
+                    int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    bDoesEmployeeExist = rowCount > 0 ? true : false;
+                }
+                conn.Close();
+            }
+            if (bDoesEmployeeExist)
+            {
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"
                     UPDATE Arbeitszeiten
                     SET ZeitstempelAusgetragen = @ausgetragen
                     WHERE MitarbeiterID = @id";
-                    cmd.Parameters.AddWithValue("@ausgetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    cmd.Parameters.AddWithValue("@id", oCurrentID);
+                        cmd.Parameters.AddWithValue("@ausgetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        cmd.Parameters.AddWithValue("@id", oCurrentID);
 
-                    cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
                 }
+                buildDatabase();
             }
-            buildDatabase();
+            else
+            {
+                MessageBox.Show("Bitte Trage zuerst den Start Zeitstempel ein","Falsche Nutzung",MessageBoxButtons.OK,MessageBoxIcon.Information);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DataTable dt;
-
-            string filePath = @"D:\YourExcelFile.xlsx";
-
-            using (ExcelPackage pck = new ExcelPackage())
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
-                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Arbeitszeiten");
-                ws.Cells["A1"].LoadFromDataTable(dt, true);
-                pck.SaveAs(new FileInfo(filePath));
+                conn.Open();
+
+                using (var cmd = new SQLiteCommand("SELECT * FROM Arbeitszeiten", conn))
+                {
+                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+
+                        SaveFileDialog sfd = new SaveFileDialog();
+                        sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
+                        sfd.FileName = "export.xlsx";
+
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            IWorkbook workbook = new XSSFWorkbook();
+                            ISheet sheet = workbook.CreateSheet("Arbeitszeiten");
+
+                            // Überschriften
+                            IRow row = sheet.CreateRow(0);
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            }
+
+                            // Daten
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                row = sheet.CreateRow(i + 1);
+                                for (int j = 0; j < dt.Columns.Count; j++)
+                                {
+                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                                }
+                            }
+
+                            // Speichern
+                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                            {
+                                workbook.Write(stream,false);
+                            }
+
+                        }
+                    }
+                }
+                conn.Close();
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+                MessageBox.Show("Dieser Knopf funktioniert noch nicht", "Demo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Dieser Knopf funktioniert noch nicht", "Demo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

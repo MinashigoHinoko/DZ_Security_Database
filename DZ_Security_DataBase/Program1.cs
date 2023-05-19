@@ -5,26 +5,34 @@ namespace DZ_Security_DataBase
 {
     internal static class Program
     {
+        static string folderName = "datenBank";
+        static string folderPath = Path.Combine(Application.StartupPath, folderName);
+        static string stConnectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
+        static bool freshlyCreated = false;
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            //SQLiteConnection.CreateFile("MeineDatenbank.sqlite");
-            builDatabase();
-            //editDatabase();
+            createDatabase();
+            editDatabase();
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1());
         }
-        static void builDatabase()
+        static void createDatabase()
         {
-            try
+            if (Directory.Exists(folderPath))
             {
-                string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-                using (var m_dbConnection = new SQLiteConnection(connectionString))
+                return;
+            }
+            else
+            {
+                freshlyCreated = true;
+                string connectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
+                Directory.CreateDirectory(folderPath);
+                SQLiteConnection.CreateFile($"{folderPath}\\MeineDatenbank.sqlite");
+                using (var m_dbConnection = new SQLiteConnection(stConnectionString))
                 {
                     m_dbConnection.Open();
 
@@ -56,16 +64,14 @@ namespace DZ_Security_DataBase
                     }
                 }
             }
-            catch (Exception)
-            {
-
-                return;
-            }
         }
         static void editDatabase()
         {
-            string connectionString = "Data Source=D:\\MEGA\\Freelancing\\DZ_Security\\DZ_Security_DataBase\\DZ_Security_DataBase\\bin\\Debug\\net6.0-windows\\MeineDatenbank.sqlite;Version=3;";
-            using (var conn = new SQLiteConnection(connectionString))
+            if(!freshlyCreated)
+            {
+                return;
+            }
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
@@ -77,9 +83,49 @@ namespace DZ_Security_DataBase
 
                     cmd.Prepare();
 
-                    cmd.Parameters.AddWithValue("@MitarbeiterID", 4);
+                    cmd.Parameters.AddWithValue("@MitarbeiterID", 00353485);
                     cmd.Parameters.AddWithValue("@Name", "Max Mustermann");
-                    cmd.Parameters.AddWithValue("@Position", "South");
+                    cmd.Parameters.AddWithValue("@Position", "Norden");
+                    cmd.Parameters.AddWithValue("@RFIDChipNummer", "123456");
+                    cmd.Parameters.AddWithValue("@WeitereInformationen", "Keine weiteren Informationen");
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"INSERT INTO Mitarbeiter 
+                            (MitarbeiterID, Name, Position, RFIDChipNummer, WeitereInformationen) 
+                            VALUES (@MitarbeiterID, @Name, @Position, @RFIDChipNummer, @WeitereInformationen);";
+
+                    cmd.Prepare();
+
+                    cmd.Parameters.AddWithValue("@MitarbeiterID", 00353486);
+                    cmd.Parameters.AddWithValue("@Name", "Max Mustermann");
+                    cmd.Parameters.AddWithValue("@Position", "Süden");
+                    cmd.Parameters.AddWithValue("@RFIDChipNummer", "123456");
+                    cmd.Parameters.AddWithValue("@WeitereInformationen", "Keine weiteren Informationen");
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"INSERT INTO Mitarbeiter 
+                            (MitarbeiterID, Name, Position, RFIDChipNummer, WeitereInformationen) 
+                            VALUES (@MitarbeiterID, @Name, @Position, @RFIDChipNummer, @WeitereInformationen);";
+
+                    cmd.Prepare();
+
+                    cmd.Parameters.AddWithValue("@MitarbeiterID", 00353487);
+                    cmd.Parameters.AddWithValue("@Name", "John Doe");
+                    cmd.Parameters.AddWithValue("@Position", "Osten");
+                    cmd.Parameters.AddWithValue("@RFIDChipNummer", "123456");
+                    cmd.Parameters.AddWithValue("@WeitereInformationen", "Keine weiteren Informationen");
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"INSERT INTO Mitarbeiter 
+                            (MitarbeiterID, Name, Position, RFIDChipNummer, WeitereInformationen) 
+                            VALUES (@MitarbeiterID, @Name, @Position, @RFIDChipNummer, @WeitereInformationen);";
+
+
+                    cmd.Prepare();
+
+                    cmd.Parameters.AddWithValue("@MitarbeiterID", 00353484);
+                    cmd.Parameters.AddWithValue("@Name", "Test Name");
+                    cmd.Parameters.AddWithValue("@Position", "Westen");
                     cmd.Parameters.AddWithValue("@RFIDChipNummer", "123456");
                     cmd.Parameters.AddWithValue("@WeitereInformationen", "Keine weiteren Informationen");
 
