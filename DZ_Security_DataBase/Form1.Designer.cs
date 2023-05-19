@@ -47,10 +47,11 @@
             // 
             // button1
             // 
+            this.button1.AutoSize = true;
             this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.button1.Location = new System.Drawing.Point(12, 309);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(124, 23);
+            this.button1.Size = new System.Drawing.Size(124, 25);
             this.button1.TabIndex = 0;
             this.button1.Text = "Arbeitszeit Starten";
             this.button1.UseVisualStyleBackColor = true;
@@ -58,10 +59,11 @@
             // 
             // button2
             // 
+            this.button2.AutoSize = true;
             this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.button2.Location = new System.Drawing.Point(142, 309);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(119, 23);
+            this.button2.Size = new System.Drawing.Size(119, 25);
             this.button2.TabIndex = 1;
             this.button2.Text = "Arbeitszeit Stoppen";
             this.button2.UseVisualStyleBackColor = true;
@@ -156,10 +158,11 @@
             // 
             // button3
             // 
+            this.button3.AutoSize = true;
             this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
             this.button3.Location = new System.Drawing.Point(342, 309);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(140, 23);
+            this.button3.Size = new System.Drawing.Size(140, 25);
             this.button3.TabIndex = 12;
             this.button3.Text = "Zu Excel Konvertieren";
             this.button3.UseVisualStyleBackColor = true;
@@ -167,10 +170,11 @@
             // 
             // button4
             // 
+            this.button4.AutoSize = true;
             this.button4.Cursor = System.Windows.Forms.Cursors.Help;
             this.button4.Location = new System.Drawing.Point(481, 12);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(135, 23);
+            this.button4.Size = new System.Drawing.Size(135, 25);
             this.button4.TabIndex = 13;
             this.button4.Text = "Equipment Ausleihen";
             this.button4.UseVisualStyleBackColor = true;
@@ -178,10 +182,11 @@
             // 
             // button5
             // 
+            this.button5.AutoSize = true;
             this.button5.Cursor = System.Windows.Forms.Cursors.Help;
             this.button5.Location = new System.Drawing.Point(481, 41);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(135, 23);
+            this.button5.Size = new System.Drawing.Size(135, 25);
             this.button5.TabIndex = 14;
             this.button5.Text = "Equipment Übersicht";
             this.button5.UseVisualStyleBackColor = true;

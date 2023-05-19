@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using System.Data.SQLite;
 
 namespace DZ_Security_DataBase
@@ -22,15 +21,14 @@ namespace DZ_Security_DataBase
         }
         static void createDatabase()
         {
-            if (Directory.Exists(folderPath))
+            if (!Directory.Exists(folderPath))
             {
-                return;
-            }
-            else
-            {
-                freshlyCreated = true;
                 string connectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
                 Directory.CreateDirectory(folderPath);
+            }
+            if (!File.Exists($"{folderPath}\\MeineDatenbank.sqlite"))
+            {
+                freshlyCreated = true;
                 SQLiteConnection.CreateFile($"{folderPath}\\MeineDatenbank.sqlite");
                 using (var m_dbConnection = new SQLiteConnection(stConnectionString))
                 {
@@ -38,12 +36,12 @@ namespace DZ_Security_DataBase
 
                     // Mitarbeiter Tabelle erstellen
                     string sql = @"CREATE TABLE Mitarbeiter (
-                    MitarbeiterID INT PRIMARY KEY NOT NULL, 
-                    Name TEXT NOT NULL, 
-                    Position TEXT,
-                    RFIDChipNummer TEXT,
-                    WeitereInformationen TEXT
-                   );";
+                        MitarbeiterID INT PRIMARY KEY NOT NULL, 
+                        Name TEXT NOT NULL, 
+                        Position TEXT,
+                        RFIDChipNummer TEXT,
+                        WeitereInformationen TEXT
+                       );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {
@@ -52,11 +50,11 @@ namespace DZ_Security_DataBase
 
                     // Arbeitszeiten Tabelle erstellen
                     sql = @"CREATE TABLE Arbeitszeiten (
-                     MitarbeiterID INT NOT NULL, 
-                     ZeitstempelEingetragen DATETIME,
-                     ZeitstempelAusgetragen DATETIME,
-                     FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
-                     );";
+                         MitarbeiterID INT NOT NULL, 
+                         ZeitstempelEingetragen DATETIME,
+                         ZeitstempelAusgetragen DATETIME,
+                         FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
+                         );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {
@@ -67,7 +65,7 @@ namespace DZ_Security_DataBase
         }
         static void editDatabase()
         {
-            if(!freshlyCreated)
+            if (!freshlyCreated)
             {
                 return;
             }

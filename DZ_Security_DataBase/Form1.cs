@@ -18,25 +18,24 @@ namespace DZ_Security_DataBase
         }
         private void buildDatabase()
         {
-            Directory.CreateDirectory(folderPath);
-                using (var conn = new SQLiteConnection(stConnectionString))
-                {
-                    conn.Open();
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
 
                 using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, strftime('%Y-%m-%d %H:%M:%S', ZeitstempelEingetragen) AS ZeitstempelEingetragen, strftime('%Y-%m-%d %H:%M:%S', ZeitstempelAusgetragen) AS ZeitstempelAusgetragen FROM Arbeitszeiten", conn))
 
                 {
                     using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
 
                         // Hier setzen wir die Datenquelle des DataGridView auf das DataTable.
                         this.dgvArbeitszeit.DataSource = dt;
-                        }
                     }
                 }
             }
+        }
         private void insertDatabaseInComboBox()
         {
             using (var conn = new SQLiteConnection(stConnectionString))
@@ -72,7 +71,7 @@ namespace DZ_Security_DataBase
                             // Zum Beispiel:
                             Console.WriteLine($"Name: {reader["Name"]}, Position: {reader["Position"]}");
                             lbName.Text = reader["Name"].ToString();
-                            lbPosition.Text= reader["Position"].ToString();
+                            lbPosition.Text = reader["Position"].ToString();
                         }
                     }
                 }
@@ -92,7 +91,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId", conn))
                 {
                     cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
 
@@ -102,7 +101,8 @@ namespace DZ_Security_DataBase
                 }
                 conn.Close();
             }
-            if (bDoesEmployeeExist)
+            
+            if (!bDoesEmployeeExist)
             {
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
@@ -149,7 +149,7 @@ namespace DZ_Security_DataBase
         {
             bool bDoesEmployeeExist = false;
             object oCurrentID = cbMitarbeiterID.SelectedItem;
-            if(oCurrentID == null)
+            if (oCurrentID == null)
             {
                 MessageBox.Show("Bitte wähle zuerst oben einen Mitarbeiter über seine MitarbeiterID aus", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -158,7 +158,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId", conn))
                 {
                     cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
 
@@ -191,7 +191,7 @@ namespace DZ_Security_DataBase
             }
             else
             {
-                MessageBox.Show("Bitte Trage zuerst den Start Zeitstempel ein","Falsche Nutzung",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                MessageBox.Show("Bitte Trage zuerst den Start Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -237,7 +237,7 @@ namespace DZ_Security_DataBase
                             // Speichern
                             using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
                             {
-                                workbook.Write(stream,false);
+                                workbook.Write(stream, false);
                             }
 
                         }
@@ -249,7 +249,7 @@ namespace DZ_Security_DataBase
 
         private void button4_Click(object sender, EventArgs e)
         {
-                MessageBox.Show("Dieser Knopf funktioniert noch nicht", "Demo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Dieser Knopf funktioniert noch nicht", "Demo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button5_Click(object sender, EventArgs e)
