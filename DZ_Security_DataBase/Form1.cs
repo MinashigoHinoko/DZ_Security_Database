@@ -5,12 +5,12 @@ using System.Data.SQLite;
 
 namespace DZ_Security_DataBase
 {
-    public partial class Form1 : Form
+    public partial class fCheckIn : Form
     {
         static string folderName = "datenBank";
         static string folderPath = Path.Combine(Application.StartupPath, folderName);
         static string stConnectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
-        public Form1()
+        public fCheckIn()
         {
             InitializeComponent();
             buildDatabase();
@@ -101,7 +101,7 @@ namespace DZ_Security_DataBase
                 }
                 conn.Close();
             }
-            
+
             if (!bDoesEmployeeExist)
             {
                 using (var conn = new SQLiteConnection(stConnectionString))

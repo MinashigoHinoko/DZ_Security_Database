@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class Form1
+    partial class fCheckIn
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,203 +28,211 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.Name = new System.Windows.Forms.Label();
-            this.Position = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.dgvArbeitszeit = new System.Windows.Forms.DataGridView();
-            this.cbMitarbeiterID = new System.Windows.Forms.ComboBox();
-            this.lbName = new System.Windows.Forms.Label();
-            this.lbPosition = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvArbeitszeit)).BeginInit();
-            this.SuspendLayout();
+            start_Work_Timestamp = new Button();
+            stop_Work_Timestamp = new Button();
+            label1 = new Label();
+            Name = new Label();
+            Position = new Label();
+            label4 = new Label();
+            label5 = new Label();
+            dgvArbeitszeit = new DataGridView();
+            cbMitarbeiterID = new ComboBox();
+            lbName = new Label();
+            lbPosition = new Label();
+            convert_Excel_Button = new Button();
+            button4 = new Button();
+            button5 = new Button();
+            ((System.ComponentModel.ISupportInitialize)dgvArbeitszeit).BeginInit();
+            SuspendLayout();
             // 
-            // button1
+            // start_Work_Timestamp
             // 
-            this.button1.AutoSize = true;
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.Location = new System.Drawing.Point(12, 309);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(124, 25);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Arbeitszeit Starten";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            start_Work_Timestamp.AutoSize = true;
+            start_Work_Timestamp.Cursor = Cursors.Hand;
+            start_Work_Timestamp.Location = new Point(14, 412);
+            start_Work_Timestamp.Margin = new Padding(3, 4, 3, 4);
+            start_Work_Timestamp.Name = "start_Work_Timestamp";
+            start_Work_Timestamp.Size = new Size(142, 33);
+            start_Work_Timestamp.TabIndex = 0;
+            start_Work_Timestamp.Text = "Arbeitszeit Starten";
+            start_Work_Timestamp.UseVisualStyleBackColor = true;
+            start_Work_Timestamp.Click += button1_Click;
             // 
-            // button2
+            // stop_Work_Timestamp
             // 
-            this.button2.AutoSize = true;
-            this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button2.Location = new System.Drawing.Point(142, 309);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(119, 25);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Arbeitszeit Stoppen";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            stop_Work_Timestamp.AutoSize = true;
+            stop_Work_Timestamp.Cursor = Cursors.Hand;
+            stop_Work_Timestamp.Location = new Point(162, 412);
+            stop_Work_Timestamp.Margin = new Padding(3, 4, 3, 4);
+            stop_Work_Timestamp.Name = "stop_Work_Timestamp";
+            stop_Work_Timestamp.Size = new Size(150, 33);
+            stop_Work_Timestamp.TabIndex = 1;
+            stop_Work_Timestamp.Text = "Arbeitszeit Stoppen";
+            stop_Work_Timestamp.UseVisualStyleBackColor = true;
+            stop_Work_Timestamp.Click += button2_Click;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 43);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "MitarbeiterID: ";
+            label1.AutoSize = true;
+            label1.Location = new Point(14, 57);
+            label1.Name = "label1";
+            label1.Size = new Size(105, 20);
+            label1.TabIndex = 2;
+            label1.Text = "MitarbeiterID: ";
             // 
             // Name
             // 
-            this.Name.AutoSize = true;
-            this.Name.Location = new System.Drawing.Point(12, 72);
-            this.Name.Name = "Name";
-            this.Name.Size = new System.Drawing.Size(112, 15);
-            this.Name.TabIndex = 3;
-            this.Name.Text = "Vor und Nachname:";
+            Name.AutoSize = true;
+            Name.Location = new Point(14, 96);
+            Name.Name = "Name";
+            Name.Size = new Size(138, 20);
+            Name.TabIndex = 3;
+            Name.Text = "Vor und Nachname:";
             // 
             // Position
             // 
-            this.Position.AutoSize = true;
-            this.Position.Location = new System.Drawing.Point(12, 92);
-            this.Position.Name = "Position";
-            this.Position.Size = new System.Drawing.Size(53, 15);
-            this.Position.TabIndex = 4;
-            this.Position.Text = "Position:";
+            Position.AutoSize = true;
+            Position.Location = new Point(14, 123);
+            Position.Name = "Position";
+            Position.Size = new Size(64, 20);
+            Position.TabIndex = 4;
+            Position.Text = "Position:";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.Location = new System.Drawing.Point(12, 116);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(156, 20);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Arbeitszeit Datenbank";
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            label4.Location = new Point(14, 155);
+            label4.Name = "label4";
+            label4.Size = new Size(197, 25);
+            label4.TabIndex = 5;
+            label4.Text = "Arbeitszeit Datenbank";
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(12, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(177, 20);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "Ausgewählter Mitarbeiter";
+            label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Location = new Point(14, 12);
+            label5.Name = "label5";
+            label5.Size = new Size(226, 25);
+            label5.TabIndex = 7;
+            label5.Text = "Ausgewählter Mitarbeiter";
             // 
             // dgvArbeitszeit
             // 
-            this.dgvArbeitszeit.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dgvArbeitszeit.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvArbeitszeit.Cursor = System.Windows.Forms.Cursors.No;
-            this.dgvArbeitszeit.Location = new System.Drawing.Point(12, 139);
-            this.dgvArbeitszeit.Name = "dgvArbeitszeit";
-            this.dgvArbeitszeit.RowTemplate.Height = 25;
-            this.dgvArbeitszeit.Size = new System.Drawing.Size(470, 150);
-            this.dgvArbeitszeit.TabIndex = 8;
+            dgvArbeitszeit.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvArbeitszeit.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvArbeitszeit.Cursor = Cursors.No;
+            dgvArbeitszeit.Location = new Point(14, 185);
+            dgvArbeitszeit.Margin = new Padding(3, 4, 3, 4);
+            dgvArbeitszeit.Name = "dgvArbeitszeit";
+            dgvArbeitszeit.RowHeadersWidth = 51;
+            dgvArbeitszeit.RowTemplate.Height = 25;
+            dgvArbeitszeit.Size = new Size(537, 200);
+            dgvArbeitszeit.TabIndex = 8;
             // 
             // cbMitarbeiterID
             // 
-            this.cbMitarbeiterID.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.cbMitarbeiterID.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.cbMitarbeiterID.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cbMitarbeiterID.FormattingEnabled = true;
-            this.cbMitarbeiterID.Location = new System.Drawing.Point(95, 40);
-            this.cbMitarbeiterID.Name = "cbMitarbeiterID";
-            this.cbMitarbeiterID.Size = new System.Drawing.Size(121, 23);
-            this.cbMitarbeiterID.Sorted = true;
-            this.cbMitarbeiterID.TabIndex = 9;
-            this.cbMitarbeiterID.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cbMitarbeiterID.Cursor = Cursors.Hand;
+            cbMitarbeiterID.FormattingEnabled = true;
+            cbMitarbeiterID.Location = new Point(109, 53);
+            cbMitarbeiterID.Margin = new Padding(3, 4, 3, 4);
+            cbMitarbeiterID.Name = "cbMitarbeiterID";
+            cbMitarbeiterID.Size = new Size(138, 28);
+            cbMitarbeiterID.Sorted = true;
+            cbMitarbeiterID.TabIndex = 9;
+            cbMitarbeiterID.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // lbName
             // 
-            this.lbName.AutoSize = true;
-            this.lbName.Location = new System.Drawing.Point(130, 72);
-            this.lbName.Name = "lbName";
-            this.lbName.Size = new System.Drawing.Size(0, 15);
-            this.lbName.TabIndex = 10;
+            lbName.AutoSize = true;
+            lbName.Location = new Point(149, 96);
+            lbName.Name = "lbName";
+            lbName.Size = new Size(0, 20);
+            lbName.TabIndex = 10;
             // 
             // lbPosition
             // 
-            this.lbPosition.AutoSize = true;
-            this.lbPosition.Location = new System.Drawing.Point(71, 92);
-            this.lbPosition.Name = "lbPosition";
-            this.lbPosition.Size = new System.Drawing.Size(0, 15);
-            this.lbPosition.TabIndex = 11;
+            lbPosition.AutoSize = true;
+            lbPosition.Location = new Point(81, 123);
+            lbPosition.Name = "lbPosition";
+            lbPosition.Size = new Size(0, 20);
+            lbPosition.TabIndex = 11;
             // 
-            // button3
+            // convert_Excel_Button
             // 
-            this.button3.AutoSize = true;
-            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button3.Location = new System.Drawing.Point(342, 309);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(140, 25);
-            this.button3.TabIndex = 12;
-            this.button3.Text = "Zu Excel Konvertieren";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            convert_Excel_Button.AutoSize = true;
+            convert_Excel_Button.Cursor = Cursors.Hand;
+            convert_Excel_Button.Location = new Point(391, 412);
+            convert_Excel_Button.Margin = new Padding(3, 4, 3, 4);
+            convert_Excel_Button.Name = "convert_Excel_Button";
+            convert_Excel_Button.Size = new Size(162, 33);
+            convert_Excel_Button.TabIndex = 12;
+            convert_Excel_Button.Text = "Zu Excel Konvertieren";
+            convert_Excel_Button.UseVisualStyleBackColor = true;
+            convert_Excel_Button.Click += button3_Click;
             // 
             // button4
             // 
-            this.button4.AutoSize = true;
-            this.button4.Cursor = System.Windows.Forms.Cursors.Help;
-            this.button4.Location = new System.Drawing.Point(481, 12);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(135, 25);
-            this.button4.TabIndex = 13;
-            this.button4.Text = "Equipment Ausleihen";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            button4.AutoSize = true;
+            button4.Cursor = Cursors.Help;
+            button4.Location = new Point(550, 16);
+            button4.Margin = new Padding(3, 4, 3, 4);
+            button4.Name = "button4";
+            button4.Size = new Size(159, 33);
+            button4.TabIndex = 13;
+            button4.Text = "Equipment Ausleihen";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // button5
             // 
-            this.button5.AutoSize = true;
-            this.button5.Cursor = System.Windows.Forms.Cursors.Help;
-            this.button5.Location = new System.Drawing.Point(481, 41);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(135, 25);
-            this.button5.TabIndex = 14;
-            this.button5.Text = "Equipment Übersicht";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            button5.AutoSize = true;
+            button5.Cursor = Cursors.Help;
+            button5.Location = new Point(550, 55);
+            button5.Margin = new Padding(3, 4, 3, 4);
+            button5.Name = "button5";
+            button5.Size = new Size(157, 33);
+            button5.TabIndex = 14;
+            button5.Text = "Equipment Übersicht";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click;
             // 
-            // Form1
+            // fCheckIn
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
-            this.ClientSize = new System.Drawing.Size(628, 399);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.lbPosition);
-            this.Controls.Add(this.lbName);
-            this.Controls.Add(this.cbMitarbeiterID);
-            this.Controls.Add(this.dgvArbeitszeit);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.Position);
-            this.Controls.Add(this.Name);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Text = "DZ Security CheckIn-Tool";
-            ((System.ComponentModel.ISupportInitialize)(this.dgvArbeitszeit)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AutoValidate = AutoValidate.EnableAllowFocusChange;
+            ClientSize = new Size(718, 532);
+            Controls.Add(button5);
+            Controls.Add(button4);
+            Controls.Add(convert_Excel_Button);
+            Controls.Add(lbPosition);
+            Controls.Add(lbName);
+            Controls.Add(cbMitarbeiterID);
+            Controls.Add(dgvArbeitszeit);
+            Controls.Add(label5);
+            Controls.Add(label4);
+            Controls.Add(Position);
+            Controls.Add(Name);
+            Controls.Add(label1);
+            Controls.Add(stop_Work_Timestamp);
+            Controls.Add(start_Work_Timestamp);
+            Margin = new Padding(3, 4, 3, 4);
+            Text = "DZ Security CheckIn-Tool";
+            ((System.ComponentModel.ISupportInitialize)dgvArbeitszeit).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private Button button1;
-        private Button button2;
+        private Button start_Work_Timestamp;
+        private Button stop_Work_Timestamp;
         private Label label1;
         private Label Name;
         private Label Position;
@@ -234,7 +242,7 @@
         private Label lbName;
         private Label lbPosition;
         public ComboBox cbMitarbeiterID;
-        private Button button3;
+        private Button convert_Excel_Button;
         private Button button4;
         private Button button5;
     }

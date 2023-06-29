@@ -17,7 +17,7 @@ namespace DZ_Security_DataBase
             createDatabase();
             editDatabase();
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.Run(new fCheckIn());
         }
         static void createDatabase()
         {
