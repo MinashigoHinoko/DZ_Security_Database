@@ -5,12 +5,12 @@ using System.Data.SQLite;
 
 namespace DZ_Security_DataBase
 {
-    public partial class fCheckIn : Form
+    public partial class cCheckIn : Form
     {
         static string folderName = "datenBank";
         static string folderPath = Path.Combine(Application.StartupPath, folderName);
         static string stConnectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
-        public fCheckIn()
+        public cCheckIn()
         {
             InitializeComponent();
             buildDatabase();
@@ -255,6 +255,11 @@ namespace DZ_Security_DataBase
         private void button5_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Dieser Knopf funktioniert noch nicht", "Demo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            cMenu menu = new cMenu();
+            menu.Show();
         }
     }
 }

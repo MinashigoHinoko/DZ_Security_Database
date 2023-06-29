@@ -2,7 +2,7 @@ using System.Data.SQLite;
 
 namespace DZ_Security_DataBase
 {
-    internal static class Program
+    internal static class cMain
     {
         static string folderName = "datenBank";
         static string folderPath = Path.Combine(Application.StartupPath, folderName);
@@ -17,7 +17,7 @@ namespace DZ_Security_DataBase
             createDatabase();
             editDatabase();
             ApplicationConfiguration.Initialize();
-            Application.Run(new fCheckIn());
+            Application.Run(new cMenu());
         }
         static void createDatabase()
         {

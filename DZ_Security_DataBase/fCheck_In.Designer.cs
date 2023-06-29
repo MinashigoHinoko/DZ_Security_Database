@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fCheckIn
+    partial class cCheckIn
     {
         /// <summary>
         ///  Required designer variable.
@@ -200,7 +200,7 @@
             button5.UseVisualStyleBackColor = true;
             button5.Click += button5_Click;
             // 
-            // fCheckIn
+            // cCheckIn
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -224,6 +224,7 @@
             Controls.Add(start_Work_Timestamp);
             Margin = new Padding(3, 4, 3, 4);
             Text = "DZ Security CheckIn-Tool";
+            FormClosed += fCheckin_FormClosed;
             ((System.ComponentModel.ISupportInitialize)dgvArbeitszeit).EndInit();
             ResumeLayout(false);
             PerformLayout();
