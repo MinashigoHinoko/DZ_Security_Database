@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace DZ_Security_DataBase
+﻿namespace DZ_Security_DataBase
 {
     public partial class cMenu : Form
     {
+        private bool firstLoad = true;
         public cMenu()
         {
             InitializeComponent();
+            this.TopMost = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -36,8 +28,12 @@ namespace DZ_Security_DataBase
 
         private void cMenu_Load(object sender, EventArgs e)
         {
-            cDataBase.createDatabase();
-            cDataBase.editDatabase();
+            if (firstLoad)
+            {
+                cDataBase.createDatabase();
+                cDataBase.editDatabase();
+                firstLoad = false;
+            }
         }
     }
 }

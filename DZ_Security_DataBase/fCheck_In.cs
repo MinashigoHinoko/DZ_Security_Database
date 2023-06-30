@@ -77,7 +77,7 @@ namespace DZ_Security_DataBase
         }
 
         private void button1_Click(object sender, EventArgs e)
-            {
+        {
             object oCurrentID = cbMitarbeiterID.SelectedItem;
             if (oCurrentID == null)
             {
@@ -121,24 +121,24 @@ namespace DZ_Security_DataBase
                 }
             }
             else
-        {
-            using (var conn = new SQLiteConnection(stConnectionString))
             {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand(conn))
+                using (var conn = new SQLiteConnection(stConnectionString))
                 {
-                    cmd.CommandText = @"
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"
                         UPDATE Arbeitszeiten
                         SET ZeitstempelEingetragen = @eingetragen
                         WHERE MitarbeiterID = @id";
-                    cmd.Parameters.AddWithValue("@eingetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    cmd.Parameters.AddWithValue("@id", oCurrentID);
+                        cmd.Parameters.AddWithValue("@eingetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        cmd.Parameters.AddWithValue("@id", oCurrentID);
 
-                    cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
                 }
-                conn.Close();
-            }
             }
             buildDatabase();
         }
@@ -204,7 +204,16 @@ namespace DZ_Security_DataBase
                     using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
                     {
                         DataTable dt = new DataTable();
-                        adapter.Fill(dt);
+                        try
+                        {
+                            adapter.Fill(dt);
+
+                        }
+                        catch (Exception)
+                        {
+
+                            throw new InvalidOperationException("Die Datei ist nicht Speicherbar ohne ein Stop Zeitstempel");
+                        }
 
                         SaveFileDialog sfd = new SaveFileDialog();
                         sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";

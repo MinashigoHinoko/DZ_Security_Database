@@ -87,13 +87,17 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ClientSize = new Size(439, 269);
             Controls.Add(bExcelExport);
             Controls.Add(bPrint);
             Controls.Add(bToolOverlay);
             Controls.Add(bToolBorrow);
             Controls.Add(bCheckIn);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "cMenu";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "DZ Security Member Menü";
             Load += cMenu_Load;
             ResumeLayout(false);
