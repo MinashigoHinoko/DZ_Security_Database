@@ -197,7 +197,7 @@ namespace DZ_Security_DataBase
 
         private void button3_Click(object sender, EventArgs e)
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (var conn = new SQLiteConnection(cDataBase.DbPath))
             {
                 conn.Open();
 
