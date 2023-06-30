@@ -95,6 +95,7 @@
             Controls.Add(bCheckIn);
             Name = "cMenu";
             Text = "DZ Security Member Menü";
+            Load += cMenu_Load;
             ResumeLayout(false);
         }
 

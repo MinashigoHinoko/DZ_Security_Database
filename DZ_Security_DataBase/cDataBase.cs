@@ -7,41 +7,52 @@ namespace DZ_Security_DataBase
         static string folderName = "datenBank";
         static string folderPath = Path.Combine(Application.StartupPath, folderName);
         static bool freshlyCreated = false;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+
+        public static string DbPath { get; set; }
+
+        private static string GetConnectionString()
+        {
+            return $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        }
+
         internal static void createDatabase()
         {
-            // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
-            using (var fbd = new FolderBrowserDialog())
-            {
-                DialogResult result = fbd.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                {
-                    folderPath = fbd.SelectedPath;
-                }
-            }
-
-            if (!Directory.Exists(folderPath))
-            {
-                string connectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-                Directory.CreateDirectory(folderPath);
-            }
+            // If the database file doesn't exist, ask the user for a path.
             if (!File.Exists($"{folderPath}\\Dz_Security.sqlite"))
             {
+                // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        folderPath = fbd.SelectedPath;
+                        cDataBase.DbPath = folderPath; // Speichern des Pfades in der statischen Eigenschaft
+                    }
+                }
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                string connectionString = GetConnectionString();
+
                 freshlyCreated = true;
-                SQLiteConnection.CreateFile($"{folderPath}\\MeineDatenbank.sqlite");
+                SQLiteConnection.CreateFile($"{folderPath}\\Dz_Security.sqlite");
                 using (var m_dbConnection = new SQLiteConnection(connectionString))
                 {
                     m_dbConnection.Open();
 
                     // Mitarbeiter Tabelle erstellen
                     string sql = @"CREATE TABLE Mitarbeiter (
-                MitarbeiterID INT PRIMARY KEY NOT NULL, 
-                Name TEXT NOT NULL, 
-                Position TEXT,
-                RFIDChipNummer TEXT,
-                WeitereInformationen TEXT
-               );";
+            MitarbeiterID INT PRIMARY KEY NOT NULL, 
+            Name TEXT NOT NULL, 
+            Position TEXT,
+            RFIDChipNummer TEXT,
+            WeitereInformationen TEXT
+           );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {
@@ -50,11 +61,11 @@ namespace DZ_Security_DataBase
 
                     // Arbeitszeiten Tabelle erstellen
                     sql = @"CREATE TABLE Arbeitszeiten (
-                 MitarbeiterID INT NOT NULL, 
-                 ZeitstempelEingetragen DATETIME,
-                 ZeitstempelAusgetragen DATETIME,
-                 FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
-                 );";
+             MitarbeiterID INT NOT NULL, 
+             ZeitstempelEingetragen DATETIME,
+             ZeitstempelAusgetragen DATETIME,
+             FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
+             );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {
@@ -64,13 +75,16 @@ namespace DZ_Security_DataBase
             }
         }
 
+
+
+
         internal static void editDatabase()
         {
             if (!freshlyCreated)
             {
                 return;
             }
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (var conn = new SQLiteConnection(GetConnectionString()))
             {
                 conn.Open();
 

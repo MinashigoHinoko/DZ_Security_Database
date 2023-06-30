@@ -33,5 +33,11 @@ namespace DZ_Security_DataBase
             cCheckIn checkIn = new cCheckIn();
             checkIn.ShowDialog();
         }
+
+        private void cMenu_Load(object sender, EventArgs e)
+        {
+            cDataBase.createDatabase();
+            cDataBase.editDatabase();
+        }
     }
 }

@@ -1,6 +1,6 @@
 namespace DZ_Security_DataBase
 {
-    internal static class cMain
+    internal static class cProgramm
     {
         /// <summary>
         ///  The main entry point for the application.
@@ -8,8 +8,6 @@ namespace DZ_Security_DataBase
         [STAThread]
         static void Main()
         {
-            cDataBase.createDatabase();
-            cDataBase.editDatabase();
             ApplicationConfiguration.Initialize();
             Application.Run(new cMenu());
         }
