@@ -7,14 +7,11 @@ namespace DZ_Security_DataBase
 {
     public partial class cCheckIn : Form
     {
-        static string folderName = "datenBank";
-        static string folderPath = Path.Combine(Application.StartupPath, folderName);
-        static string stConnectionString = $"Data Source={folderPath}\\MeineDatenbank.sqlite;Version=3;";
+        static string folderPath = cDataBase.DbPath;
+        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         public cCheckIn()
         {
             InitializeComponent();
-            buildDatabase();
-            insertDatabaseInComboBox();
         }
         private void buildDatabase()
         {
@@ -53,6 +50,7 @@ namespace DZ_Security_DataBase
                     }
                 }
             }
+            buildDatabase();
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -79,7 +77,7 @@ namespace DZ_Security_DataBase
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
+            {
             object oCurrentID = cbMitarbeiterID.SelectedItem;
             if (oCurrentID == null)
             {
@@ -123,24 +121,24 @@ namespace DZ_Security_DataBase
                 }
             }
             else
+        {
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
-                using (var conn = new SQLiteConnection(stConnectionString))
-                {
-                    conn.Open();
+                conn.Open();
 
-                    using (var cmd = new SQLiteCommand(conn))
-                    {
-                        cmd.CommandText = @"
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = @"
                         UPDATE Arbeitszeiten
                         SET ZeitstempelEingetragen = @eingetragen
                         WHERE MitarbeiterID = @id";
-                        cmd.Parameters.AddWithValue("@eingetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                        cmd.Parameters.AddWithValue("@id", oCurrentID);
+                    cmd.Parameters.AddWithValue("@eingetragen", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.Parameters.AddWithValue("@id", oCurrentID);
 
-                        cmd.ExecuteNonQuery();
-                    }
-                    conn.Close();
+                    cmd.ExecuteNonQuery();
                 }
+                conn.Close();
+            }
             }
             buildDatabase();
         }
@@ -197,7 +195,7 @@ namespace DZ_Security_DataBase
 
         private void button3_Click(object sender, EventArgs e)
         {
-            using (var conn = new SQLiteConnection(cDataBase.DbPath))
+            using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
@@ -260,6 +258,12 @@ namespace DZ_Security_DataBase
         {
             cMenu menu = new cMenu();
             menu.Show();
+        }
+
+        private void cCheckIn_Load(object sender, EventArgs e)
+        {
+            buildDatabase();
+            insertDatabaseInComboBox();
         }
     }
 }

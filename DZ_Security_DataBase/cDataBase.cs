@@ -4,21 +4,19 @@ namespace DZ_Security_DataBase
 {
     internal static class cDataBase
     {
-        static string folderName = "datenBank";
-        static string folderPath = Path.Combine(Application.StartupPath, folderName);
         static bool freshlyCreated = false;
 
         public static string DbPath { get; set; }
 
         private static string GetConnectionString()
         {
-            return $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            return $"Data Source={DbPath}\\Dz_Security.sqlite;Version=3;";
         }
 
         internal static void createDatabase()
         {
             // If the database file doesn't exist, ask the user for a path.
-            if (!File.Exists($"{folderPath}\\Dz_Security.sqlite"))
+            if (!File.Exists($"{DbPath}\\Dz_Security.sqlite"))
             {
                 // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
                 using (var fbd = new FolderBrowserDialog())
@@ -27,21 +25,13 @@ namespace DZ_Security_DataBase
 
                     if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                     {
-                        folderPath = fbd.SelectedPath;
-                        cDataBase.DbPath = folderPath; // Speichern des Pfades in der statischen Eigenschaft
+                        cDataBase.DbPath = fbd.SelectedPath; // Speichern des Pfades in der statischen Eigenschaft
                     }
                 }
 
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-
-                string connectionString = GetConnectionString();
-
                 freshlyCreated = true;
-                SQLiteConnection.CreateFile($"{folderPath}\\Dz_Security.sqlite");
-                using (var m_dbConnection = new SQLiteConnection(connectionString))
+                SQLiteConnection.CreateFile($"{DbPath}\\Dz_Security.sqlite");
+                using (var m_dbConnection = new SQLiteConnection(GetConnectionString()))
                 {
                     m_dbConnection.Open();
 
@@ -62,8 +52,8 @@ namespace DZ_Security_DataBase
                     // Arbeitszeiten Tabelle erstellen
                     sql = @"CREATE TABLE Arbeitszeiten (
              MitarbeiterID INT NOT NULL, 
-             ZeitstempelEingetragen DATETIME,
-             ZeitstempelAusgetragen DATETIME,
+             ZeitstempelEingetragen DATETIME DEFAULT '0000-00-00 00:00:00',
+             ZeitstempelAusgetragen DATETIME DEFAULT '0000-00-00 00:00:00',
              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
              );";
 

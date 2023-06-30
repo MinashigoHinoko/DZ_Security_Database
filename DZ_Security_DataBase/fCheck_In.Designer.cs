@@ -225,6 +225,7 @@
             Margin = new Padding(3, 4, 3, 4);
             Text = "DZ Security CheckIn-Tool";
             FormClosed += fCheckin_FormClosed;
+            Load += cCheckIn_Load;
             ((System.ComponentModel.ISupportInitialize)dgvArbeitszeit).EndInit();
             ResumeLayout(false);
             PerformLayout();
