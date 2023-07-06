@@ -2,6 +2,7 @@
 using NPOI.XSSF.UserModel;
 using System.Data.SQLite;
 using System.Data;
+using System.Drawing.Printing;
 
 namespace DZ_Security_DataBase
 {
@@ -29,69 +30,38 @@ namespace DZ_Security_DataBase
                 cDataBase.editDatabase();
                 firstLoad = false;
             }
+
         }
 
-        private void bExcelExport_Click(object sender, EventArgs e)
+        private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            string folderPath = cDataBase.DbPath;
-            string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
+            PrintDocument printDoc = new PrintDocument();
 
-                using (var cmd = new SQLiteCommand("SELECT * FROM Arbeitszeiten", conn))
-                {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        try
-                        {
-                            adapter.Fill(dt);
-
-                        }
-                        catch (Exception)
-                        {
-                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        SaveFileDialog sfd = new SaveFileDialog();
-                        sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
-                        sfd.FileName = "export.xlsx";
-
-                        if (sfd.ShowDialog() == DialogResult.OK)
-                        {
-                            IWorkbook workbook = new XSSFWorkbook();
-                            ISheet sheet = workbook.CreateSheet("Arbeitszeiten");
-
-                            // Überschriften
-                            IRow row = sheet.CreateRow(0);
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
-                            }
-
-                            // Daten
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                row = sheet.CreateRow(i + 1);
-                                for (int j = 0; j < dt.Columns.Count; j++)
-                                {
-                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                                }
-                            }
-
-                            // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
-                            {
-                                workbook.Write(stream, false);
-                            }
-
-                        }
-                    }
-                }
-                conn.Close();
-            }
+            // Stellen Sie die Papiereinstellungen ein
+            printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720); // Diese Größe ist typisch für einen 80mm Bon-Drucker. Sie müssen es möglicherweise an Ihre spezifische Situation anpassen.
+            printDoc.PrintPage += new PrintPageEventHandler(printDoc_PrintPage);
+            printDoc.Print();
         }
+
+
+        void printDoc_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            // Erzeugt den Zeichenstring.
+            string text = "Laufzettel\n\n";
+
+            // Add some values. Ersetzen Sie "someValue1" und "someValue2" durch die tatsächlichen Werte, die Sie drucken möchten.
+            //text += "Wert 1: " + someValue1.ToString() + "\n";
+            //text += "Wert 2: " + someValue2.ToString() + "\n";
+            text += "Wert1: \n";
+            text += "Wert2: \n";
+            // ... add as many values as you need
+
+            // Erzeugt das Font-Objekt.
+            Font printFont = new Font("Arial", 10);
+
+            // Zeichnet den Text.
+            e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);
+        }
+
     }
 }
