@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class cMenu
+    partial class fMemberView
     {
         /// <summary>
         /// Required designer variable.
@@ -53,7 +53,6 @@
             bToolBorrow.TabIndex = 1;
             bToolBorrow.Text = "Equipment Ausleihe";
             bToolBorrow.UseVisualStyleBackColor = true;
-            bToolBorrow.Click += button2_Click;
             // 
             // bToolOverlay
             // 
@@ -72,7 +71,6 @@
             bPrint.TabIndex = 3;
             bPrint.Text = "Ausdruck";
             bPrint.UseVisualStyleBackColor = true;
-            bPrint.Click += button4_Click;
             // 
             // bExcelExport
             // 
@@ -82,21 +80,22 @@
             bExcelExport.TabIndex = 4;
             bExcelExport.Text = "Excel Export";
             bExcelExport.UseVisualStyleBackColor = true;
+            bExcelExport.Click += bExcelExport_Click;
             // 
-            // cMenu
+            // fMemberView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(439, 269);
+            ClientSize = new Size(437, 274);
             Controls.Add(bExcelExport);
             Controls.Add(bPrint);
             Controls.Add(bToolOverlay);
             Controls.Add(bToolBorrow);
             Controls.Add(bCheckIn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Name = "cMenu";
+            Name = "fMemberView";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "DZ Security Member Menü";
             Load += cMenu_Load;
