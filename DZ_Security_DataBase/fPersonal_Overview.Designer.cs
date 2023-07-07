@@ -69,6 +69,7 @@
             label36 = new Label();
             bAddWorker = new Button();
             cbCompany = new ComboBox();
+            button1 = new Button();
             SuspendLayout();
             // 
             // lbPosition
@@ -443,11 +444,21 @@
             cbCompany.Size = new Size(139, 28);
             cbCompany.TabIndex = 54;
             // 
+            // button1
+            // 
+            button1.Location = new Point(531, 350);
+            button1.Name = "button1";
+            button1.Size = new Size(161, 58);
+            button1.TabIndex = 55;
+            button1.Text = "SprachenListe";
+            button1.UseVisualStyleBackColor = true;
+            // 
             // fPersonal_Overview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(703, 416);
+            Controls.Add(button1);
             Controls.Add(cbCompany);
             Controls.Add(bAddWorker);
             Controls.Add(lbContact);
@@ -489,6 +500,7 @@
             Controls.Add(Position);
             Controls.Add(Name);
             Controls.Add(label1);
+            Name = "fPersonal_Overview";
             Text = "DZ Security Personal Übersicht";
             ResumeLayout(false);
             PerformLayout();
@@ -537,5 +549,6 @@
         private Label label36;
         private Button bAddWorker;
         private ComboBox cbCompany;
+        private Button button1;
     }
 }
