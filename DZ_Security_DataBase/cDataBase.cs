@@ -77,8 +77,8 @@ namespace DZ_Security_DataBase
                     // Arbeitszeiten Tabelle erstellen
                     sql = @"CREATE TABLE Arbeitszeiten (
                              MitarbeiterID INT NOT NULL, 
-                             CheckedIn DATETIME DEFAULT '0000-00-00 00:00:00',
-                             CheckedOut DATETIME DEFAULT '0000-00-00 00:00:00',
+                             CheckedIn DATETIME,
+                             CheckedOut DATETIME,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 

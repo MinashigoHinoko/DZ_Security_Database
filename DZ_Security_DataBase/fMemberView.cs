@@ -38,9 +38,18 @@ namespace DZ_Security_DataBase
             PrintDocument printDoc = new PrintDocument();
 
             // Stellen Sie die Papiereinstellungen ein
-            printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720); // Diese Größe ist typisch für einen 80mm Bon-Drucker. Sie müssen es möglicherweise an Ihre spezifische Situation anpassen.
+            printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720);
+
+            // Legen Sie den Handler für das PrintPage-Ereignis fest.
             printDoc.PrintPage += new PrintPageEventHandler(printDoc_PrintPage);
-            printDoc.Print();
+
+            // Zeigen Sie den Druckdialog an und starten Sie den Druckvorgang, wenn der Benutzer auf "Drucken" klickt.
+            PrintDialog printDialog = new PrintDialog();
+            printDialog.Document = printDoc;
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDoc.Print();
+            }
         }
 
 
