@@ -77,6 +77,10 @@ namespace DZ_Security_DataBase
             ComboBox employeeComboBox = new ComboBox();
             employeeComboBox.Dock = DockStyle.Fill;
 
+            // Enable the ComboBox to be searchable
+            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
             using (var conn = new SQLiteConnection(stConnectionString))
@@ -112,7 +116,6 @@ namespace DZ_Security_DataBase
                     MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             };
-
             // Fügt die ComboBox und den Bestätigungsbutton zum Formular hinzu
             prompt.Controls.Add(employeeComboBox);
             prompt.Controls.Add(confirmation);
@@ -121,9 +124,9 @@ namespace DZ_Security_DataBase
             // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
             if (employeeComboBox.SelectedItem != null)
             {
-                string selectedEmployeeID = employeeComboBox.SelectedItem.ToString();
+                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
 
-                string oCurrentID = selectedEmployeeID; // now oCurrentID is the ID string
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
 
                 bool bDoesEmployeeExist = false;
                 using (var conn = new SQLiteConnection(stConnectionString))
@@ -173,6 +176,7 @@ namespace DZ_Security_DataBase
         {
             // Erzeugt ein neues Formular
             bool bDoesEmployeeExist = false;
+            // Erzeugt ein neues Formular
             Form prompt = new Form();
             prompt.Width = 200;
             prompt.Height = 150;
@@ -182,12 +186,16 @@ namespace DZ_Security_DataBase
             ComboBox employeeComboBox = new ComboBox();
             employeeComboBox.Dock = DockStyle.Fill;
 
+            // Enable the ComboBox to be searchable
+            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS FullName \r\nFROM Mitarbeiter \r\nLEFT JOIN Arbeitszeiten \r\nON Mitarbeiter.MitarbeiterID = Arbeitszeiten.MitarbeiterID \r\nWHERE Arbeitszeiten.CheckedOut IS NULL\r\n", conn))
+                using (var cmd = new SQLiteCommand("SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS FullName \r\nFROM Mitarbeiter \r\nLEFT JOIN Arbeitszeiten \r\nON Mitarbeiter.MitarbeiterID = Arbeitszeiten.MitarbeiterID \r\nWHERE Arbeitszeiten.CheckedIn IS NOT NULL AND Arbeitszeiten.CheckedOut IS NULL\r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -203,6 +211,8 @@ namespace DZ_Security_DataBase
                     }
                 }
             }
+
+
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
             Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Fill };
@@ -226,9 +236,9 @@ namespace DZ_Security_DataBase
             // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
             if (employeeComboBox.SelectedItem != null)
             {
-                string selectedEmployeeID = employeeComboBox.SelectedItem.ToString();
+                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
 
-                string oCurrentID = selectedEmployeeID; // now oCurrentID is the ID string
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
                 if (oCurrentID == null)
                 {
                     MessageBox.Show("Bitte wähle zuerst oben einen Mitarbeiter aus", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -286,6 +296,117 @@ namespace DZ_Security_DataBase
         {
             buildDatabase();
             insertDatabaseInComboBox();
+        }
+
+        private void bCheckInAgain_Click(object sender, EventArgs e)
+        {
+            // Erzeugt ein neues Formular
+            Form prompt = new Form();
+            prompt.Width = 200;
+            prompt.Height = 150;
+            prompt.Text = "Wählen Sie einen Mitarbeiter aus";
+
+            // Erzeugt eine neue ComboBox und füllt sie mit MitarbeiterIDs
+            ComboBox employeeComboBox = new ComboBox();
+            employeeComboBox.Dock = DockStyle.Fill;
+
+            // Enable the ComboBox to be searchable
+            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
+            // die noch nicht eingecheckt haben.
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand(@"SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS FullName
+                                    FROM Mitarbeiter 
+                                    WHERE NOT EXISTS (
+                                        SELECT 1 FROM Arbeitszeiten 
+                                        WHERE Mitarbeiter.MitarbeiterID = Arbeitszeiten.MitarbeiterID 
+                                        AND Arbeitszeiten.CheckedOut IS NULL)", conn))
+
+                {
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var employeeItem = new cWorker
+                            {
+                                ID = reader.GetInt32(0).ToString(), // oder GetInt64(0).ToString(), wenn MitarbeiterID ein long ist
+                                Name = reader.GetString(1)
+                            };
+                            employeeComboBox.Items.Add(employeeItem);
+                        }
+                    }
+                }
+            }
+
+            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
+            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Fill };
+            confirmation.Click += (sender, e) =>
+            {
+                if (employeeComboBox.SelectedItem != null)
+                {
+                    prompt.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            // Fügt die ComboBox und den Bestätigungsbutton zum Formular hinzu
+            prompt.Controls.Add(employeeComboBox);
+            prompt.Controls.Add(confirmation);
+            prompt.ShowDialog();
+
+            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
+            if (employeeComboBox.SelectedItem != null)
+            {
+                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
+
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
+
+                bool bDoesEmployeeExist = false;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+
+                        int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        bDoesEmployeeExist = rowCount > 0 ? true : false;
+                    }
+                    conn.Close();
+                }
+
+                if (!bDoesEmployeeExist)
+                {
+                    using (var conn = new SQLiteConnection(stConnectionString))
+                    {
+                        conn.Open();
+
+                        using (var cmd = new SQLiteCommand(conn))
+                        {
+                            cmd.CommandText = @"
+                        INSERT INTO Arbeitszeiten (MitarbeiterID, CheckedIn, CheckedOut)
+                        VALUES (@id, @jetzt, NULL)";
+                            cmd.Parameters.AddWithValue("@id", oCurrentID);
+                            cmd.Parameters.AddWithValue("@jetzt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                            cmd.ExecuteNonQuery();
+                        }
+                        conn.Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Bitte trage zuerst den Aus-Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                buildDatabase();
+            }
         }
     }
 }

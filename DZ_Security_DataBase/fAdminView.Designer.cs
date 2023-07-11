@@ -33,13 +33,16 @@
             bToolOverlay = new Button();
             bToolBorrow = new Button();
             bCheckIn = new Button();
+            button1 = new Button();
+            label1 = new Label();
+            bPrintReceipt = new Button();
             SuspendLayout();
             // 
             // bExcelExport
             // 
-            bExcelExport.Location = new Point(12, 191);
+            bExcelExport.Location = new Point(242, 191);
             bExcelExport.Name = "bExcelExport";
-            bExcelExport.Size = new Size(415, 64);
+            bExcelExport.Size = new Size(185, 64);
             bExcelExport.TabIndex = 9;
             bExcelExport.Text = "Excel Export";
             bExcelExport.UseVisualStyleBackColor = true;
@@ -47,7 +50,7 @@
             // 
             // bPrint
             // 
-            bPrint.Location = new Point(242, 12);
+            bPrint.Location = new Point(12, 191);
             bPrint.Name = "bPrint";
             bPrint.Size = new Size(185, 64);
             bPrint.TabIndex = 8;
@@ -82,11 +85,42 @@
             bCheckIn.UseVisualStyleBackColor = true;
             bCheckIn.Click += bCheckin_Click;
             // 
+            // button1
+            // 
+            button1.Location = new Point(242, 12);
+            button1.Name = "button1";
+            button1.Size = new Size(185, 64);
+            button1.TabIndex = 10;
+            button1.Text = "Personal Übersicht";
+            button1.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 5F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(433, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(53, 12);
+            label1.TabIndex = 16;
+            label1.Text = "@Mobinoko";
+            // 
+            // bPrintReceipt
+            // 
+            bPrintReceipt.Location = new Point(10, 261);
+            bPrintReceipt.Name = "bPrintReceipt";
+            bPrintReceipt.Size = new Size(417, 64);
+            bPrintReceipt.TabIndex = 17;
+            bPrintReceipt.Text = "Laufzettel manuell drucken";
+            bPrintReceipt.UseVisualStyleBackColor = true;
+            // 
             // cAdminView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(438, 276);
+            ClientSize = new Size(486, 342);
+            Controls.Add(bPrintReceipt);
+            Controls.Add(label1);
+            Controls.Add(button1);
             Controls.Add(bExcelExport);
             Controls.Add(bPrint);
             Controls.Add(bToolOverlay);
@@ -97,6 +131,7 @@
             Text = "DZ Security Admin Menü";
             Load += cAdminMenu_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -106,5 +141,8 @@
         private Button bToolOverlay;
         private Button bToolBorrow;
         private Button bCheckIn;
+        private Button button1;
+        private Label label1;
+        private Button bPrintReceipt;
     }
 }

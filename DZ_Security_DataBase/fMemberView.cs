@@ -72,5 +72,11 @@ namespace DZ_Security_DataBase
             e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);
         }
 
+        private void bToolBorrow_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            cEquipmentRent checkIn = new cEquipmentRent();
+            checkIn.ShowDialog();
+        }
     }
 }

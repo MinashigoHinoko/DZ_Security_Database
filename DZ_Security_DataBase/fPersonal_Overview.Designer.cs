@@ -70,6 +70,7 @@
             bAddWorker = new Button();
             cbCompany = new ComboBox();
             button1 = new Button();
+            label2 = new Label();
             SuspendLayout();
             // 
             // lbPosition
@@ -453,11 +454,22 @@
             button1.Text = "SprachenListe";
             button1.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 5F, FontStyle.Regular, GraphicsUnit.Point);
+            label2.Location = new Point(639, 9);
+            label2.Name = "label2";
+            label2.Size = new Size(53, 12);
+            label2.TabIndex = 56;
+            label2.Text = "@Mobinoko";
+            // 
             // fPersonal_Overview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(703, 416);
+            Controls.Add(label2);
             Controls.Add(button1);
             Controls.Add(cbCompany);
             Controls.Add(bAddWorker);
@@ -500,8 +512,7 @@
             Controls.Add(Position);
             Controls.Add(Name);
             Controls.Add(label1);
-            Name = "fPersonal_Overview";
-            Text = "DZ Security Personal Übersicht";
+            Text = "Festival Manager Personal Übersicht";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -550,5 +561,6 @@
         private Button bAddWorker;
         private ComboBox cbCompany;
         private Button button1;
+        private Label label2;
     }
 }
