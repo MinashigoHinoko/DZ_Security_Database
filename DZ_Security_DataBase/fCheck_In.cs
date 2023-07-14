@@ -9,7 +9,6 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        Dictionary<string, string> mitarbeiterDict = new Dictionary<string, string>();
         public cCheckIn()
         {
             InitializeComponent();
@@ -97,7 +96,7 @@ namespace DZ_Security_DataBase
                 }
             };
 
-            List<cWorker> allWorkers = new List<cWorker>();
+            List<cWorker> allEmployee = new List<cWorker>();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
@@ -115,7 +114,7 @@ namespace DZ_Security_DataBase
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1)
                             };
-                            allWorkers.Add(employeeItem);
+                            allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
                         }
                     }
@@ -125,10 +124,15 @@ namespace DZ_Security_DataBase
             // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
             searchBox.TextChanged += (sender, e) =>
             {
-                string searchTerm = searchBox.Text.ToLower();
+                // Konvertiere Suchbegriffe zu Kleinbuchstaben und teile sie auf Basis von Kommas
+                string[] searchTerms = searchBox.Text.ToLower().Split(',');
 
-                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
-                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
+                var matches = allEmployee.Where(item =>
+                    searchTerms.All(term => item.ID.Contains(term.Trim())
+                                        || item.Name.ToLower().Contains(term.Trim())
+                                    )
+                );
                 employeeListBox.Items.Clear();
                 foreach (var match in matches)
                 {
@@ -229,7 +233,7 @@ namespace DZ_Security_DataBase
                 }
             };
 
-            List<cWorker> allWorkers = new List<cWorker>();
+            List<cWorker> allEmployee = new List<cWorker>();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
@@ -247,7 +251,7 @@ namespace DZ_Security_DataBase
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1)
                             };
-                            allWorkers.Add(employeeItem);
+                            allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
                         }
                     }
@@ -259,16 +263,22 @@ namespace DZ_Security_DataBase
             // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
             searchBox.TextChanged += (sender, e) =>
             {
-                string searchTerm = searchBox.Text.ToLower();
+                // Konvertiere Suchbegriffe zu Kleinbuchstaben und teile sie auf Basis von Kommas
+                string[] searchTerms = searchBox.Text.ToLower().Split(',');
 
-                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
-                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
+                var matches = allEmployee.Where(item =>
+                    searchTerms.All(term => item.ID.Contains(term.Trim())
+                                        || item.Name.ToLower().Contains(term.Trim())
+                                    )
+                );
                 employeeListBox.Items.Clear();
                 foreach (var match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
             };
+
 
             // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
             // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
@@ -365,7 +375,7 @@ namespace DZ_Security_DataBase
                 }
             };
 
-            List<cWorker> allWorkers = new List<cWorker>();
+            List<cWorker> allEmployee = new List<cWorker>();
 
             // Lade die Mitarbeiter aus der Datenbank in die ListBox
             using (var conn = new SQLiteConnection(stConnectionString))
@@ -387,7 +397,7 @@ namespace DZ_Security_DataBase
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1)
                             };
-                            allWorkers.Add(employeeItem);
+                            allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
                         }
                     }
@@ -397,10 +407,15 @@ namespace DZ_Security_DataBase
             // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
             searchBox.TextChanged += (sender, e) =>
             {
-                string searchTerm = searchBox.Text.ToLower();
+                // Konvertiere Suchbegriffe zu Kleinbuchstaben und teile sie auf Basis von Kommas
+                string[] searchTerms = searchBox.Text.ToLower().Split(',');
 
-                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
-                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
+                var matches = allEmployee.Where(item =>
+                    searchTerms.All(term => item.ID.Contains(term.Trim())
+                                        || item.Name.ToLower().Contains(term.Trim())
+                                    )
+                );
                 employeeListBox.Items.Clear();
                 foreach (var match in matches)
                 {
@@ -473,7 +488,6 @@ namespace DZ_Security_DataBase
 
         private void cCheckIn_Load(object sender, EventArgs e)
         {
-            buildDatabase();
             insertDatabaseInComboBox();
         }
     }
