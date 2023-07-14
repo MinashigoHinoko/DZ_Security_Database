@@ -53,19 +53,33 @@ namespace DZ_Security_DataBase
                     // Mitarbeiter Tabelle erstellen
                     string sql = @"CREATE TABLE Mitarbeiter (
                                     MitarbeiterID INT PRIMARY KEY NOT NULL, 
-                                    Vorname TEXT NOT NULL, 
-                                    Nachname TEXT NOT NULL,
-                                    Geburtsdatum DATE,
-                                    Wohnort TEXT,
+                                    Firma TEXT NOT NULL,
+                                    Vorname TEXT, 
+                                    Nachname TEXT,
+                                    Geburtsname TEXT,
+                                    Geburtsort TEXT,
                                     Geburtsland TEXT,
-                                    Geschlecht TEXT,
+                                    Geburtsdatum DATE,
+                                    Nationalitaet TEXT,
+                                    Straße TEXT,
+                                    Hausnummer TEXT,
+                                    PLZ INT,
+                                    Wohnort TEXT,
+                                    Bundesland TEXT,
+                                    Ausweis_Art TEXT,
+                                    Ausweis_Nr TEXT,
+                                    Bewacherregister_Nr TEXT,
+                                    Security_Typ TEXT,
+                                    Muttersprache TEXT,
                                     Sprachen TEXT,
-                                    B1 TEXT,
+                                    SprachNiveau TEXT,
+                                    Gender TEXT,
                                     TelefonNummer TEXT,
                                     Ansprechpartner TEXT,
                                     Position TEXT,
                                     ChipNummer INT,
                                     CheckInState TEXT,
+                                    IstKrank TEXT,
                                     WeitereInformationen TEXT
                                    );";
 
@@ -90,7 +104,56 @@ namespace DZ_Security_DataBase
                     sql = @"CREATE TABLE Passwort (
                              Username TEXT PRIMARY KEY NOT NULL, 
                              HashedPassword TEXT NOT NULL,
-                             Salt TEXT NOT NULL
+                             Salt TEXT NOT NULL,
+                             Rights TEXT NOT NULL
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    // Ausrüstungs Tabelle erstellen
+                    sql = @"CREATE TABLE Ausruestung (
+                             ID INT PRIMARY KEY NOT NULL, 
+                             Art TEXT NOT NULL,
+                             Farbe TEXT NOT NULL,
+                             Position TEXT NOT NULL,
+                             Status TEXT NOT NULL,
+                             MitarbeiterID INT,
+                             Zustand TEXT,
+                             FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    // Position Tabelle erstellen
+                    sql = @"CREATE TABLE Position (
+                             Nr INT PRIMARY KEY NOT NULL, 
+                             Geschlecht TEXT,
+                             Quadrat INT,
+                             Bezeichnung TEXT,
+                             Zusatz TEXT,
+                             Bemerkung TEXT,
+                             Benötigt TEXT,
+                             Vorgesetzer INT
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    // Ausrüstungs Tabelle erstellen
+                    sql = @"CREATE TABLE Funkgeraete (
+                             ID INT PRIMARY KEY NOT NULL, 
+                             Bleibt TEXT NOT NULL,
+                             Akku INT NOT NULL,
+                             Tarn_Headset TEXT,
+                             Rasierer TEXT,
+                             Mikimaus TEXT,
+                             Verbrauchsmaterial TEXT,
+                             Sonstiges TEXT
                              );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
@@ -124,6 +187,7 @@ namespace DZ_Security_DataBase
                     string[] surNames = { "Max", "Max", "John", "Test" };
                     string[] name = { "Mustermann", "Mustermann", "Doe", "Name" };
                     string[] positions = { "Norden", "Süden", "Osten", "Westen" };
+                    string firma = "DZ_Security";
                     string ChipNummer = "123456";
                     string weitereInformationen = "Keine weiteren Informationen";
 
@@ -136,9 +200,10 @@ namespace DZ_Security_DataBase
                         if (count == 0)
                         {
                             cmd.CommandText = @"INSERT INTO Mitarbeiter 
-                            (MitarbeiterID, Vorname, Nachname, Position, ChipNummer, WeitereInformationen) 
-                            VALUES (@MitarbeiterID, @Vorname,@Nachname, @Position, @ChipNummer, @WeitereInformationen);";
+                            (MitarbeiterID,Firma, Vorname, Nachname, Position, ChipNummer, WeitereInformationen) 
+                            VALUES (@MitarbeiterID,@Firma, @Vorname,@Nachname, @Position, @ChipNummer, @WeitereInformationen);";
                             cmd.Parameters.AddWithValue("@MitarbeiterID", mitarbeiterIds[i]);
+                            cmd.Parameters.AddWithValue("@Firma", firma);
                             cmd.Parameters.AddWithValue("@Vorname", surNames[i]);
                             cmd.Parameters.AddWithValue("@Nachname", name[i]);
                             cmd.Parameters.AddWithValue("@Position", positions[i]);
