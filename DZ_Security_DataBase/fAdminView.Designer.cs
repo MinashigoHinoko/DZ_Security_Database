@@ -33,7 +33,7 @@
             bToolOverlay = new Button();
             bToolBorrow = new Button();
             bCheckIn = new Button();
-            button1 = new Button();
+            bWorkerOverview = new Button();
             label1 = new Label();
             bPrintReceipt = new Button();
             SuspendLayout();
@@ -56,6 +56,7 @@
             bPrint.TabIndex = 8;
             bPrint.Text = "Ausdruck";
             bPrint.UseVisualStyleBackColor = true;
+            bPrint.Click += bPrint_Click;
             // 
             // bToolOverlay
             // 
@@ -65,6 +66,7 @@
             bToolOverlay.TabIndex = 7;
             bToolOverlay.Text = "Equipment Übersicht";
             bToolOverlay.UseVisualStyleBackColor = true;
+            bToolOverlay.Click += bToolOverlay_Click;
             // 
             // bToolBorrow
             // 
@@ -74,6 +76,7 @@
             bToolBorrow.TabIndex = 6;
             bToolBorrow.Text = "Equipment Ausleihe";
             bToolBorrow.UseVisualStyleBackColor = true;
+            bToolBorrow.Click += bToolBorrow_Click;
             // 
             // bCheckIn
             // 
@@ -85,14 +88,15 @@
             bCheckIn.UseVisualStyleBackColor = true;
             bCheckIn.Click += bCheckin_Click;
             // 
-            // button1
+            // bWorkerOverview
             // 
-            button1.Location = new Point(242, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(185, 64);
-            button1.TabIndex = 10;
-            button1.Text = "Personal Übersicht";
-            button1.UseVisualStyleBackColor = true;
+            bWorkerOverview.Location = new Point(242, 12);
+            bWorkerOverview.Name = "bWorkerOverview";
+            bWorkerOverview.Size = new Size(185, 64);
+            bWorkerOverview.TabIndex = 10;
+            bWorkerOverview.Text = "Personal Übersicht";
+            bWorkerOverview.UseVisualStyleBackColor = true;
+            bWorkerOverview.Click += bWorkerOverview_Click;
             // 
             // label1
             // 
@@ -112,6 +116,7 @@
             bPrintReceipt.TabIndex = 17;
             bPrintReceipt.Text = "Laufzettel manuell drucken";
             bPrintReceipt.UseVisualStyleBackColor = true;
+            bPrintReceipt.Click += bPrintReceipt_Click;
             // 
             // cAdminView
             // 
@@ -120,7 +125,7 @@
             ClientSize = new Size(486, 342);
             Controls.Add(bPrintReceipt);
             Controls.Add(label1);
-            Controls.Add(button1);
+            Controls.Add(bWorkerOverview);
             Controls.Add(bExcelExport);
             Controls.Add(bPrint);
             Controls.Add(bToolOverlay);
@@ -129,7 +134,6 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "cAdminView";
             Text = "DZ Security Admin Menü";
-            Load += cAdminMenu_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -141,7 +145,7 @@
         private Button bToolOverlay;
         private Button bToolBorrow;
         private Button bCheckIn;
-        private Button button1;
+        private Button bWorkerOverview;
         private Label label1;
         private Button bPrintReceipt;
     }

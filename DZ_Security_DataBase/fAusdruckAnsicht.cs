@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace DZ_Security_DataBase
 {
-    public partial class fAusdruckAnsicht : Form
+    public partial class cPrintOutView : Form
     {
-        public fAusdruckAnsicht()
+        public cPrintOutView()
         {
             InitializeComponent();
         }

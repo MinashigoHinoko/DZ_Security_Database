@@ -67,19 +67,37 @@ namespace DZ_Security_DataBase
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            // Erzeugt ein neues Formular
             Form prompt = new Form();
-            prompt.Width = 200;
+            prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
 
-            // Erzeugt eine neue ComboBox und füllt sie mit MitarbeiterIDs
-            ComboBox employeeComboBox = new ComboBox();
-            employeeComboBox.Dock = DockStyle.Fill;
+            // Erzeugt eine TextBox und eine ListBox
+            TextBox searchBox = new TextBox();
+            searchBox.Dock = DockStyle.Top;
 
-            // Enable the ComboBox to be searchable
-            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            ListBox employeeListBox = new ListBox();
+            employeeListBox.Dock = DockStyle.Fill;
+
+            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
+            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            confirmation.Width = 100; // Set the width
+            confirmation.Height = 30; // Set the height
+            // Set the AcceptButton property of the Form
+            prompt.AcceptButton = confirmation;
+            confirmation.Click += (sender, e) =>
+            {
+                if (employeeListBox.SelectedItem != null)
+                {
+                    prompt.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            List<cWorker> allWorkers = new List<cWorker>();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
@@ -94,37 +112,42 @@ namespace DZ_Security_DataBase
                         {
                             var employeeItem = new cWorker
                             {
-                                ID = reader.GetInt32(0).ToString(), // oder GetInt64(0).ToString(), wenn MitarbeiterID ein long ist
+                                ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1)
                             };
-                            employeeComboBox.Items.Add(employeeItem);
+                            allWorkers.Add(employeeItem);
+                            employeeListBox.Items.Add(employeeItem);
                         }
                     }
                 }
             }
 
-            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Fill };
-            confirmation.Click += (sender, e) =>
+            // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
+            searchBox.TextChanged += (sender, e) =>
             {
-                if (employeeComboBox.SelectedItem != null)
+                string searchTerm = searchBox.Text.ToLower();
+
+                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
+                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                employeeListBox.Items.Clear();
+                foreach (var match in matches)
                 {
-                    prompt.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    employeeListBox.Items.Add(match);
                 }
             };
-            // Fügt die ComboBox und den Bestätigungsbutton zum Formular hinzu
-            prompt.Controls.Add(employeeComboBox);
+
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            prompt.Controls.Add(employeeListBox);
+            prompt.Controls.Add(searchBox);
             prompt.Controls.Add(confirmation);
             prompt.ShowDialog();
 
-            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
-            if (employeeComboBox.SelectedItem != null)
+
+            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ListBox ausgewählte Mitarbeiter
+            if (employeeListBox.SelectedItem != null)
             {
-                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
+                cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
 
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
 
@@ -176,19 +199,37 @@ namespace DZ_Security_DataBase
         {
             // Erzeugt ein neues Formular
             bool bDoesEmployeeExist = false;
-            // Erzeugt ein neues Formular
             Form prompt = new Form();
-            prompt.Width = 200;
+            prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
 
-            // Erzeugt eine neue ComboBox und füllt sie mit MitarbeiterIDs
-            ComboBox employeeComboBox = new ComboBox();
-            employeeComboBox.Dock = DockStyle.Fill;
+            // Erzeugt eine TextBox und eine ListBox
+            TextBox searchBox = new TextBox();
+            searchBox.Dock = DockStyle.Top;
 
-            // Enable the ComboBox to be searchable
-            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            ListBox employeeListBox = new ListBox();
+            employeeListBox.Dock = DockStyle.Fill;
+
+            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
+            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            confirmation.Width = 100; // Set the width
+            confirmation.Height = 30; // Set the height
+            // Set the AcceptButton property of the Form
+            prompt.AcceptButton = confirmation;
+            confirmation.Click += (sender, e) =>
+            {
+                if (employeeListBox.SelectedItem != null)
+                {
+                    prompt.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            List<cWorker> allWorkers = new List<cWorker>();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
@@ -203,10 +244,11 @@ namespace DZ_Security_DataBase
                         {
                             var employeeItem = new cWorker
                             {
-                                ID = reader.GetInt32(0).ToString(), // oder GetInt64(0).ToString(), wenn MitarbeiterID ein long ist
+                                ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1)
                             };
-                            employeeComboBox.Items.Add(employeeItem);
+                            allWorkers.Add(employeeItem);
+                            employeeListBox.Items.Add(employeeItem);
                         }
                     }
                 }
@@ -214,29 +256,32 @@ namespace DZ_Security_DataBase
 
 
 
-            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Fill };
-            confirmation.Click += (sender, e) =>
+            // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
+            searchBox.TextChanged += (sender, e) =>
             {
-                if (employeeComboBox.SelectedItem != null)
+                string searchTerm = searchBox.Text.ToLower();
+
+                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
+                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                employeeListBox.Items.Clear();
+                foreach (var match in matches)
                 {
-                    prompt.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    employeeListBox.Items.Add(match);
                 }
             };
 
-            // Fügt die ComboBox und den Bestätigungsbutton zum Formular hinzu
-            prompt.Controls.Add(employeeComboBox);
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            prompt.Controls.Add(employeeListBox);
+            prompt.Controls.Add(searchBox);
             prompt.Controls.Add(confirmation);
             prompt.ShowDialog();
 
-            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
-            if (employeeComboBox.SelectedItem != null)
+
+            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ListBox ausgewählte Mitarbeiter
+            if (employeeListBox.SelectedItem != null)
             {
-                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
+                cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
 
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
                 if (oCurrentID == null)
@@ -286,66 +331,31 @@ namespace DZ_Security_DataBase
                 }
             }
         }
-        private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            fMemberView menu = new fMemberView();
-            menu.Show();
-        }
-
-        private void cCheckIn_Load(object sender, EventArgs e)
-        {
-            buildDatabase();
-            insertDatabaseInComboBox();
-        }
 
         private void bCheckInAgain_Click(object sender, EventArgs e)
         {
             // Erzeugt ein neues Formular
             Form prompt = new Form();
-            prompt.Width = 200;
+            prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
 
-            // Erzeugt eine neue ComboBox und füllt sie mit MitarbeiterIDs
-            ComboBox employeeComboBox = new ComboBox();
-            employeeComboBox.Dock = DockStyle.Fill;
+            // Erzeugt eine TextBox und eine ListBox
+            TextBox searchBox = new TextBox();
+            searchBox.Dock = DockStyle.Top;
 
-            // Enable the ComboBox to be searchable
-            employeeComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            employeeComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
-            // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
-            // die noch nicht eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
-                using (var cmd = new SQLiteCommand(@"SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS FullName
-                                    FROM Mitarbeiter 
-                                    WHERE NOT EXISTS (
-                                        SELECT 1 FROM Arbeitszeiten 
-                                        WHERE Mitarbeiter.MitarbeiterID = Arbeitszeiten.MitarbeiterID 
-                                        AND Arbeitszeiten.CheckedOut IS NULL)", conn))
-
-                {
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var employeeItem = new cWorker
-                            {
-                                ID = reader.GetInt32(0).ToString(), // oder GetInt64(0).ToString(), wenn MitarbeiterID ein long ist
-                                Name = reader.GetString(1)
-                            };
-                            employeeComboBox.Items.Add(employeeItem);
-                        }
-                    }
-                }
-            }
+            ListBox employeeListBox = new ListBox();
+            employeeListBox.Dock = DockStyle.Fill;
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Fill };
+            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            confirmation.Width = 100; // Set the width
+            confirmation.Height = 30; // Set the height
+            // Set the AcceptButton property of the Form
+            prompt.AcceptButton = confirmation;
             confirmation.Click += (sender, e) =>
             {
-                if (employeeComboBox.SelectedItem != null)
+                if (employeeListBox.SelectedItem != null)
                 {
                     prompt.Close();
                 }
@@ -354,15 +364,62 @@ namespace DZ_Security_DataBase
                     MessageBox.Show("Bitte wählen Sie einen Mitarbeiter aus", "Kein Mitarbeiter ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             };
-            // Fügt die ComboBox und den Bestätigungsbutton zum Formular hinzu
-            prompt.Controls.Add(employeeComboBox);
+
+            List<cWorker> allWorkers = new List<cWorker>();
+
+            // Lade die Mitarbeiter aus der Datenbank in die ListBox
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand(@"SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS FullName
+                            FROM Mitarbeiter 
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM Arbeitszeiten 
+                                WHERE Mitarbeiter.MitarbeiterID = Arbeitszeiten.MitarbeiterID 
+                                AND Arbeitszeiten.CheckedOut IS NULL)", conn))
+                {
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var employeeItem = new cWorker
+                            {
+                                ID = reader.GetInt32(0).ToString(),
+                                Name = reader.GetString(1)
+                            };
+                            allWorkers.Add(employeeItem);
+                            employeeListBox.Items.Add(employeeItem);
+                        }
+                    }
+                }
+            }
+
+            // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
+            searchBox.TextChanged += (sender, e) =>
+            {
+                string searchTerm = searchBox.Text.ToLower();
+
+                // Nur die Einträge anzeigen, die den Suchbegriff enthalten
+                var matches = allWorkers.Where(item => item.ID.Contains(searchTerm) || item.Name.ToLower().Contains(searchTerm));
+                employeeListBox.Items.Clear();
+                foreach (var match in matches)
+                {
+                    employeeListBox.Items.Add(match);
+                }
+            };
+
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            // Fügt die TextBox, ListBox und den Bestätigungsbutton zum Formular hinzu
+            prompt.Controls.Add(employeeListBox);
+            prompt.Controls.Add(searchBox);
             prompt.Controls.Add(confirmation);
             prompt.ShowDialog();
 
-            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ComboBox ausgewählte Mitarbeiter
-            if (employeeComboBox.SelectedItem != null)
+
+            // Nach dem Schließen des Dialogs ist der ausgewählte Mitarbeiter der in der ListBox ausgewählte Mitarbeiter
+            if (employeeListBox.SelectedItem != null)
             {
-                cWorker selectedWorker = employeeComboBox.SelectedItem as cWorker;
+                cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
 
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
 
@@ -407,6 +464,17 @@ namespace DZ_Security_DataBase
                 }
                 buildDatabase();
             }
+        }
+        private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            cMemberView menu = new cMemberView();
+            menu.Show();
+        }
+
+        private void cCheckIn_Load(object sender, EventArgs e)
+        {
+            buildDatabase();
+            insertDatabaseInComboBox();
         }
     }
 }

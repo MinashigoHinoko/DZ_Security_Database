@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace DZ_Security_DataBase
 {
-    public partial class fPersonal_Overview : Form
+    public partial class cPersonalOverview : Form
     {
-        public fPersonal_Overview()
+        public cPersonalOverview()
         {
             InitializeComponent();
         }

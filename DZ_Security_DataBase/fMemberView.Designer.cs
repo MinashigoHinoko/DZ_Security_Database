@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fMemberView
+    partial class cMemberView
     {
         /// <summary>
         /// Required designer variable.
@@ -74,7 +74,7 @@
             label1.TabIndex = 16;
             label1.Text = "@Mobinoko";
             // 
-            // fMemberView
+            // cMemberView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -86,10 +86,9 @@
             Controls.Add(bToolBorrow);
             Controls.Add(bCheckIn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Name = "fMemberView";
+            Name = "cMemberView";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Member Menü";
-            Load += cMenu_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fAusdruckAnsicht
+    partial class cPrintOutView
     {
         /// <summary>
         /// Required designer variable.
@@ -81,7 +81,7 @@
             button4.Text = "Eigener";
             button4.UseVisualStyleBackColor = true;
             // 
-            // fAusdruckAnsicht
+            // cPrintOutView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -91,7 +91,7 @@
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
-            Name = "fAusdruckAnsicht";
+            Name = "cPrintOutView";
             Text = "FestivalManager Ausdruck";
             ResumeLayout(false);
             PerformLayout();

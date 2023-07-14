@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fPersonal_Overview
+    partial class cPersonalOverview
     {
         /// <summary>
         /// Required designer variable.
@@ -464,7 +464,7 @@
             label2.TabIndex = 56;
             label2.Text = "@Mobinoko";
             // 
-            // fPersonal_Overview
+            // cPersonalOverview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;

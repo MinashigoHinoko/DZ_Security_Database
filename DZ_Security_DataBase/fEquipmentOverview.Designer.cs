@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fEquipmentOverview
+    partial class cEquipmentOverview
     {
         /// <summary>
         /// Required designer variable.
@@ -187,7 +187,7 @@
             label2.TabIndex = 97;
             label2.Text = "@Mobinoko";
             // 
-            // fEquipmentOverview
+            // cEquipmentOverview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -207,7 +207,7 @@
             Controls.Add(cbMitarbeiterID);
             Controls.Add(Name);
             Controls.Add(label1);
-            Text = "fEquipmentOverview";
+            Text = "Festival Manager Equipment Übersicht";
             ResumeLayout(false);
             PerformLayout();
         }
