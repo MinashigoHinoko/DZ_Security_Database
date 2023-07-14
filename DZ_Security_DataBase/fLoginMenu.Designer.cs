@@ -1,6 +1,6 @@
 ﻿namespace DZ_Security_DataBase
 {
-    partial class fLoginMenu
+    partial class cLoginMenu
     {
         /// <summary>
         /// Required designer variable.
@@ -28,20 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            textBox1 = new TextBox();
+            tbUsername = new TextBox();
             label1 = new Label();
             label2 = new Label();
-            textBox2 = new TextBox();
-            button1 = new Button();
-            button2 = new Button();
+            tbPassword = new TextBox();
+            bLogin = new Button();
+            bCancel = new Button();
             SuspendLayout();
             // 
-            // textBox1
+            // tbUsername
             // 
-            textBox1.Location = new Point(107, 8);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(125, 27);
-            textBox1.TabIndex = 0;
+            tbUsername.Location = new Point(107, 8);
+            tbUsername.Name = "tbUsername";
+            tbUsername.Size = new Size(125, 27);
+            tbUsername.TabIndex = 0;
             // 
             // label1
             // 
@@ -61,56 +61,61 @@
             label2.TabIndex = 3;
             label2.Text = "Passwort:";
             // 
-            // textBox2
+            // tbPassword
             // 
-            textBox2.Location = new Point(107, 38);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(125, 27);
-            textBox2.TabIndex = 2;
+            tbPassword.Location = new Point(107, 38);
+            tbPassword.Name = "tbPassword";
+            tbPassword.PasswordChar = '*';
+            tbPassword.Size = new Size(125, 27);
+            tbPassword.TabIndex = 2;
             // 
-            // button1
+            // bLogin
             // 
-            button1.Location = new Point(12, 74);
-            button1.Name = "button1";
-            button1.Size = new Size(94, 29);
-            button1.TabIndex = 4;
-            button1.Text = "Login";
-            button1.UseVisualStyleBackColor = true;
+            bLogin.Location = new Point(12, 74);
+            bLogin.Name = "bLogin";
+            bLogin.Size = new Size(94, 29);
+            bLogin.TabIndex = 4;
+            bLogin.Text = "Login";
+            bLogin.UseVisualStyleBackColor = true;
+            bLogin.Click += bLogin_Click;
             // 
-            // button2
+            // bCancel
             // 
-            button2.Location = new Point(138, 74);
-            button2.Name = "button2";
-            button2.Size = new Size(94, 29);
-            button2.TabIndex = 5;
-            button2.Text = "Abbrechen";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            bCancel.Location = new Point(138, 74);
+            bCancel.Name = "bCancel";
+            bCancel.Size = new Size(94, 29);
+            bCancel.TabIndex = 5;
+            bCancel.Text = "Abbrechen";
+            bCancel.UseVisualStyleBackColor = true;
+            bCancel.Click += button2_Click;
             // 
-            // Form1
+            // cLoginMenu
             // 
+            AcceptButton = bLogin;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = bCancel;
             ClientSize = new Size(245, 115);
-            Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(bCancel);
+            Controls.Add(bLogin);
             Controls.Add(label2);
-            Controls.Add(textBox2);
+            Controls.Add(tbPassword);
             Controls.Add(label1);
-            Controls.Add(textBox1);
-            Name = "Form1";
+            Controls.Add(tbUsername);
+            Name = "cLoginMenu";
             Text = "Mobinoko\n Festival Manager LogIn";
+            Load += cLoginMenu_Load;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private TextBox textBox1;
+        private TextBox tbUsername;
         private Label label1;
         private Label label2;
-        private TextBox textBox2;
-        private Button button1;
-        private Button button2;
+        private TextBox tbPassword;
+        private Button bLogin;
+        private Button bCancel;
     }
 }

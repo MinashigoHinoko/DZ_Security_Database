@@ -13,7 +13,7 @@ namespace DZ_Security_DataBase
 
         public override string ToString()
         {
-            return $"{Name} ({ID})";  // or just "{ID}" if you want
+            return $"{Name} - {ID}";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)

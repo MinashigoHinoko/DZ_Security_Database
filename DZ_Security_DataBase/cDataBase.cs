@@ -86,6 +86,17 @@ namespace DZ_Security_DataBase
                     {
                         command.ExecuteNonQuery();
                     }
+                    // Passwort Tabelle erstellen
+                    sql = @"CREATE TABLE Passwort (
+                             Username TEXT PRIMARY KEY NOT NULL, 
+                             HashedPassword TEXT NOT NULL,
+                             Salt TEXT NOT NULL
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
         }
@@ -102,7 +113,8 @@ namespace DZ_Security_DataBase
                 return;
             }
 
-            using (var conn = new SQLiteConnection(GetConnectionString()))
+
+                    using (var conn = new SQLiteConnection(GetConnectionString()))
             {
                 conn.Open();
 

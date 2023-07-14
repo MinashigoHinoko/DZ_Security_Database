@@ -9,7 +9,7 @@ namespace DZ_Security_DataBase
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new fMemberView());
+            Application.Run(new cLoginMenu());
         }
     }
 }
