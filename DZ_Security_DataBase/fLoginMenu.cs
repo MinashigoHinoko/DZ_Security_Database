@@ -84,30 +84,30 @@ namespace DZ_Security_DataBase
             {
                 string username = txtUsername.Text;
                 string password = txtPassword.Text;
-                string role = cbRole.SelectedItem.ToString(); // Nehmen Sie die ausgewählte Rolle
+                    string role = cbRole.SelectedItem.ToString(); // Nehmen Sie die ausgewählte Rolle
 
-                // Erzeugt eine neue Instanz von cPasswordManager.Registration und versucht, den Benutzer zu registrieren
-                cPasswordManager.Registration registrationManager = new cPasswordManager.Registration();
+                    // Erzeugt eine neue Instanz von cPasswordManager.Registration und versucht, den Benutzer zu registrieren
+                    cPasswordManager.Registration registrationManager = new cPasswordManager.Registration();
 
-                try
-                {
-                    registrationManager.RegisterUser(username, password, role); // Passen Sie Ihre RegisterUser-Methode an, um eine Rolle zu akzeptieren
-                    MessageBox.Show("Benutzer erfolgreich registriert!");
-                    registrationForm.Close();
-                }
-                catch (Exception ex) // Ändern Sie den Exception-Typ je nach verwendeter Datenbank
-                {
-                    if (ex is SQLiteException sqliteEx && sqliteEx.ResultCode == SQLiteErrorCode.Constraint)
+                    try
                     {
-                        // Dieser Fehler tritt auf, wenn ein Benutzername, der bereits in der Datenbank existiert, verwendet wird
-                        MessageBox.Show("Der Benutzername existiert bereits, bitte wählen Sie einen anderen.");
+                        registrationManager.RegisterUser(username, password, role); // Passen Sie Ihre RegisterUser-Methode an, um eine Rolle zu akzeptieren
+                        MessageBox.Show("Benutzer erfolgreich registriert!");
+                        registrationForm.Close();
                     }
-                    else
+                    catch (Exception ex) // Ändern Sie den Exception-Typ je nach verwendeter Datenbank
                     {
-                        // Für alle anderen Fehler
-                        MessageBox.Show("Ein Fehler ist aufgetreten: " + ex.Message);
+                        if (ex is SQLiteException sqliteEx && sqliteEx.ResultCode == SQLiteErrorCode.Constraint)
+                        {
+                            // Dieser Fehler tritt auf, wenn ein Benutzername, der bereits in der Datenbank existiert, verwendet wird
+                            MessageBox.Show("Der Benutzername existiert bereits, bitte wählen Sie einen anderen.");
+                        }
+                        else
+                        {
+                            // Für alle anderen Fehler
+                            MessageBox.Show("Ein Fehler ist aufgetreten: " + ex.Message);
+                        }
                     }
-                }
             };
 
 

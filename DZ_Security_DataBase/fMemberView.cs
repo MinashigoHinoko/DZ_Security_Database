@@ -18,17 +18,23 @@ namespace DZ_Security_DataBase
         private void bCheckin_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.checkIn(sender,e);
+            viewManager.checkIn(sender, e, false);
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            viewManager.printReceipt(sender,e);
+            viewManager.printReceipt(sender, e);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.toolBorrow(sender,e);
+            viewManager.toolBorrow(sender, e, false);
+        }
+
+        private void cMemberView_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            cLoginMenu cLoginMenu = new cLoginMenu();
+            cLoginMenu.ShowDialog();
         }
     }
 }

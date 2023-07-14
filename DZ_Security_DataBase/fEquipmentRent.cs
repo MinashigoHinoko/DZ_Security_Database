@@ -16,8 +16,10 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public cEquipmentRent()
+        bool isAdmin=false;
+        public cEquipmentRent(bool isAdmin)
         {
+            this.isAdmin = isAdmin;
             InitializeComponent();
         }
 
@@ -48,51 +50,6 @@ namespace DZ_Security_DataBase
 
         }
 
-        private void insertDatabaseInComboBox()
-        {
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand("SELECT ID, Art, Farbe, Position FROM Ausruestung", conn))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string name = reader["Art"].ToString();
-                            string id = reader["ID"].ToString();
-                            string color = reader["Farbe"].ToString();
-                            string position = reader["Position"].ToString();
-
-                            // Create a new cEquipment object
-                            cEquipment equipment = new cEquipment { ID = id, Name = name, Color = color, Position = position };
-                        }
-                    }
-                }
-            }
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string name = reader["Name"].ToString();
-                            string id = reader["MitarbeiterID"].ToString();
-
-                            // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name };
-                        }
-                    }
-                }
-            }
-
-            buildDatabase();
-        }
         private void return_Click(object sender, EventArgs e)
         {
             using (var conn = new SQLiteConnection(stConnectionString))
@@ -178,7 +135,7 @@ namespace DZ_Security_DataBase
                     {
                         conn.Open();
                         using (var cmd = new SQLiteCommand(
-                            "SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS Name " +
+                            "SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS Name, Mitarbeiter.Position " +
                             "FROM Mitarbeiter " +
                             "JOIN Ausruestung ON Mitarbeiter.MitarbeiterID = Ausruestung.MitarbeiterID " +
                             "WHERE Ausruestung.ID = @equipmentID", conn))
@@ -192,6 +149,7 @@ namespace DZ_Security_DataBase
                                     {
                                         ID = reader.GetInt32(0).ToString(),
                                         Name = reader.GetString(1),
+                                        Position = reader.GetString(2),
                                     };
                                     allEmployee.Add(employeeItem);
                                     employeeListBox.Items.Add(employeeItem);
@@ -271,8 +229,8 @@ namespace DZ_Security_DataBase
                     {
                         cmd.CommandText = @"
                         UPDATE Mitarbeiter
-                        SET Position = @position,
-                        WHERE ID = @id";
+                        SET Position = @position
+                        WHERE MitarbeiterID = @id";
                         cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
                         cmd.Parameters.AddWithValue("@position", null);
 
@@ -288,7 +246,7 @@ namespace DZ_Security_DataBase
 
         private void cEquipmentRent_Load(object sender, EventArgs e)
         {
-            insertDatabaseInComboBox();
+            buildDatabase();
         }
 
         private void rent_Click(object sender, EventArgs e)
@@ -375,7 +333,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n WHERE Mitarbeiter.CheckInState IS 'true'", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n WHERE CheckInState IS 'true'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -482,8 +440,8 @@ namespace DZ_Security_DataBase
                     {
                         cmd.CommandText = @"
                         UPDATE Mitarbeiter
-                        SET Position = @position,
-                        WHERE ID = @id";
+                        SET Position = @position
+                        WHERE MitarbeiterID = @id";
                         cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
                         cmd.Parameters.AddWithValue("@position", oCurrentPosition);
                         cmd.ExecuteNonQuery();
@@ -491,6 +449,20 @@ namespace DZ_Security_DataBase
                     conn.Close();
                 }
                 buildDatabase();
+            }
+        }
+
+        private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (this.isAdmin)
+            {
+                cAdminView cAdminView = new cAdminView();
+                cAdminView.ShowDialog();
+            }
+            else
+            {
+                cMemberView cMemberView = new cMemberView();
+                cMemberView.ShowDialog();
             }
         }
     }

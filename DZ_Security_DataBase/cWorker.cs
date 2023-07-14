@@ -10,10 +10,10 @@ namespace DZ_Security_DataBase
     {
         public string ID { get; set; }
         public string Name { get; set; }
-
+        public string Position { get; set; }
         public override string ToString()
         {
-            return $"{Name} - {ID}";  // or just "{ID}" if you want
+            return $"{Name} - {ID} ({Position})";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)

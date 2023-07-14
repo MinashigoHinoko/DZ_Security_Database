@@ -129,7 +129,7 @@ namespace DZ_Security_DataBase
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Passwort", conn))
+                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Passwort WHERE Rights IS 'admin'", conn))
                     {
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         return count == 0;

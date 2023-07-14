@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.Tokens;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Data;
@@ -9,9 +10,11 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public cCheckIn()
+        bool isAdmin = false;
+        public cCheckIn(bool isAdmin)
         {
             InitializeComponent();
+            this.isAdmin = isAdmin;
         }
         private void buildDatabase()
         {
@@ -40,30 +43,6 @@ namespace DZ_Security_DataBase
 
         }
 
-        private void insertDatabaseInComboBox()
-        {
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter", conn))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string name = reader["Name"].ToString();
-                            string id = reader["MitarbeiterID"].ToString();
-
-                            // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name };
-                        }
-                    }
-                }
-            }
-
-            buildDatabase();
-        }
         private void button1_Click(object sender, EventArgs e)
         {
             Form prompt = new Form();
@@ -112,7 +91,7 @@ namespace DZ_Security_DataBase
                             var employeeItem = new cWorker
                             {
                                 ID = reader.GetInt32(0).ToString(),
-                                Name = reader.GetString(1)
+                                Name = reader.GetString(1),
                             };
                             allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
@@ -154,51 +133,59 @@ namespace DZ_Security_DataBase
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
 
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
-
-                bool bDoesEmployeeExist = false;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                if (selectedWorker.Position.IsNullOrEmpty())
                 {
-                    conn.Open();
-
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
-
-                        int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
-
-                        bDoesEmployeeExist = rowCount > 0 ? true : false;
-                    }
-                    conn.Close();
-                }
-
-                if (!bDoesEmployeeExist)
-                {
+                    bool bDoesEmployeeExist = false;
                     using (var conn = new SQLiteConnection(stConnectionString))
                     {
                         conn.Open();
 
-                        using (var cmd = new SQLiteCommand(conn))
+                        using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
                         {
-                            cmd.CommandText = @"
+                            cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+
+                            int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+                            bDoesEmployeeExist = rowCount > 0 ? true : false;
+                        }
+                        conn.Close();
+                    }
+
+                    if (!bDoesEmployeeExist)
+                    {
+                        using (var conn = new SQLiteConnection(stConnectionString))
+                        {
+                            conn.Open();
+
+                            using (var cmd = new SQLiteCommand(conn))
+                            {
+                                cmd.CommandText = @"
                         INSERT INTO Arbeitszeiten (MitarbeiterID, CheckedIn, CheckedOut)
                         VALUES (@id, @jetzt, NULL)";
-                            cmd.Parameters.AddWithValue("@id", oCurrentID);
-                            cmd.Parameters.AddWithValue("@jetzt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                cmd.Parameters.AddWithValue("@id", oCurrentID);
+                                cmd.Parameters.AddWithValue("@jetzt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
-                            cmd.ExecuteNonQuery();
-                        }
-                        using (var cmd = new SQLiteCommand(conn))
-                        {
-                            cmd.CommandText = @"
+                                cmd.ExecuteNonQuery();
+                            }
+                            using (var cmd = new SQLiteCommand(conn))
+                            {
+                                cmd.CommandText = @"
                         UPDATE Mitarbeiter
                         SET CheckInState = @state
                         WHERE MitarbeiterID =@id ";
-                            cmd.Parameters.AddWithValue("@state", "true");
-                            cmd.Parameters.AddWithValue("id", oCurrentID);
+                                cmd.Parameters.AddWithValue("@state", "true");
+                                cmd.Parameters.AddWithValue("id", oCurrentID);
 
-                            cmd.ExecuteNonQuery();
+                                cmd.ExecuteNonQuery();
+                            }
+                            conn.Close();
                         }
-                        conn.Close();
+                        cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin);
+                        cEquipmentRent.ShowDialog();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Bitte Gib zuerst alle Ausgeliehene Dinge zurück", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 else
@@ -206,6 +193,7 @@ namespace DZ_Security_DataBase
                     MessageBox.Show("Bitte trage zuerst den Aus-Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 buildDatabase();
+
             }
         }
 
@@ -247,11 +235,11 @@ namespace DZ_Security_DataBase
             List<cWorker> allEmployee = new List<cWorker>();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
-            // die noch nicht eingecheckt haben.
+            // die eingecheckt haben.
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND Position IS NULL", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -364,13 +352,27 @@ namespace DZ_Security_DataBase
         }
         private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
         {
-            cMemberView menu = new cMemberView();
-            menu.Show();
+            if (this.isAdmin)
+            {
+                cAdminView cAdminView = new cAdminView();
+                cAdminView.ShowDialog();
+            }
+            else
+            {
+                cMemberView cMemberView = new cMemberView();
+                cMemberView.ShowDialog();
+            }
         }
 
         private void cCheckIn_Load(object sender, EventArgs e)
         {
-            insertDatabaseInComboBox();
+            buildDatabase();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin);
+            cEquipmentRent.ShowDialog();
         }
     }
 }

@@ -30,13 +30,13 @@ namespace DZ_Security_DataBase
         private void bCheckin_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.checkIn(sender, e);
+            viewManager.checkIn(sender, e,true);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.toolBorrow(sender, e);
+            viewManager.toolBorrow(sender, e,true);
         }
 
         private void bPrintReceipt_Click(object sender, EventArgs e)

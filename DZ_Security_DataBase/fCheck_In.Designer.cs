@@ -39,6 +39,7 @@
             label10 = new Label();
             lbTotalCount = new Label();
             label11 = new Label();
+            bRent = new Button();
             SuspendLayout();
             // 
             // start_Work_Timestamp
@@ -150,6 +151,19 @@
             label11.TabIndex = 20;
             label11.Text = "Personalzahl";
             // 
+            // bRent
+            // 
+            bRent.AutoSize = true;
+            bRent.Cursor = Cursors.Hand;
+            bRent.Location = new Point(125, 205);
+            bRent.Margin = new Padding(3, 4, 3, 4);
+            bRent.Name = "bRent";
+            bRent.Size = new Size(83, 30);
+            bRent.TabIndex = 22;
+            bRent.Text = "Ausleihen";
+            bRent.UseVisualStyleBackColor = true;
+            bRent.Click += button1_Click_1;
+            // 
             // cCheckIn
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -157,7 +171,8 @@
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             AutoValidate = AutoValidate.EnableAllowFocusChange;
-            ClientSize = new Size(342, 207);
+            ClientSize = new Size(342, 241);
+            Controls.Add(bRent);
             Controls.Add(label1);
             Controls.Add(label11);
             Controls.Add(lbTotalCount);
@@ -193,5 +208,6 @@
         private Label label10;
         private Label lbTotalCount;
         private Label label11;
+        private Button bRent;
     }
 }

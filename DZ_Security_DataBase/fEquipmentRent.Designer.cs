@@ -169,6 +169,7 @@
             Controls.Add(bRent);
             Name = "cEquipmentRent";
             Text = "FestivalManager Ausrüstung Ausleih Menü";
+            FormClosed += cEquipmentRent_FormClosed;
             Load += cEquipmentRent_Load;
             ResumeLayout(false);
             PerformLayout();

@@ -91,14 +91,14 @@ namespace DZ_Security_DataBase
                 conn.Close();
             }
         }
-        public void toolBorrow(object sender, EventArgs e)
+        public void toolBorrow(object sender, EventArgs e,bool isAdmin)
         {
-            cEquipmentRent checkIn = new cEquipmentRent();
+            cEquipmentRent checkIn = new cEquipmentRent(isAdmin);
             checkIn.ShowDialog();
         }
-        public void checkIn(object sender, EventArgs e)
+        public void checkIn(object sender, EventArgs e, bool isAdmin)
         {
-            cCheckIn checkIn = new cCheckIn();
+            cCheckIn checkIn = new cCheckIn(isAdmin);
             checkIn.ShowDialog();
         }
         public void printReceipt(object sender, EventArgs e)

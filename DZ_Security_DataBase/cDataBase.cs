@@ -186,7 +186,6 @@ namespace DZ_Security_DataBase
                     int[] mitarbeiterIds = { 00353485, 00353486, 00353487, 00353484 };
                     string[] surNames = { "Max", "Max", "John", "Test" };
                     string[] name = { "Mustermann", "Mustermann", "Doe", "Name" };
-                    string[] positions = { "Norden", "Süden", "Osten", "Westen" };
                     string firma = "DZ_Security";
                     string ChipNummer = "123456";
                     string weitereInformationen = "Keine weiteren Informationen";
@@ -200,13 +199,12 @@ namespace DZ_Security_DataBase
                         if (count == 0)
                         {
                             cmd.CommandText = @"INSERT INTO Mitarbeiter 
-                            (MitarbeiterID,Firma, Vorname, Nachname, Position, ChipNummer, WeitereInformationen) 
-                            VALUES (@MitarbeiterID,@Firma, @Vorname,@Nachname, @Position, @ChipNummer, @WeitereInformationen);";
+                            (MitarbeiterID,Firma, Vorname, Nachname, ChipNummer, WeitereInformationen) 
+                            VALUES (@MitarbeiterID,@Firma, @Vorname,@Nachname, @ChipNummer, @WeitereInformationen);";
                             cmd.Parameters.AddWithValue("@MitarbeiterID", mitarbeiterIds[i]);
                             cmd.Parameters.AddWithValue("@Firma", firma);
                             cmd.Parameters.AddWithValue("@Vorname", surNames[i]);
                             cmd.Parameters.AddWithValue("@Nachname", name[i]);
-                            cmd.Parameters.AddWithValue("@Position", positions[i]);
                             cmd.Parameters.AddWithValue("@ChipNummer", ChipNummer);
                             cmd.Parameters.AddWithValue("@WeitereInformationen", weitereInformationen);
 
