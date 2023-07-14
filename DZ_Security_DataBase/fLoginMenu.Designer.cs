@@ -33,7 +33,8 @@
             label2 = new Label();
             tbPassword = new TextBox();
             bLogin = new Button();
-            bCancel = new Button();
+            bRegister = new Button();
+            label3 = new Label();
             SuspendLayout();
             // 
             // tbUsername
@@ -79,24 +80,35 @@
             bLogin.UseVisualStyleBackColor = true;
             bLogin.Click += bLogin_Click;
             // 
-            // bCancel
+            // bRegister
             // 
-            bCancel.Location = new Point(138, 74);
-            bCancel.Name = "bCancel";
-            bCancel.Size = new Size(94, 29);
-            bCancel.TabIndex = 5;
-            bCancel.Text = "Abbrechen";
-            bCancel.UseVisualStyleBackColor = true;
-            bCancel.Click += button2_Click;
+            bRegister.Location = new Point(197, 74);
+            bRegister.Name = "bRegister";
+            bRegister.Size = new Size(94, 29);
+            bRegister.TabIndex = 5;
+            bRegister.Text = "Registrieren";
+            bRegister.UseVisualStyleBackColor = true;
+            bRegister.Click += bRegister_Click;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 5F, FontStyle.Regular, GraphicsUnit.Point);
+            label3.Location = new Point(238, 8);
+            label3.Name = "label3";
+            label3.Size = new Size(53, 12);
+            label3.TabIndex = 32;
+            label3.Text = "@Mobinoko";
             // 
             // cLoginMenu
             // 
             AcceptButton = bLogin;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            CancelButton = bCancel;
-            ClientSize = new Size(245, 115);
-            Controls.Add(bCancel);
+            CancelButton = bRegister;
+            ClientSize = new Size(300, 114);
+            Controls.Add(label3);
+            Controls.Add(bRegister);
             Controls.Add(bLogin);
             Controls.Add(label2);
             Controls.Add(tbPassword);
@@ -116,6 +128,7 @@
         private Label label2;
         private TextBox tbPassword;
         private Button bLogin;
-        private Button bCancel;
+        private Button bRegister;
+        private Label label3;
     }
 }

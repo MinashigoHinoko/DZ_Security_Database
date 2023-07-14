@@ -8,9 +8,10 @@ namespace DZ_Security_DataBase
     {
         public class Registration
         {
+
             static string folderPath = cDataBase.DbPath;
             static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-            public void RegisterUser(string username, string password)
+            public void RegisterUser(string username, string password, string rights)
             {
                 // Generate a new salt
                 string salt = GenerateSalt();
@@ -22,11 +23,12 @@ namespace DZ_Security_DataBase
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt) VALUES (@username, @password, @salt)", conn))
+                    using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights) VALUES (@username, @password, @salt, @rights)", conn))
                     {
                         cmd.Parameters.AddWithValue("@username", username);
                         cmd.Parameters.AddWithValue("@password", hashedPassword);
                         cmd.Parameters.AddWithValue("@salt", salt);
+                        cmd.Parameters.AddWithValue("@rights", rights);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -64,10 +66,11 @@ namespace DZ_Security_DataBase
         {
             static string folderPath = cDataBase.DbPath;
             static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-            public bool AuthenticateUser(string username, string password)
+            public string AuthenticateUser(string username, string password)
             {
                 string storedSalt = "";
                 string storedHashedPassword = "";
+                string userRights = null;
 
                 // Verbindung zur Datenbank herstellen
                 using (var conn = new SQLiteConnection(stConnectionString))
@@ -75,7 +78,7 @@ namespace DZ_Security_DataBase
                     conn.Open();
 
                     // SQL-Abfrage erstellen
-                    string sql = "SELECT Salt, HashedPassword FROM Passwort WHERE Username = @username";
+                    string sql = "SELECT Salt, HashedPassword, Rights FROM Passwort WHERE Username = @username";
 
                     using (var cmd = new SQLiteCommand(sql, conn))
                     {
@@ -86,9 +89,10 @@ namespace DZ_Security_DataBase
                         {
                             if (reader.Read())
                             {
-                                // Salz und gehashtes Passwort aus der Datenbank abrufen
+                                // Salz, gehashtes Passwort und Rolle aus der Datenbank abrufen
                                 storedSalt = reader.GetString(0);
                                 storedHashedPassword = reader.GetString(1);
+                                userRights = reader.GetString(2);
                             }
                         }
                     }
@@ -99,8 +103,9 @@ namespace DZ_Security_DataBase
                 string hashedPassword = HashPasswordWithSalt(password, storedSalt);
 
                 // Überprüft, ob das gehashte Passwort mit dem gespeicherten Passwort übereinstimmt
-                return hashedPassword == storedHashedPassword;
+                return hashedPassword == storedHashedPassword ? userRights : null;
             }
+
 
 
             private static string HashPasswordWithSalt(string password, string salt)
@@ -116,6 +121,19 @@ namespace DZ_Security_DataBase
                         builder.Append(bytes[i].ToString("x2"));
                     }
                     return builder.ToString();
+                }
+            }
+            public bool IsDatabaseEmpty()
+            {
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Passwort", conn))
+                    {
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        return count == 0;
+                    }
                 }
             }
         }
