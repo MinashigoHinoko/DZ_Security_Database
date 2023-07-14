@@ -39,7 +39,6 @@
             label10 = new Label();
             lbTotalCount = new Label();
             label11 = new Label();
-            bCheckInAgain = new Button();
             SuspendLayout();
             // 
             // start_Work_Timestamp
@@ -151,19 +150,6 @@
             label11.TabIndex = 20;
             label11.Text = "Personalzahl";
             // 
-            // bCheckInAgain
-            // 
-            bCheckInAgain.AutoSize = true;
-            bCheckInAgain.Cursor = Cursors.Hand;
-            bCheckInAgain.Location = new Point(102, 205);
-            bCheckInAgain.Margin = new Padding(3, 4, 3, 4);
-            bCheckInAgain.Name = "bCheckInAgain";
-            bCheckInAgain.Size = new Size(150, 33);
-            bCheckInAgain.TabIndex = 22;
-            bCheckInAgain.Text = "Erneut Einchecken";
-            bCheckInAgain.UseVisualStyleBackColor = true;
-            bCheckInAgain.Click += bCheckInAgain_Click;
-            // 
             // cCheckIn
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -171,8 +157,7 @@
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             AutoValidate = AutoValidate.EnableAllowFocusChange;
-            ClientSize = new Size(342, 250);
-            Controls.Add(bCheckInAgain);
+            ClientSize = new Size(342, 207);
             Controls.Add(label1);
             Controls.Add(label11);
             Controls.Add(lbTotalCount);
@@ -208,6 +193,5 @@
         private Label label10;
         private Label lbTotalCount;
         private Label label11;
-        private Button bCheckInAgain;
     }
 }

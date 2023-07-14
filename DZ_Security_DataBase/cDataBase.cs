@@ -78,7 +78,7 @@ namespace DZ_Security_DataBase
                                     Ansprechpartner TEXT,
                                     Position TEXT,
                                     ChipNummer INT,
-                                    CheckInState TEXT,
+                                    CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
                                     WeitereInformationen TEXT
                                    );";
@@ -118,7 +118,7 @@ namespace DZ_Security_DataBase
                              Art TEXT NOT NULL,
                              Farbe TEXT NOT NULL,
                              Position TEXT NOT NULL,
-                             Status TEXT NOT NULL,
+                             Status TEXT DEFAULT 'Ausleihbar' NOT NULL,
                              MitarbeiterID INT,
                              Zustand TEXT,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)

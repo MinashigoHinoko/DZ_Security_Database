@@ -11,9 +11,10 @@ namespace DZ_Security_DataBase
         public string ID { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
+        public string Position { get; set; }
         public override string ToString()
         {
-            return $"{ID} - {Name}, {Color}";  // or just "{ID}" if you want
+            return $"{ID} - {Name}, {Color} - {Position}";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)

@@ -54,7 +54,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT ID, Art, Farbe FROM Ausruestung", conn))
+                using (var cmd = new SQLiteCommand("SELECT ID, Art, Farbe, Position FROM Ausruestung", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -63,9 +63,10 @@ namespace DZ_Security_DataBase
                             string name = reader["Art"].ToString();
                             string id = reader["ID"].ToString();
                             string color = reader["Farbe"].ToString();
+                            string position = reader["Position"].ToString();
 
                             // Create a new cEquipment object
-                            cEquipment equipment = new cEquipment { ID = id, Name = name, Color = color };
+                            cEquipment equipment = new cEquipment { ID = id, Name = name, Color = color, Position = position };
                         }
                     }
                 }
@@ -74,7 +75,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -124,6 +125,7 @@ namespace DZ_Security_DataBase
             Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
+            prompt.AcceptButton = confirmation;
             confirmation.Click += (sender, e) =>
             {
                 if (equipmentListBox.SelectedItem != null && employeeListBox.SelectedItem != null)
@@ -145,7 +147,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe FROM Ausruestung WHERE Status IS 'Ausgeliehen'", conn))
+                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe, Position FROM Ausruestung WHERE Status IS 'Ausgeliehen'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -155,7 +157,8 @@ namespace DZ_Security_DataBase
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
-                                Color = reader.GetString(2)
+                                Color = reader.GetString(2),
+                                Position = reader.GetString(3)
                             };
                             allEquipment.Add(equipmentItem);
                             equipmentListBox.Items.Add(equipmentItem);
@@ -207,6 +210,7 @@ namespace DZ_Security_DataBase
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                         || item.Color.ToLower().Contains(term.Trim())
+                                        || item.Position.ToLower().Contains(term.Trim())
                                     )
                 );
                 equipmentListBox.Items.Clear();
@@ -263,6 +267,19 @@ namespace DZ_Security_DataBase
 
                         cmd.ExecuteNonQuery();
                     }
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"
+                        UPDATE Mitarbeiter
+                        SET Position = @position,
+                        WHERE ID = @id";
+                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
+                        cmd.Parameters.AddWithValue("@position", null);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    conn.Close();
                 }
                 buildDatabase();
             }
@@ -334,7 +351,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe \r\nFROM Ausruestung WHERE Status IS 'Ausleihbar' \r\n", conn))
+                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Status IS 'Ausleihbar' \r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -344,7 +361,8 @@ namespace DZ_Security_DataBase
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
-                                Color = reader.GetString(2)
+                                Color = reader.GetString(2),
+                                Position = reader.GetString(3)
                             };
                             allEquipment.Add(equipmentItem);
                             equipmentListBox.Items.Add(equipmentItem);
@@ -357,7 +375,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n WHERE Mitarbeiter.CheckInState IS 'true'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -386,6 +404,7 @@ namespace DZ_Security_DataBase
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                         || item.Color.ToLower().Contains(term.Trim())
+                                        || item.Position.ToLower().Contains(term.Trim())
                                     )
                 );
                 equipmentListBox.Items.Clear();
@@ -430,7 +449,7 @@ namespace DZ_Security_DataBase
                 string oCurrentID = selectedEquipment.ID; // now oCurrentID is the ID string
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentMemberID = selectedWorker.ID;
-
+                string oCurrentPosition = selectedEquipment.Position;
                 bool bDoesEmployeeExist = false;
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
@@ -457,6 +476,16 @@ namespace DZ_Security_DataBase
                         cmd.Parameters.AddWithValue("@status", "Ausgeliehen");
                         cmd.Parameters.AddWithValue("@memberID", oCurrentMemberID);
 
+                        cmd.ExecuteNonQuery();
+                    }
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"
+                        UPDATE Mitarbeiter
+                        SET Position = @position,
+                        WHERE ID = @id";
+                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
+                        cmd.Parameters.AddWithValue("@position", oCurrentPosition);
                         cmd.ExecuteNonQuery();
                     }
                     conn.Close();
