@@ -148,12 +148,16 @@ namespace DZ_Security_DataBase
                     sql = @"CREATE TABLE Funkgeraete (
                              ID INT PRIMARY KEY NOT NULL, 
                              Bleibt TEXT NOT NULL,
-                             Akku INT NOT NULL,
+                             Akku INT DEFAULT 0 NOT NULL,
+                             Funkgeraet TEXT,
                              Tarn_Headset TEXT,
                              Rasierer TEXT,
                              Mikimaus TEXT,
+                             Status TEXT DEFAULT 'Ausleihbar' NOT NULL,
+                             MitarbeiterID INT,
                              Verbrauchsmaterial TEXT,
-                             Sonstiges TEXT
+                             Sonstiges TEXT,
+                             FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))

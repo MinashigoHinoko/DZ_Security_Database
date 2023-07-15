@@ -16,7 +16,7 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        bool isAdmin=false;
+        bool isAdmin = false;
         public cEquipmentRent(bool isAdmin)
         {
             this.isAdmin = isAdmin;
@@ -464,6 +464,13 @@ namespace DZ_Security_DataBase
                 cMemberView cMemberView = new cMemberView();
                 cMemberView.ShowDialog();
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+            cFunk cFunk = new cFunk();
+            cFunk.ShowDialog();
         }
     }
 }

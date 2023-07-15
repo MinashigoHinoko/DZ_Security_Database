@@ -39,6 +39,7 @@
             bReturn = new Button();
             bRent = new Button();
             label1 = new Label();
+            button1 = new Button();
             SuspendLayout();
             // 
             // label11
@@ -151,11 +152,25 @@
             label1.TabIndex = 31;
             label1.Text = "@Mobinoko";
             // 
+            // button1
+            // 
+            button1.AutoSize = true;
+            button1.Cursor = Cursors.Hand;
+            button1.Location = new Point(125, 205);
+            button1.Margin = new Padding(3, 4, 3, 4);
+            button1.Name = "button1";
+            button1.Size = new Size(92, 30);
+            button1.TabIndex = 32;
+            button1.Text = "Funkgeräte";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // cEquipmentRent
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(339, 206);
+            ClientSize = new Size(339, 244);
+            Controls.Add(button1);
             Controls.Add(label1);
             Controls.Add(label11);
             Controls.Add(lbTotalCount);
@@ -188,5 +203,6 @@
         private Button bReturn;
         private Button bRent;
         private Label label1;
+        private Button button1;
     }
 }

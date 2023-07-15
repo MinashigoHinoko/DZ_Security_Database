@@ -74,7 +74,7 @@
             // 
             bLogin.Location = new Point(12, 74);
             bLogin.Name = "bLogin";
-            bLogin.Size = new Size(94, 29);
+            bLogin.Size = new Size(111, 29);
             bLogin.TabIndex = 4;
             bLogin.Text = "Login";
             bLogin.UseVisualStyleBackColor = true;
@@ -82,9 +82,9 @@
             // 
             // bRegister
             // 
-            bRegister.Location = new Point(197, 74);
+            bRegister.Location = new Point(177, 74);
             bRegister.Name = "bRegister";
-            bRegister.Size = new Size(94, 29);
+            bRegister.Size = new Size(111, 29);
             bRegister.TabIndex = 5;
             bRegister.Text = "Registrieren";
             bRegister.UseVisualStyleBackColor = true;
