@@ -24,7 +24,6 @@ namespace DZ_Security_DataBase
 
         private void bAddWorker_Click(object sender, EventArgs e)
         {
-            Random random = new Random();
 
             try
             {

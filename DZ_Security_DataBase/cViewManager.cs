@@ -8,6 +8,7 @@ using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 
 namespace DZ_Security_DataBase
 {
@@ -15,31 +16,36 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public void workerOverview(object sender, EventArgs e)
+        public void workerOverview(object sender, EventArgs e, bool isAdmin)
         {
-            cPersonalOverview personalOverview = new cPersonalOverview();
+            cPersonalOverview personalOverview = new cPersonalOverview(isAdmin);
             personalOverview.Show();
         }
-        public void toolOverview(object sender, EventArgs e)
+        public void toolOverview(object sender, EventArgs e, bool isAdmin)
         {
-            cEquipmentOverview equipment = new cEquipmentOverview();
+            cEquipmentOverview equipment = new cEquipmentOverview(isAdmin);
             equipment.Show();
         }
-        public void printOut(object sender, EventArgs e)
+        public void printOut(object sender, EventArgs e,bool isAdmin)
         {
-            cPrintOutView printOut = new cPrintOutView();
+            cPrintOutView printOut = new cPrintOutView(isAdmin);
             printOut.Show();
         }
         public void excelExport(object sender, EventArgs e)
         {
-
-            string folderPath = cDataBase.DbPath;
-            string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
+                sfd.FileName = "export.xlsx";
 
-                using (var cmd = new SQLiteCommand("SELECT * FROM Arbeitszeiten", conn))
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("Mitarbeiter");
+
+                // Überschriften
+                IRow row = sheet.CreateRow(0);
+                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter", conn))
                 {
                     using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
                     {
@@ -55,17 +61,8 @@ namespace DZ_Security_DataBase
                             return;
                         }
 
-                        SaveFileDialog sfd = new SaveFileDialog();
-                        sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
-                        sfd.FileName = "export.xlsx";
-
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
-                            IWorkbook workbook = new XSSFWorkbook();
-                            ISheet sheet = workbook.CreateSheet("Arbeitszeiten");
-
-                            // Überschriften
-                            IRow row = sheet.CreateRow(0);
                             for (int i = 0; i < dt.Columns.Count; i++)
                             {
                                 row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
@@ -81,16 +78,128 @@ namespace DZ_Security_DataBase
                                 }
                             }
 
-                            // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
-                            {
-                                workbook.Write(stream, false);
-                            }
-
                         }
                     }
                 }
+                sheet = workbook.CreateSheet("Arbeitszeiten");
+
+                // Überschriften
+                row = sheet.CreateRow(0);
+                using (var cmd = new SQLiteCommand("SELECT * FROM Arbeitszeiten", conn))
+                {
+                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            adapter.Fill(dt);
+
+                        }
+                        catch (Exception)
+                        {
+                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            }
+
+                            // Daten
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                row = sheet.CreateRow(i + 1);
+                                for (int j = 0; j < dt.Columns.Count; j++)
+                                {
+                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                                }
+                            }
+
+                        
+                    }
+                }
+                sheet = workbook.CreateSheet("Ausruestung");
+
+                // Überschriften
+                row = sheet.CreateRow(0);
+                using (var cmd = new SQLiteCommand("SELECT * FROM Ausruestung", conn))
+                {
+                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            adapter.Fill(dt);
+
+                        }
+                        catch (Exception)
+                        {
+                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            }
+
+                            // Daten
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                row = sheet.CreateRow(i + 1);
+                                for (int j = 0; j < dt.Columns.Count; j++)
+                                {
+                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                                }
+                            }
+
+                        
+                    }
+                }
+                sheet = workbook.CreateSheet("Position");
+
+                // Überschriften
+                row = sheet.CreateRow(0);
+                using (var cmd = new SQLiteCommand("SELECT * FROM Position", conn))
+                {
+                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            adapter.Fill(dt);
+
+                        }
+                        catch (Exception)
+                        {
+                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                            for (int i = 0; i < dt.Columns.Count; i++)
+                            {
+                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            }
+
+                            // Daten
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                row = sheet.CreateRow(i + 1);
+                                for (int j = 0; j < dt.Columns.Count; j++)
+                                {
+                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                                }
+                            }
+
+                        
+                    }
+                }
                 conn.Close();
+                // Speichern
+                using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                {
+                    workbook.Write(stream, false);
+                }
             }
         }
         public void toolBorrow(object sender, EventArgs e,bool isAdmin)

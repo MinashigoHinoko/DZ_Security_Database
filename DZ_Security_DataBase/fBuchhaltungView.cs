@@ -10,7 +10,8 @@
 
         private void bPrint_Click(object sender, EventArgs e)
         {
-            viewManager.printOut(sender, e);
+            this.Close();
+            viewManager.printOut(sender, e,false);
         }
 
         private void bExcelExport_Click(object sender, EventArgs e)

@@ -36,10 +36,10 @@
             lbLanguage = new Label();
             label30 = new Label();
             label32 = new Label();
-            lbName = new Label();
+            lbDefect = new Label();
             label20 = new Label();
-            lbSurName = new Label();
-            cbMitarbeiterID = new ComboBox();
+            lbBestand = new Label();
+            cbEquipment = new ComboBox();
             Name = new Label();
             label1 = new Label();
             label2 = new Label();
@@ -53,6 +53,7 @@
             bAddWorker.TabIndex = 95;
             bAddWorker.Text = "Defekt Melden";
             bAddWorker.UseVisualStyleBackColor = true;
+            bAddWorker.Click += bAddWorker_Click;
             // 
             // lbMobileNumber
             // 
@@ -80,7 +81,6 @@
             lbLanguageLvL.Size = new Size(17, 20);
             lbLanguageLvL.TabIndex = 90;
             lbLanguageLvL.Text = "2";
-            lbLanguageLvL.Click += lbLanguageLvL_Click;
             // 
             // label28
             // 
@@ -119,14 +119,14 @@
             label32.TabIndex = 85;
             label32.Text = "Farben:";
             // 
-            // lbName
+            // lbDefect
             // 
-            lbName.AutoSize = true;
-            lbName.Location = new Point(123, 69);
-            lbName.Name = "lbName";
-            lbName.Size = new Size(17, 20);
-            lbName.TabIndex = 78;
-            lbName.Text = "2";
+            lbDefect.AutoSize = true;
+            lbDefect.Location = new Point(123, 69);
+            lbDefect.Name = "lbDefect";
+            lbDefect.Size = new Size(17, 20);
+            lbDefect.TabIndex = 78;
+            lbDefect.Text = "2";
             // 
             // label20
             // 
@@ -137,27 +137,28 @@
             label20.TabIndex = 77;
             label20.Text = "Defekte:";
             // 
-            // lbSurName
+            // lbBestand
             // 
-            lbSurName.AutoSize = true;
-            lbSurName.Location = new Point(123, 49);
-            lbSurName.Name = "lbSurName";
-            lbSurName.Size = new Size(17, 20);
-            lbSurName.TabIndex = 60;
-            lbSurName.Text = "4";
+            lbBestand.AutoSize = true;
+            lbBestand.Location = new Point(123, 49);
+            lbBestand.Name = "lbBestand";
+            lbBestand.Size = new Size(17, 20);
+            lbBestand.TabIndex = 60;
+            lbBestand.Text = "4";
             // 
-            // cbMitarbeiterID
+            // cbEquipment
             // 
-            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
-            cbMitarbeiterID.Cursor = Cursors.Hand;
-            cbMitarbeiterID.FormattingEnabled = true;
-            cbMitarbeiterID.Location = new Point(124, 6);
-            cbMitarbeiterID.Margin = new Padding(3, 4, 3, 4);
-            cbMitarbeiterID.Name = "cbMitarbeiterID";
-            cbMitarbeiterID.Size = new Size(138, 28);
-            cbMitarbeiterID.Sorted = true;
-            cbMitarbeiterID.TabIndex = 59;
+            cbEquipment.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cbEquipment.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cbEquipment.Cursor = Cursors.Hand;
+            cbEquipment.FormattingEnabled = true;
+            cbEquipment.Location = new Point(124, 6);
+            cbEquipment.Margin = new Padding(3, 4, 3, 4);
+            cbEquipment.Name = "cbEquipment";
+            cbEquipment.Size = new Size(138, 28);
+            cbEquipment.Sorted = true;
+            cbEquipment.TabIndex = 59;
+            cbEquipment.SelectedIndexChanged += cbEquipment_SelectedIndexChanged;
             // 
             // Name
             // 
@@ -201,13 +202,15 @@
             Controls.Add(lbLanguage);
             Controls.Add(label30);
             Controls.Add(label32);
-            Controls.Add(lbName);
+            Controls.Add(lbDefect);
             Controls.Add(label20);
-            Controls.Add(lbSurName);
-            Controls.Add(cbMitarbeiterID);
+            Controls.Add(lbBestand);
+            Controls.Add(cbEquipment);
             Controls.Add(Name);
             Controls.Add(label1);
             Text = "Festival Manager Equipment Übersicht";
+            FormClosed += cEquipmentRent_FormClosed;
+            Load += cEquipmentOverview_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -221,10 +224,10 @@
         private Label lbLanguage;
         private Label label30;
         private Label label32;
-        private Label lbName;
+        private Label lbDefect;
         private Label label20;
-        private Label lbSurName;
-        public ComboBox cbMitarbeiterID;
+        private Label lbBestand;
+        public ComboBox cbEquipment;
         private Label Name;
         private Label label1;
         private Label label2;

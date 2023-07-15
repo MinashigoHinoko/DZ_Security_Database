@@ -17,7 +17,7 @@ namespace DZ_Security_DataBase
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             viewManager.checkIn(sender, e, false);
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
@@ -27,7 +27,7 @@ namespace DZ_Security_DataBase
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             viewManager.toolBorrow(sender, e, false);
         }
 

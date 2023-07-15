@@ -517,6 +517,7 @@
             Controls.Add(Name);
             Controls.Add(label1);
             Text = "Festival Manager Personal Übersicht";
+            FormClosed += cEquipmentRent_FormClosed;
             Load += cPersonalOverview_Load;
             ResumeLayout(false);
             PerformLayout();

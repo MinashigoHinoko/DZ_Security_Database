@@ -15,9 +15,11 @@ namespace DZ_Security_DataBase
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public cPersonalOverview()
+        bool isAdmin = false;
+        public cPersonalOverview(bool isAdmin)
         {
             InitializeComponent();
+            this.isAdmin = isAdmin;
         }
 
         private void insertDatabaseInComboBox()
@@ -143,6 +145,19 @@ namespace DZ_Security_DataBase
             cPersonalManuellHinzufügen cPersonalManuellHinzufügen = new cPersonalManuellHinzufügen();
             cPersonalManuellHinzufügen.ShowDialog();
             insertDatabaseInComboBox();
+        }
+        private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (this.isAdmin)
+            {
+                cAdminView cAdminView = new cAdminView();
+                cAdminView.ShowDialog();
+            }
+            else
+            {
+                cMemberView cMemberView = new cMemberView();
+                cMemberView.ShowDialog();
+            }
         }
     }
 }

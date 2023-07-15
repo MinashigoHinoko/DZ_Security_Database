@@ -120,7 +120,7 @@ namespace DZ_Security_DataBase
                              Position TEXT NOT NULL,
                              Status TEXT DEFAULT 'Ausleihbar' NOT NULL,
                              MitarbeiterID INT,
-                             Zustand TEXT,
+                             Zustand TEXT DEFAULT 'Gut' NOT NULL,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
@@ -183,7 +183,7 @@ namespace DZ_Security_DataBase
 
                 using (var cmd = new SQLiteCommand(conn))
                 {
-                    int[] mitarbeiterIds = { 00353485, 00353486, 00353487, 00353484 };
+                    int[] mitarbeiterIds = { 1, 2, 3, 4 };
                     string[] surNames = { "Max", "Max", "John", "Test" };
                     string[] name = { "Mustermann", "Mustermann", "Doe", "Name" };
                     string firma = "DZ_Security";

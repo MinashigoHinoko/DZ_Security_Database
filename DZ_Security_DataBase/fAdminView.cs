@@ -29,13 +29,13 @@ namespace DZ_Security_DataBase
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             viewManager.checkIn(sender, e,true);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             viewManager.toolBorrow(sender, e,true);
         }
 
@@ -46,20 +46,20 @@ namespace DZ_Security_DataBase
 
         private void bPrint_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            viewManager.printOut(sender, e);
+            this.Close();
+            viewManager.printOut(sender, e, true);
         }
 
         private void bToolOverlay_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            viewManager.toolOverview(sender, e);
+            this.Close();
+            viewManager.toolOverview(sender, e, true);
         }
 
         private void bWorkerOverview_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            viewManager.workerOverview(sender, e);
+            this.Close();
+            viewManager.workerOverview(sender, e, true);
         }
     }
 }
