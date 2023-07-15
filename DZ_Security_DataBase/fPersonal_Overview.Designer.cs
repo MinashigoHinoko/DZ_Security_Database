@@ -28,99 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lbPosition = new Label();
-            lbSurName = new Label();
-            cbMitarbeiterID = new ComboBox();
-            Position = new Label();
-            Name = new Label();
             label1 = new Label();
-            lbCheckedIn = new Label();
+            Name = new Label();
+            Position = new Label();
+            cbMitarbeiterID = new ComboBox();
+            lbSurName = new Label();
+            lbPosition = new Label();
             label3 = new Label();
-            lbMicky = new Label();
+            lbCheckedIn = new Label();
             label6 = new Label();
-            lbShaver = new Label();
+            lbMicky = new Label();
             label8 = new Label();
-            lbBatteries = new Label();
+            lbShaver = new Label();
             label10 = new Label();
-            lbHidden = new Label();
+            lbBatteries = new Label();
             label12 = new Label();
-            lbRadio = new Label();
+            lbHidden = new Label();
             label14 = new Label();
-            lbNFCNumber = new Label();
+            lbRadio = new Label();
             label16 = new Label();
+            lbNFCNumber = new Label();
             label18 = new Label();
-            lbName = new Label();
             label20 = new Label();
-            lbBirthday = new Label();
+            lbName = new Label();
             label22 = new Label();
-            lbLiving = new Label();
+            lbBirthday = new Label();
             label24 = new Label();
-            lbBirthCountry = new Label();
+            lbLiving = new Label();
             label26 = new Label();
-            lbLanguageLvL = new Label();
-            label28 = new Label();
-            lbLanguage = new Label();
-            label30 = new Label();
-            lbGender = new Label();
+            lbBirthCountry = new Label();
             label32 = new Label();
-            lbContact = new Label();
-            label34 = new Label();
-            lbMobileNumber = new Label();
+            lbGender = new Label();
+            label30 = new Label();
+            lbLanguage = new Label();
+            label28 = new Label();
+            lbLanguageLvL = new Label();
             label36 = new Label();
+            lbMobileNumber = new Label();
+            label34 = new Label();
+            lbContact = new Label();
             bAddWorker = new Button();
             cbCompany = new ComboBox();
             button1 = new Button();
             label2 = new Label();
             SuspendLayout();
-            // 
-            // lbPosition
-            // 
-            lbPosition.AutoSize = true;
-            lbPosition.Location = new Point(590, 141);
-            lbPosition.Name = "lbPosition";
-            lbPosition.Size = new Size(102, 20);
-            lbPosition.TabIndex = 18;
-            lbPosition.Text = "Keine Angabe";
-            // 
-            // lbSurName
-            // 
-            lbSurName.AutoSize = true;
-            lbSurName.Location = new Point(123, 71);
-            lbSurName.Name = "lbSurName";
-            lbSurName.Size = new Size(102, 20);
-            lbSurName.TabIndex = 17;
-            lbSurName.Text = "Keine Angabe";
-            // 
-            // cbMitarbeiterID
-            // 
-            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
-            cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
-            cbMitarbeiterID.Cursor = Cursors.Hand;
-            cbMitarbeiterID.FormattingEnabled = true;
-            cbMitarbeiterID.Location = new Point(124, 9);
-            cbMitarbeiterID.Margin = new Padding(3, 4, 3, 4);
-            cbMitarbeiterID.Name = "cbMitarbeiterID";
-            cbMitarbeiterID.Size = new Size(138, 28);
-            cbMitarbeiterID.Sorted = true;
-            cbMitarbeiterID.TabIndex = 16;
-            // 
-            // Position
-            // 
-            Position.AutoSize = true;
-            Position.Location = new Point(463, 141);
-            Position.Name = "Position";
-            Position.Size = new Size(64, 20);
-            Position.TabIndex = 14;
-            Position.Text = "Position:";
-            // 
-            // Name
-            // 
-            Name.AutoSize = true;
-            Name.Location = new Point(11, 71);
-            Name.Name = "Name";
-            Name.Size = new Size(83, 20);
-            Name.TabIndex = 13;
-            Name.Text = "Nachname:";
             // 
             // label1
             // 
@@ -131,14 +82,56 @@
             label1.TabIndex = 12;
             label1.Text = "Personal: ";
             // 
-            // lbCheckedIn
+            // Name
             // 
-            lbCheckedIn.AutoSize = true;
-            lbCheckedIn.Location = new Point(123, 195);
-            lbCheckedIn.Name = "lbCheckedIn";
-            lbCheckedIn.Size = new Size(102, 20);
-            lbCheckedIn.TabIndex = 20;
-            lbCheckedIn.Text = "Keine Angabe";
+            Name.AutoSize = true;
+            Name.Location = new Point(11, 71);
+            Name.Name = "Name";
+            Name.Size = new Size(83, 20);
+            Name.TabIndex = 13;
+            Name.Text = "Nachname:";
+            // 
+            // Position
+            // 
+            Position.AutoSize = true;
+            Position.Location = new Point(463, 141);
+            Position.Name = "Position";
+            Position.Size = new Size(64, 20);
+            Position.TabIndex = 14;
+            Position.Text = "Position:";
+            // 
+            // cbMitarbeiterID
+            // 
+            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cbMitarbeiterID.Cursor = Cursors.Hand;
+            cbMitarbeiterID.DropDownWidth = 200;
+            cbMitarbeiterID.FormattingEnabled = true;
+            cbMitarbeiterID.Location = new Point(124, 9);
+            cbMitarbeiterID.Margin = new Padding(3, 4, 3, 4);
+            cbMitarbeiterID.Name = "cbMitarbeiterID";
+            cbMitarbeiterID.Size = new Size(138, 28);
+            cbMitarbeiterID.Sorted = true;
+            cbMitarbeiterID.TabIndex = 16;
+            cbMitarbeiterID.SelectedIndexChanged += cbMitarbeiterID_SelectedIndexChanged;
+            // 
+            // lbSurName
+            // 
+            lbSurName.AutoSize = true;
+            lbSurName.Location = new Point(123, 71);
+            lbSurName.Name = "lbSurName";
+            lbSurName.Size = new Size(102, 20);
+            lbSurName.TabIndex = 17;
+            lbSurName.Text = "Keine Angabe";
+            // 
+            // lbPosition
+            // 
+            lbPosition.AutoSize = true;
+            lbPosition.Location = new Point(590, 141);
+            lbPosition.Name = "lbPosition";
+            lbPosition.Size = new Size(102, 20);
+            lbPosition.TabIndex = 18;
+            lbPosition.Text = "Keine Angabe";
             // 
             // label3
             // 
@@ -149,14 +142,14 @@
             label3.TabIndex = 19;
             label3.Text = "Check-in Status:";
             // 
-            // lbMicky
+            // lbCheckedIn
             // 
-            lbMicky.AutoSize = true;
-            lbMicky.Location = new Point(572, 245);
-            lbMicky.Name = "lbMicky";
-            lbMicky.Size = new Size(59, 20);
-            lbMicky.TabIndex = 22;
-            lbMicky.Text = "Ja/Nein";
+            lbCheckedIn.AutoSize = true;
+            lbCheckedIn.Location = new Point(123, 195);
+            lbCheckedIn.Name = "lbCheckedIn";
+            lbCheckedIn.Size = new Size(102, 20);
+            lbCheckedIn.TabIndex = 20;
+            lbCheckedIn.Text = "Keine Angabe";
             // 
             // label6
             // 
@@ -167,14 +160,14 @@
             label6.TabIndex = 21;
             label6.Text = "MickyMaus:";
             // 
-            // lbShaver
+            // lbMicky
             // 
-            lbShaver.AutoSize = true;
-            lbShaver.Location = new Point(552, 265);
-            lbShaver.Name = "lbShaver";
-            lbShaver.Size = new Size(59, 20);
-            lbShaver.TabIndex = 24;
-            lbShaver.Text = "Ja/Nein";
+            lbMicky.AutoSize = true;
+            lbMicky.Location = new Point(572, 245);
+            lbMicky.Name = "lbMicky";
+            lbMicky.Size = new Size(59, 20);
+            lbMicky.TabIndex = 22;
+            lbMicky.Text = "Ja/Nein";
             // 
             // label8
             // 
@@ -185,14 +178,14 @@
             label8.TabIndex = 23;
             label8.Text = "Rasierer:";
             // 
-            // lbBatteries
+            // lbShaver
             // 
-            lbBatteries.AutoSize = true;
-            lbBatteries.Location = new Point(558, 307);
-            lbBatteries.Name = "lbBatteries";
-            lbBatteries.Size = new Size(102, 20);
-            lbBatteries.TabIndex = 26;
-            lbBatteries.Text = "Keine Angabe";
+            lbShaver.AutoSize = true;
+            lbShaver.Location = new Point(552, 265);
+            lbShaver.Name = "lbShaver";
+            lbShaver.Size = new Size(59, 20);
+            lbShaver.TabIndex = 24;
+            lbShaver.Text = "Ja/Nein";
             // 
             // label10
             // 
@@ -203,14 +196,14 @@
             label10.TabIndex = 25;
             label10.Text = "Batterien:";
             // 
-            // lbHidden
+            // lbBatteries
             // 
-            lbHidden.AutoSize = true;
-            lbHidden.Location = new Point(558, 285);
-            lbHidden.Name = "lbHidden";
-            lbHidden.Size = new Size(59, 20);
-            lbHidden.TabIndex = 28;
-            lbHidden.Text = "Ja/Nein";
+            lbBatteries.AutoSize = true;
+            lbBatteries.Location = new Point(558, 307);
+            lbBatteries.Name = "lbBatteries";
+            lbBatteries.Size = new Size(102, 20);
+            lbBatteries.TabIndex = 26;
+            lbBatteries.Text = "Keine Angabe";
             // 
             // label12
             // 
@@ -221,14 +214,14 @@
             label12.TabIndex = 27;
             label12.Text = "Tarn-Set:";
             // 
-            // lbRadio
+            // lbHidden
             // 
-            lbRadio.AutoSize = true;
-            lbRadio.Location = new Point(572, 225);
-            lbRadio.Name = "lbRadio";
-            lbRadio.Size = new Size(102, 20);
-            lbRadio.TabIndex = 30;
-            lbRadio.Text = "Keine Angabe";
+            lbHidden.AutoSize = true;
+            lbHidden.Location = new Point(558, 285);
+            lbHidden.Name = "lbHidden";
+            lbHidden.Size = new Size(59, 20);
+            lbHidden.TabIndex = 28;
+            lbHidden.Text = "Ja/Nein";
             // 
             // label14
             // 
@@ -239,14 +232,14 @@
             label14.TabIndex = 29;
             label14.Text = "Funkgerät-Nummer:";
             // 
-            // lbNFCNumber
+            // lbRadio
             // 
-            lbNFCNumber.AutoSize = true;
-            lbNFCNumber.Location = new Point(123, 235);
-            lbNFCNumber.Name = "lbNFCNumber";
-            lbNFCNumber.Size = new Size(102, 20);
-            lbNFCNumber.TabIndex = 32;
-            lbNFCNumber.Text = "Keine Angabe";
+            lbRadio.AutoSize = true;
+            lbRadio.Location = new Point(572, 225);
+            lbRadio.Name = "lbRadio";
+            lbRadio.Size = new Size(102, 20);
+            lbRadio.TabIndex = 30;
+            lbRadio.Text = "Keine Angabe";
             // 
             // label16
             // 
@@ -257,6 +250,15 @@
             label16.TabIndex = 31;
             label16.Text = "NFC-Nummer:";
             // 
+            // lbNFCNumber
+            // 
+            lbNFCNumber.AutoSize = true;
+            lbNFCNumber.Location = new Point(123, 235);
+            lbNFCNumber.Name = "lbNFCNumber";
+            lbNFCNumber.Size = new Size(102, 20);
+            lbNFCNumber.TabIndex = 32;
+            lbNFCNumber.Text = "Keine Angabe";
+            // 
             // label18
             // 
             label18.AutoSize = true;
@@ -265,15 +267,6 @@
             label18.Size = new Size(49, 20);
             label18.TabIndex = 33;
             label18.Text = "Firma:";
-            // 
-            // lbName
-            // 
-            lbName.AutoSize = true;
-            lbName.Location = new Point(123, 91);
-            lbName.Name = "lbName";
-            lbName.Size = new Size(102, 20);
-            lbName.TabIndex = 36;
-            lbName.Text = "Keine Angabe";
             // 
             // label20
             // 
@@ -284,14 +277,14 @@
             label20.TabIndex = 35;
             label20.Text = "Vorname:";
             // 
-            // lbBirthday
+            // lbName
             // 
-            lbBirthday.AutoSize = true;
-            lbBirthday.Location = new Point(123, 111);
-            lbBirthday.Name = "lbBirthday";
-            lbBirthday.Size = new Size(102, 20);
-            lbBirthday.TabIndex = 38;
-            lbBirthday.Text = "Keine Angabe";
+            lbName.AutoSize = true;
+            lbName.Location = new Point(123, 91);
+            lbName.Name = "lbName";
+            lbName.Size = new Size(102, 20);
+            lbName.TabIndex = 36;
+            lbName.Text = "Keine Angabe";
             // 
             // label22
             // 
@@ -302,14 +295,14 @@
             label22.TabIndex = 37;
             label22.Text = "Geburtsdatum:";
             // 
-            // lbLiving
+            // lbBirthday
             // 
-            lbLiving.AutoSize = true;
-            lbLiving.Location = new Point(123, 131);
-            lbLiving.Name = "lbLiving";
-            lbLiving.Size = new Size(102, 20);
-            lbLiving.TabIndex = 40;
-            lbLiving.Text = "Keine Angabe";
+            lbBirthday.AutoSize = true;
+            lbBirthday.Location = new Point(123, 111);
+            lbBirthday.Name = "lbBirthday";
+            lbBirthday.Size = new Size(102, 20);
+            lbBirthday.TabIndex = 38;
+            lbBirthday.Text = "Keine Angabe";
             // 
             // label24
             // 
@@ -320,14 +313,14 @@
             label24.TabIndex = 39;
             label24.Text = "Wohnort:";
             // 
-            // lbBirthCountry
+            // lbLiving
             // 
-            lbBirthCountry.AutoSize = true;
-            lbBirthCountry.Location = new Point(123, 151);
-            lbBirthCountry.Name = "lbBirthCountry";
-            lbBirthCountry.Size = new Size(102, 20);
-            lbBirthCountry.TabIndex = 42;
-            lbBirthCountry.Text = "Keine Angabe";
+            lbLiving.AutoSize = true;
+            lbLiving.Location = new Point(123, 131);
+            lbLiving.Name = "lbLiving";
+            lbLiving.Size = new Size(102, 20);
+            lbLiving.TabIndex = 40;
+            lbLiving.Text = "Keine Angabe";
             // 
             // label26
             // 
@@ -338,50 +331,14 @@
             label26.TabIndex = 41;
             label26.Text = "Geburtsland:";
             // 
-            // lbLanguageLvL
+            // lbBirthCountry
             // 
-            lbLanguageLvL.AutoSize = true;
-            lbLanguageLvL.Location = new Point(590, 81);
-            lbLanguageLvL.Name = "lbLanguageLvL";
-            lbLanguageLvL.Size = new Size(59, 20);
-            lbLanguageLvL.TabIndex = 48;
-            lbLanguageLvL.Text = "Ja/Nein";
-            // 
-            // label28
-            // 
-            label28.AutoSize = true;
-            label28.Location = new Point(507, 81);
-            label28.Name = "label28";
-            label28.Size = new Size(29, 20);
-            label28.TabIndex = 47;
-            label28.Text = "B1:";
-            // 
-            // lbLanguage
-            // 
-            lbLanguage.AutoSize = true;
-            lbLanguage.Location = new Point(590, 61);
-            lbLanguage.Name = "lbLanguage";
-            lbLanguage.Size = new Size(102, 20);
-            lbLanguage.TabIndex = 46;
-            lbLanguage.Text = "Keine Angabe";
-            // 
-            // label30
-            // 
-            label30.AutoSize = true;
-            label30.Location = new Point(463, 61);
-            label30.Name = "label30";
-            label30.Size = new Size(73, 20);
-            label30.TabIndex = 45;
-            label30.Text = "Sprachen:";
-            // 
-            // lbGender
-            // 
-            lbGender.AutoSize = true;
-            lbGender.Location = new Point(590, 41);
-            lbGender.Name = "lbGender";
-            lbGender.Size = new Size(102, 20);
-            lbGender.TabIndex = 44;
-            lbGender.Text = "Keine Angabe";
+            lbBirthCountry.AutoSize = true;
+            lbBirthCountry.Location = new Point(123, 151);
+            lbBirthCountry.Name = "lbBirthCountry";
+            lbBirthCountry.Size = new Size(102, 20);
+            lbBirthCountry.TabIndex = 42;
+            lbBirthCountry.Text = "Keine Angabe";
             // 
             // label32
             // 
@@ -392,32 +349,50 @@
             label32.TabIndex = 43;
             label32.Text = "Geschlecht:";
             // 
-            // lbContact
+            // lbGender
             // 
-            lbContact.AutoSize = true;
-            lbContact.Location = new Point(590, 121);
-            lbContact.Name = "lbContact";
-            lbContact.Size = new Size(102, 20);
-            lbContact.TabIndex = 52;
-            lbContact.Text = "Keine Angabe";
+            lbGender.AutoSize = true;
+            lbGender.Location = new Point(590, 41);
+            lbGender.Name = "lbGender";
+            lbGender.Size = new Size(102, 20);
+            lbGender.TabIndex = 44;
+            lbGender.Text = "Keine Angabe";
             // 
-            // label34
+            // label30
             // 
-            label34.AutoSize = true;
-            label34.Location = new Point(463, 121);
-            label34.Name = "label34";
-            label34.Size = new Size(121, 20);
-            label34.TabIndex = 51;
-            label34.Text = "Ansprechpartner:";
+            label30.AutoSize = true;
+            label30.Location = new Point(439, 61);
+            label30.Name = "label30";
+            label30.Size = new Size(107, 20);
+            label30.TabIndex = 45;
+            label30.Text = "Muttersprache:";
             // 
-            // lbMobileNumber
+            // lbLanguage
             // 
-            lbMobileNumber.AutoSize = true;
-            lbMobileNumber.Location = new Point(590, 101);
-            lbMobileNumber.Name = "lbMobileNumber";
-            lbMobileNumber.Size = new Size(102, 20);
-            lbMobileNumber.TabIndex = 50;
-            lbMobileNumber.Text = "Keine Angabe";
+            lbLanguage.AutoSize = true;
+            lbLanguage.Location = new Point(590, 61);
+            lbLanguage.Name = "lbLanguage";
+            lbLanguage.Size = new Size(102, 20);
+            lbLanguage.TabIndex = 46;
+            lbLanguage.Text = "Keine Angabe";
+            // 
+            // label28
+            // 
+            label28.AutoSize = true;
+            label28.Location = new Point(414, 81);
+            label28.Name = "label28";
+            label28.Size = new Size(134, 20);
+            label28.TabIndex = 47;
+            label28.Text = "Sonstige Sprachen:";
+            // 
+            // lbLanguageLvL
+            // 
+            lbLanguageLvL.AutoSize = true;
+            lbLanguageLvL.Location = new Point(590, 81);
+            lbLanguageLvL.Name = "lbLanguageLvL";
+            lbLanguageLvL.Size = new Size(102, 20);
+            lbLanguageLvL.TabIndex = 48;
+            lbLanguageLvL.Text = "Keine Angabe";
             // 
             // label36
             // 
@@ -428,6 +403,33 @@
             label36.TabIndex = 49;
             label36.Text = "Telefon Nr.:";
             // 
+            // lbMobileNumber
+            // 
+            lbMobileNumber.AutoSize = true;
+            lbMobileNumber.Location = new Point(590, 101);
+            lbMobileNumber.Name = "lbMobileNumber";
+            lbMobileNumber.Size = new Size(102, 20);
+            lbMobileNumber.TabIndex = 50;
+            lbMobileNumber.Text = "Keine Angabe";
+            // 
+            // label34
+            // 
+            label34.AutoSize = true;
+            label34.Location = new Point(463, 121);
+            label34.Name = "label34";
+            label34.Size = new Size(121, 20);
+            label34.TabIndex = 51;
+            label34.Text = "Ansprechpartner:";
+            // 
+            // lbContact
+            // 
+            lbContact.AutoSize = true;
+            lbContact.Location = new Point(590, 121);
+            lbContact.Name = "lbContact";
+            lbContact.Size = new Size(102, 20);
+            lbContact.TabIndex = 52;
+            lbContact.Text = "Keine Angabe";
+            // 
             // bAddWorker
             // 
             bAddWorker.Location = new Point(12, 318);
@@ -436,6 +438,7 @@
             bAddWorker.TabIndex = 53;
             bAddWorker.Text = "Neues Personal Hinzufügen";
             bAddWorker.UseVisualStyleBackColor = true;
+            bAddWorker.Click += bAddWorker_Click;
             // 
             // cbCompany
             // 
@@ -444,6 +447,7 @@
             cbCompany.Name = "cbCompany";
             cbCompany.Size = new Size(139, 28);
             cbCompany.TabIndex = 54;
+            cbCompany.SelectedIndexChanged += cbCompany_SelectedIndexChanged;
             // 
             // button1
             // 
@@ -513,51 +517,52 @@
             Controls.Add(Name);
             Controls.Add(label1);
             Text = "Festival Manager Personal Übersicht";
+            Load += cPersonalOverview_Load;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Label lbPosition;
-        private Label lbSurName;
-        public ComboBox cbMitarbeiterID;
-        private Label Position;
-        private Label Name;
         private Label label1;
-        private Label lbCheckedIn;
+        private Label Name;
+        private Label Position;
+        public ComboBox cbMitarbeiterID;
+        private Label lbSurName;
+        private Label lbPosition;
         private Label label3;
-        private Label lbMicky;
+        private Label lbCheckedIn;
         private Label label6;
-        private Label lbShaver;
+        private Label lbMicky;
         private Label label8;
-        private Label lbBatteries;
+        private Label lbShaver;
         private Label label10;
-        private Label lbHidden;
+        private Label lbBatteries;
         private Label label12;
-        private Label lbRadio;
+        private Label lbHidden;
         private Label label14;
-        private Label lbNFCNumber;
+        private Label lbRadio;
         private Label label16;
+        private Label lbNFCNumber;
         private Label label18;
-        private Label lbName;
         private Label label20;
-        private Label lbBirthday;
+        private Label lbName;
         private Label label22;
-        private Label lbLiving;
+        private Label lbBirthday;
         private Label label24;
-        private Label lbBirthCountry;
+        private Label lbLiving;
         private Label label26;
-        private Label lbLanguageLvL;
-        private Label label28;
-        private Label lbLanguage;
-        private Label label30;
-        private Label lbGender;
+        private Label lbBirthCountry;
         private Label label32;
-        private Label lbContact;
-        private Label label34;
-        private Label lbMobileNumber;
+        private Label lbGender;
+        private Label label30;
+        private Label lbLanguage;
+        private Label label28;
+        private Label lbLanguageLvL;
         private Label label36;
+        private Label lbMobileNumber;
+        private Label label34;
+        private Label lbContact;
         private Button bAddWorker;
         private ComboBox cbCompany;
         private Button button1;
