@@ -321,6 +321,7 @@
             Controls.Add(Name);
             Text = "Festival Manager Personal Hinzufügen";
             FormClosed += cPersonalManuellHinzufügen_FormClosed;
+            Load += cPersonalManuellHinzufügen_Load;
             ResumeLayout(false);
             PerformLayout();
         }

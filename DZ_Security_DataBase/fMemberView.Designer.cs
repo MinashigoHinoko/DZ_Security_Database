@@ -90,6 +90,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Member Menü";
             FormClosed += cMemberView_FormClosed;
+            Load += cMemberView_Load;
             ResumeLayout(false);
             PerformLayout();
         }

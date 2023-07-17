@@ -98,6 +98,7 @@
             Name = "cPrintOutView";
             Text = "FestivalManager Ausdruck";
             FormClosed += cEquipmentRent_FormClosed;
+            Load += cPrintOutView_Load;
             ResumeLayout(false);
             PerformLayout();
         }

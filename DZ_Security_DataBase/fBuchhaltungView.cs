@@ -25,5 +25,10 @@
             cLoginMenu cLoginMenu = new cLoginMenu();
             cLoginMenu.ShowDialog();
         }
+
+        private void cBookingView_Load(object sender, EventArgs e)
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
     }
 }

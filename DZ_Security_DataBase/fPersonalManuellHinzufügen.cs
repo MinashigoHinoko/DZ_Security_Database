@@ -65,5 +65,10 @@ namespace DZ_Security_DataBase
         {
             this.Hide();
         }
+
+        private void cPersonalManuellHinzufügen_Load(object sender, EventArgs e)
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
     }
 }

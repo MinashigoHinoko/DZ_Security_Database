@@ -50,7 +50,7 @@
 
         private void cAdminView_Load(object sender, EventArgs e)
         {
-
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void cAdminView_FormClosed(object sender, FormClosedEventArgs e)

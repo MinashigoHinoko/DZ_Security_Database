@@ -74,6 +74,7 @@
             Name = "cBookingView";
             Text = "cBuchHaltung";
             FormClosed += cBookingView_FormClosed;
+            Load += cBookingView_Load;
             ResumeLayout(false);
             PerformLayout();
         }

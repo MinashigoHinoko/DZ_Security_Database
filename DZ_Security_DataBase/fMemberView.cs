@@ -30,5 +30,10 @@
             cLoginMenu cLoginMenu = new cLoginMenu();
             cLoginMenu.ShowDialog();
         }
+
+        private void cMemberView_Load(object sender, EventArgs e)
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
     }
 }

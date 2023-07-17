@@ -59,7 +59,7 @@ namespace DZ_Security_DataBase
                                     Geburtsname TEXT,
                                     Geburtsort TEXT,
                                     Geburtsland TEXT,
-                                    Geburtsdatum DATE,
+                                    Geburtsdatum TEXT,
                                     Nationalitaet TEXT,
                                     Straße TEXT,
                                     Hausnummer TEXT,

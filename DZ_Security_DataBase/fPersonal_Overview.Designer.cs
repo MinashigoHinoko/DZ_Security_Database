@@ -96,12 +96,13 @@
             cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
             cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
             cbMitarbeiterID.Cursor = Cursors.Hand;
+            cbMitarbeiterID.DropDownStyle = ComboBoxStyle.DropDownList;
             cbMitarbeiterID.DropDownWidth = 200;
             cbMitarbeiterID.FormattingEnabled = true;
             cbMitarbeiterID.Location = new Point(128, 9);
             cbMitarbeiterID.Margin = new Padding(3, 4, 3, 4);
             cbMitarbeiterID.Name = "cbMitarbeiterID";
-            cbMitarbeiterID.Size = new Size(139, 28);
+            cbMitarbeiterID.Size = new Size(317, 28);
             cbMitarbeiterID.Sorted = true;
             cbMitarbeiterID.TabIndex = 16;
             cbMitarbeiterID.SelectedIndexChanged += cbMitarbeiterID_SelectedIndexChanged;
@@ -306,7 +307,9 @@
             // 
             // cbGender
             // 
+            cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
             cbGender.FormattingEnabled = true;
+            cbGender.Items.AddRange(new object[] { "m", "w", "d" });
             cbGender.Location = new Point(550, 69);
             cbGender.Name = "cbGender";
             cbGender.Size = new Size(139, 28);
@@ -400,6 +403,7 @@
             Text = "Festival Manager Personal Übersicht";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cPersonalOverview_Load;
+            Shown += cPersonalOverview_Shown;
             ResumeLayout(false);
             PerformLayout();
         }

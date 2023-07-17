@@ -42,6 +42,7 @@ namespace DZ_Security_DataBase
 
         private void cEquipmentOverview_Load(object sender, EventArgs e)
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
             insertDatabaseInComboBox();
         }
 

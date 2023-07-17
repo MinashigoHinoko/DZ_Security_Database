@@ -1,4 +1,5 @@
 ﻿using System.Data.SQLite;
+using System.Globalization;
 
 namespace DZ_Security_DataBase
 {
@@ -10,6 +11,7 @@ namespace DZ_Security_DataBase
         cWorker selectedWorker;
         string selectedCompany;
         int currentIndex;
+        int isLoading;
         public cPersonalOverview(bool isAdmin)
         {
             InitializeComponent();
@@ -93,15 +95,21 @@ namespace DZ_Security_DataBase
         private void cbMitarbeiterID_SelectedIndexChanged(object sender, EventArgs e)
         {
             FillData();
+            CheckChipIDForCurrentEmployee();
         }
         private void cPersonalOverview_Load(object sender, EventArgs e)
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
+            isLoading = 2;
             insertDatabaseInComboBox();
+            cbMitarbeiterID.SelectedIndex = 0;
+            FillData();
         }
 
         private void cbCompany_SelectedIndexChanged(object sender, EventArgs e)
         {
             InsertEmployeesBasedOnCompanyIntoComboBox();
+
         }
 
         private void bAddWorker_Click(object sender, EventArgs e)
@@ -158,35 +166,54 @@ namespace DZ_Security_DataBase
                 cbMitarbeiterID.SelectedIndex = currentIndex;
                 FillData();
             }
-
         }
+
 
         private void UpdateEmployeeData(string employeeId)
         {
+            DateTime dt;
+            object geburtsdatumValue = DBNull.Value;
+            if (DateTime.TryParseExact(tbBirthday.Text, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+            {
+                geburtsdatumValue = dt.ToString("dd.MM.yyyy");
+            }
+            else if (string.IsNullOrWhiteSpace(tbBirthday.Text))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("Ungültiges Datumsformat! Bitte geben Sie das Datum im Format 'Tag.Monat.Jahr' ein. Beispiel: 01.01.2020.");
+                return;
+            }
+
+
+
+
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
                 using (var cmd = new SQLiteCommand(conn))
                 {
                     cmd.CommandText = @"UPDATE Mitarbeiter
-                                SET Firma = @Firma,
-                                Vorname = @Vorname,
-                                Nachname = @Nachname,
-                                Geburtsdatum = @Geburtsdatum,
-                                Geburtsland = @Geburtsland,
-                                Wohnort = @Wohnort,
-                                ChipNummer = @ChipNummer,
-                                Gender = @Gender,
-                                Muttersprache = @Muttersprache,
-                                Sprachen = @Sprachen,
-                                TelefonNummer = @TelefonNummer,
-                                Ansprechpartner = @Ansprechpartner,
-                                Position = @Position
-                                WHERE MitarbeiterID = @EmployeeId";
+                        SET Firma = @Firma,
+                        Vorname = @Vorname,
+                        Nachname = @Nachname,
+                        Geburtsdatum = @Geburtsdatum,
+                        Geburtsland = @Geburtsland,
+                        Wohnort = @Wohnort,
+                        ChipNummer = @ChipNummer,
+                        Gender = @Gender,
+                        Muttersprache = @Muttersprache,
+                        Sprachen = @Sprachen,
+                        TelefonNummer = @TelefonNummer,
+                        Ansprechpartner = @Ansprechpartner,
+                        Position = @Position
+                        WHERE MitarbeiterID = @EmployeeId";
                     cmd.Parameters.AddWithValue("@Firma", string.IsNullOrWhiteSpace(cbCompany.Text) ? (object)DBNull.Value : cbCompany.Text);
                     cmd.Parameters.AddWithValue("@Vorname", string.IsNullOrWhiteSpace(tbName.Text) ? (object)DBNull.Value : tbName.Text);
                     cmd.Parameters.AddWithValue("@Nachname", string.IsNullOrWhiteSpace(tbSurName.Text) ? (object)DBNull.Value : tbSurName.Text);
-                    cmd.Parameters.AddWithValue("@Geburtsdatum", string.IsNullOrWhiteSpace(tbBirthday.Text) ? (object)DBNull.Value : tbBirthday.Text);
+                    cmd.Parameters.AddWithValue("@Geburtsdatum", string.IsNullOrWhiteSpace(tbBirthday.Text) ? (object)DBNull.Value : geburtsdatumValue);
                     cmd.Parameters.AddWithValue("@Geburtsland", string.IsNullOrWhiteSpace(tbBirthPlace.Text) ? (object)DBNull.Value : tbBirthPlace.Text);
                     cmd.Parameters.AddWithValue("@Wohnort", string.IsNullOrWhiteSpace(tbLiving.Text) ? (object)DBNull.Value : tbLiving.Text);
                     cmd.Parameters.AddWithValue("@ChipNummer", string.IsNullOrWhiteSpace(tbChip.Text) ? (object)DBNull.Value : tbChip.Text);
@@ -201,7 +228,6 @@ namespace DZ_Security_DataBase
                 }
             }
         }
-
         public void FillData()
         {
             try
@@ -254,10 +280,8 @@ namespace DZ_Security_DataBase
             }
         }
 
-
         private void button2_Click(object sender, EventArgs e)
         {
-
             try
             {
                 this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
@@ -295,5 +319,40 @@ namespace DZ_Security_DataBase
                 MessageBox.Show("Fehler beim Löschen des Mitarbeiters: " + ex.Message);
             }
         }
+
+        private void CheckChipIDForCurrentEmployee()
+        {
+            if (isLoading != 0)
+            {
+                isLoading = isLoading - 1;
+                return;
+            }
+            cbMitarbeiterID.SelectedIndex = currentIndex;
+            this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+            string employeeId = selectedWorker.ID;
+
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = @"SELECT ChipNummer FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId";
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result == null || result == DBNull.Value)
+                    {
+                        MessageBox.Show("Der aktuelle Mitarbeiter hat keine Chip-Nummer. Bitte fügen Sie eine Chip-Nummer hinzu.",
+                                        "Fehlende Chip-Nummer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
         }
+
+        private void cPersonalOverview_Shown(object sender, EventArgs e)
+        {
+            CheckChipIDForCurrentEmployee();
+        }
+    }
 }

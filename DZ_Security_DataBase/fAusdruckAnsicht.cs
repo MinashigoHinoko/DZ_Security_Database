@@ -242,5 +242,10 @@ namespace DZ_Security_DataBase
                 cMemberView.ShowDialog();
             }
         }
+
+        private void cPrintOutView_Load(object sender, EventArgs e)
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
     }
 }

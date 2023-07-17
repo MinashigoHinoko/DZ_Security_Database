@@ -131,6 +131,7 @@ namespace DZ_Security_DataBase
 
         private void cLoginMenu_Load(object sender, EventArgs e)
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
             if (firstLoad)
             {
                 cDataBase.createDatabase();

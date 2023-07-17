@@ -365,6 +365,7 @@ namespace DZ_Security_DataBase
 
         private void cCheckIn_Load(object sender, EventArgs e)
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
             buildDatabase();
         }
 

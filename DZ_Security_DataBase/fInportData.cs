@@ -23,5 +23,10 @@
                 cMemberView.ShowDialog();
             }
         }
+
+        private void fInportData_Load(object sender, EventArgs e)
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
     }
 }
