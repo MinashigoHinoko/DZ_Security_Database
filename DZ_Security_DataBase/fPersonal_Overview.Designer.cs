@@ -61,6 +61,7 @@
             tbNumber = new TextBox();
             tbContact = new TextBox();
             tbPosition = new TextBox();
+            button2 = new Button();
             SuspendLayout();
             // 
             // label1
@@ -224,9 +225,9 @@
             // 
             // bAddWorker
             // 
-            bAddWorker.Location = new Point(14, 343);
+            bAddWorker.Location = new Point(6, 343);
             bAddWorker.Name = "bAddWorker";
-            bAddWorker.Size = new Size(253, 65);
+            bAddWorker.Size = new Size(217, 65);
             bAddWorker.TabIndex = 53;
             bAddWorker.Text = "Neues Personal Hinzufügen";
             bAddWorker.UseVisualStyleBackColor = true;
@@ -243,11 +244,11 @@
             // 
             // button1
             // 
-            button1.Location = new Point(429, 343);
+            button1.Location = new Point(474, 343);
             button1.Name = "button1";
-            button1.Size = new Size(263, 65);
+            button1.Size = new Size(220, 65);
             button1.TabIndex = 55;
-            button1.Text = "Personal Anpassen";
+            button1.Text = "Änderungen Speichern";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -347,11 +348,22 @@
             tbPosition.Size = new Size(140, 27);
             tbPosition.TabIndex = 68;
             // 
+            // button2
+            // 
+            button2.Location = new Point(242, 343);
+            button2.Name = "button2";
+            button2.Size = new Size(217, 65);
+            button2.TabIndex = 69;
+            button2.Text = "Personal Löschen";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // cPersonalOverview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(703, 416);
+            Controls.Add(button2);
             Controls.Add(tbPosition);
             Controls.Add(tbContact);
             Controls.Add(tbNumber);
@@ -427,5 +439,6 @@
         private TextBox tbNumber;
         private TextBox tbContact;
         private TextBox tbPosition;
+        private Button button2;
     }
 }
