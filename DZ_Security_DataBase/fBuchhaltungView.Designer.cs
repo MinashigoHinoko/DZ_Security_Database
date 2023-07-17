@@ -73,6 +73,7 @@
             Controls.Add(bPrint);
             Name = "cBookingView";
             Text = "cBuchHaltung";
+            FormClosed += cBookingView_FormClosed;
             ResumeLayout(false);
             PerformLayout();
         }

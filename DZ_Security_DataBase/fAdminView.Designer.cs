@@ -36,6 +36,7 @@
             bWorkerOverview = new Button();
             label1 = new Label();
             bPrintReceipt = new Button();
+            button1 = new Button();
             SuspendLayout();
             // 
             // bExcelExport
@@ -110,19 +111,29 @@
             // 
             // bPrintReceipt
             // 
-            bPrintReceipt.Location = new Point(10, 261);
+            bPrintReceipt.Location = new Point(10, 271);
             bPrintReceipt.Name = "bPrintReceipt";
-            bPrintReceipt.Size = new Size(417, 64);
+            bPrintReceipt.Size = new Size(187, 64);
             bPrintReceipt.TabIndex = 17;
             bPrintReceipt.Text = "Laufzettel manuell drucken";
             bPrintReceipt.UseVisualStyleBackColor = true;
             bPrintReceipt.Click += bPrintReceipt_Click;
             // 
+            // button1
+            // 
+            button1.Location = new Point(242, 271);
+            button1.Name = "button1";
+            button1.Size = new Size(185, 64);
+            button1.TabIndex = 18;
+            button1.Text = "Liste Inportieren";
+            button1.UseVisualStyleBackColor = true;
+            // 
             // cAdminView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(486, 342);
+            ClientSize = new Size(486, 355);
+            Controls.Add(button1);
             Controls.Add(bPrintReceipt);
             Controls.Add(label1);
             Controls.Add(bWorkerOverview);
@@ -134,6 +145,8 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "cAdminView";
             Text = "DZ Security Admin Menü";
+            FormClosed += cAdminView_FormClosed;
+            Load += cAdminView_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -148,5 +161,6 @@
         private Button bWorkerOverview;
         private Label label1;
         private Button bPrintReceipt;
+        private Button button1;
     }
 }

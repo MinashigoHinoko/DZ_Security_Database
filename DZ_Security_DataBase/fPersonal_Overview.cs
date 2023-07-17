@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SQLite;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data.SQLite;
 
 namespace DZ_Security_DataBase
 {
@@ -16,6 +7,9 @@ namespace DZ_Security_DataBase
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         bool isAdmin = false;
+        cWorker selectedWorker;
+        string selectedCompany;
+        int currentIndex;
         public cPersonalOverview(bool isAdmin)
         {
             InitializeComponent();
@@ -30,7 +24,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT DISTINCT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter", conn))
+                using (var cmd = new SQLiteCommand("SELECT DISTINCT MitarbeiterID, Vorname || ' ' || Nachname AS Name,Position FROM Mitarbeiter", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -38,9 +32,10 @@ namespace DZ_Security_DataBase
                         {
                             string name = reader["Name"].ToString();
                             string id = reader["MitarbeiterID"].ToString();
+                            string position = reader["Position"].ToString();
 
                             // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name };
+                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position };
                             cbMitarbeiterID.Items.Add(mitarbeiter);
                         }
                     }
@@ -66,7 +61,7 @@ namespace DZ_Security_DataBase
         }
         private void InsertEmployeesBasedOnCompanyIntoComboBox()
         {
-            string selectedCompany = cbCompany.SelectedItem.ToString();
+            selectedCompany = cbCompany.SelectedItem.ToString();
 
             // Clear the items in the cbMitarbeiterID ComboBox
             cbMitarbeiterID.Items.Clear();
@@ -75,7 +70,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter WHERE Firma = @Company", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name, Position FROM Mitarbeiter WHERE Firma = @Company", conn))
                 {
                     cmd.Parameters.AddWithValue("@Company", selectedCompany);
                     using (var reader = cmd.ExecuteReader())
@@ -84,9 +79,10 @@ namespace DZ_Security_DataBase
                         {
                             string name = reader["Name"].ToString();
                             string id = reader["MitarbeiterID"].ToString();
+                            string position = reader["Position"].ToString();
 
                             // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name };
+                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position };
                             cbMitarbeiterID.Items.Add(mitarbeiter);
                         }
                     }
@@ -96,39 +92,7 @@ namespace DZ_Security_DataBase
 
         private void cbMitarbeiterID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
-
-            string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
-            using (var conn = new SQLiteConnection(stConnectionString))
-            {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
-                {
-                    cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            cbCompany.Text = reader["Firma"].ToString();
-                            lbName.Text = reader["Vorname"].ToString();
-                            lbSurName.Text = reader["Nachname"].ToString();
-                            lbBirthday.Text = reader["Geburtsdatum"].ToString();
-                            lbBirthCountry.Text = reader["Geburtsland"].ToString();
-                            lbLiving.Text = reader["Wohnort"].ToString();
-                            lbCheckedIn.Text = reader["CheckInState"].ToString() == "true" ? "Eingechecked" : "Ausgechecked";
-                            lbNFCNumber.Text = reader["ChipNummer"].ToString();
-                            lbGender.Text = reader["Gender"].ToString();
-                            lbLanguage.Text = reader["Muttersprache"].ToString();
-                            lbLanguageLvL.Text = reader["Sprachen"].ToString();
-                            lbMobileNumber.Text = reader["TelefonNummer"].ToString();
-                            lbContact.Text = reader["Ansprechpartner"].ToString();
-                            lbPosition.Text = reader["Position"].ToString();
-                        }
-                    }
-                }
-            }
-
+            FillData();
         }
         private void cPersonalOverview_Load(object sender, EventArgs e)
         {
@@ -148,6 +112,7 @@ namespace DZ_Security_DataBase
         }
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
+            this.Hide();
             if (this.isAdmin)
             {
                 cAdminView cAdminView = new cAdminView();
@@ -157,6 +122,178 @@ namespace DZ_Security_DataBase
             {
                 cMemberView cMemberView = new cMemberView();
                 cMemberView.ShowDialog();
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID 
+                this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"UPDATE Mitarbeiter
+                                        SET Firma = @Firma,
+                                        Vorname = @Vorname,
+                                        Nachname = @Nachname,
+                                        Geburtsdatum = @Geburtsdatum,
+                                        Geburtsland = @Geburtsland,
+                                        Wohnort = @Wohnort,
+                                        ChipNummer = @ChipNummer,
+                                        Gender = @Gender,
+                                        Muttersprache = @Muttersprache,
+                                        Sprachen = @Sprachen,
+                                        TelefonNummer = @TelefonNummer,
+                                        Ansprechpartner = @Ansprechpartner,
+                                        Position = @Position
+                                        WHERE MitarbeiterID = @EmployeeId";
+                        cmd.Parameters.AddWithValue("@Firma", string.IsNullOrWhiteSpace(cbCompany.Text) ? (object)DBNull.Value : cbCompany.Text);
+                        cmd.Parameters.AddWithValue("@Vorname", string.IsNullOrWhiteSpace(tbName.Text) ? (object)DBNull.Value : tbName.Text);
+                        cmd.Parameters.AddWithValue("@Nachname", string.IsNullOrWhiteSpace(tbSurName.Text) ? (object)DBNull.Value : tbSurName.Text);
+                        cmd.Parameters.AddWithValue("@Geburtsdatum", string.IsNullOrWhiteSpace(tbBirthday.Text) ? (object)DBNull.Value : tbBirthday.Text);
+                        cmd.Parameters.AddWithValue("@Geburtsland", string.IsNullOrWhiteSpace(tbBirthPlace.Text) ? (object)DBNull.Value : tbBirthPlace.Text);
+                        cmd.Parameters.AddWithValue("@Wohnort", string.IsNullOrWhiteSpace(tbLiving.Text) ? (object)DBNull.Value : tbLiving.Text);
+                        cmd.Parameters.AddWithValue("@ChipNummer", string.IsNullOrWhiteSpace(tbChip.Text) ? (object)DBNull.Value : tbChip.Text);
+                        cmd.Parameters.AddWithValue("@Gender", string.IsNullOrWhiteSpace(cbGender.Text) ? (object)DBNull.Value : cbGender.Text);
+                        cmd.Parameters.AddWithValue("@Muttersprache", string.IsNullOrWhiteSpace(tbLanguage.Text) ? (object)DBNull.Value : tbLanguage.Text);
+                        cmd.Parameters.AddWithValue("@Sprachen", string.IsNullOrWhiteSpace(cbOtherLanguage.Text) ? (object)DBNull.Value : cbOtherLanguage.Text);
+                        cmd.Parameters.AddWithValue("@TelefonNummer", string.IsNullOrWhiteSpace(tbNumber.Text) ? (object)DBNull.Value : tbNumber.Text);
+                        cmd.Parameters.AddWithValue("@Ansprechpartner", string.IsNullOrWhiteSpace(tbContact.Text) ? (object)DBNull.Value : tbContact.Text);
+                        cmd.Parameters.AddWithValue("@Position", string.IsNullOrWhiteSpace(tbPosition.Text) ? (object)DBNull.Value : tbPosition.Text);
+                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                insertDatabaseInComboBox();
+                cbMitarbeiterID.SelectedIndex = currentIndex;
+                FillData();
+            }
+            catch
+            {
+                cbMitarbeiterID.SelectedIndex = currentIndex;
+                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID 
+                this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = @"UPDATE Mitarbeiter
+                                        SET Firma = @Firma,
+                                        Vorname = @Vorname,
+                                        Nachname = @Nachname,
+                                        Geburtsdatum = @Geburtsdatum,
+                                        Geburtsland = @Geburtsland,
+                                        Wohnort = @Wohnort,
+                                        ChipNummer = @ChipNummer,
+                                        Gender = @Gender,
+                                        Muttersprache = @Muttersprache,
+                                        Sprachen = @Sprachen,
+                                        TelefonNummer = @TelefonNummer,
+                                        Ansprechpartner = @Ansprechpartner,
+                                        Position = @Position
+                                        WHERE MitarbeiterID = @EmployeeId";
+                        cmd.Parameters.AddWithValue("@Firma", string.IsNullOrWhiteSpace(cbCompany.Text) ? (object)DBNull.Value : cbCompany.Text);
+                        cmd.Parameters.AddWithValue("@Vorname", string.IsNullOrWhiteSpace(tbName.Text) ? (object)DBNull.Value : tbName.Text);
+                        cmd.Parameters.AddWithValue("@Nachname", string.IsNullOrWhiteSpace(tbSurName.Text) ? (object)DBNull.Value : tbSurName.Text);
+                        cmd.Parameters.AddWithValue("@Geburtsdatum", string.IsNullOrWhiteSpace(tbBirthday.Text) ? (object)DBNull.Value : tbBirthday.Text);
+                        cmd.Parameters.AddWithValue("@Geburtsland", string.IsNullOrWhiteSpace(tbBirthPlace.Text) ? (object)DBNull.Value : tbBirthPlace.Text);
+                        cmd.Parameters.AddWithValue("@Wohnort", string.IsNullOrWhiteSpace(tbLiving.Text) ? (object)DBNull.Value : tbLiving.Text);
+                        cmd.Parameters.AddWithValue("@ChipNummer", string.IsNullOrWhiteSpace(tbChip.Text) ? (object)DBNull.Value : tbChip.Text);
+                        cmd.Parameters.AddWithValue("@Gender", string.IsNullOrWhiteSpace(cbGender.Text) ? (object)DBNull.Value : cbGender.Text);
+                        cmd.Parameters.AddWithValue("@Muttersprache", string.IsNullOrWhiteSpace(tbLanguage.Text) ? (object)DBNull.Value : tbLanguage.Text);
+                        cmd.Parameters.AddWithValue("@Sprachen", string.IsNullOrWhiteSpace(cbOtherLanguage.Text) ? (object)DBNull.Value : cbOtherLanguage.Text);
+                        cmd.Parameters.AddWithValue("@TelefonNummer", string.IsNullOrWhiteSpace(tbNumber.Text) ? (object)DBNull.Value : tbNumber.Text);
+                        cmd.Parameters.AddWithValue("@Ansprechpartner", string.IsNullOrWhiteSpace(tbContact.Text) ? (object)DBNull.Value : tbContact.Text);
+                        cmd.Parameters.AddWithValue("@Position", string.IsNullOrWhiteSpace(tbPosition.Text) ? (object)DBNull.Value : tbPosition.Text);
+                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                insertDatabaseInComboBox();
+                cbMitarbeiterID.SelectedIndex = currentIndex;
+                FillData();
+            }
+        }
+        public void FillData()
+        {
+            try
+            {
+                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
+                this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                cbCompany.Text = reader["Firma"].ToString();
+                                tbName.Text = reader["Vorname"].ToString();
+                                tbSurName.Text = reader["Nachname"].ToString();
+                                tbBirthday.Text = reader["Geburtsdatum"].ToString();
+                                tbBirthPlace.Text = reader["Geburtsland"].ToString();
+                                tbLiving.Text = reader["Wohnort"].ToString();
+                                lbCheckedIn.Text = reader["CheckInState"].ToString() == "true" ? "Eingechecked" : "Ausgechecked";
+                                tbChip.Text = reader["ChipNummer"].ToString();
+                                cbGender.Text = reader["Gender"].ToString();
+                                tbLanguage.Text = reader["Muttersprache"].ToString();
+                                cbOtherLanguage.Text = reader["Sprachen"].ToString();
+                                tbNumber.Text = reader["TelefonNummer"].ToString();
+                                tbContact.Text = reader["Ansprechpartner"].ToString();
+                                tbPosition.Text = reader["Position"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                cbMitarbeiterID.SelectedIndex = currentIndex;
+                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
+                this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                cbCompany.Text = reader["Firma"].ToString();
+                                tbName.Text = reader["Vorname"].ToString();
+                                tbSurName.Text = reader["Nachname"].ToString();
+                                tbBirthday.Text = reader["Geburtsdatum"].ToString();
+                                tbBirthPlace.Text = reader["Geburtsland"].ToString();
+                                tbLiving.Text = reader["Wohnort"].ToString();
+                                lbCheckedIn.Text = reader["CheckInState"].ToString() == "true" ? "Eingechecked" : "Ausgechecked";
+                                tbChip.Text = reader["ChipNummer"].ToString();
+                                cbGender.Text = reader["Gender"].ToString();
+                                tbLanguage.Text = reader["Muttersprache"].ToString();
+                                cbOtherLanguage.Text = reader["Sprachen"].ToString();
+                                tbNumber.Text = reader["TelefonNummer"].ToString();
+                                tbContact.Text = reader["Ansprechpartner"].ToString();
+                                tbPosition.Text = reader["Position"].ToString();
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }

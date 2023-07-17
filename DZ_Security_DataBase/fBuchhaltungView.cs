@@ -10,13 +10,20 @@
 
         private void bPrint_Click(object sender, EventArgs e)
         {
-            this.Close();
-            viewManager.printOut(sender, e,false);
+            this.Hide();
+            viewManager.printOut(sender, e, false);
         }
 
         private void bExcelExport_Click(object sender, EventArgs e)
         {
             viewManager.excelExport(sender, e);
+        }
+
+        private void cBookingView_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Hide();
+            cLoginMenu cLoginMenu = new cLoginMenu();
+            cLoginMenu.ShowDialog();
         }
     }
 }

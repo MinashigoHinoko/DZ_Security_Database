@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace DZ_Security_DataBase
+﻿namespace DZ_Security_DataBase
 {
     public partial class fInportData : Form
     {
-        public fInportData()
+        bool isAdmin = false;
+        public fInportData(bool isAdmin)
         {
             InitializeComponent();
+            this.isAdmin = isAdmin;
+        }
+
+        private void fInportData_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Hide();
+            if (this.isAdmin)
+            {
+                cAdminView cAdminView = new cAdminView();
+                cAdminView.ShowDialog();
+            }
+            else
+            {
+                cMemberView cMemberView = new cMemberView();
+                cMemberView.ShowDialog();
+            }
         }
     }
 }

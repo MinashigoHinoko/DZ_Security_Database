@@ -116,6 +116,7 @@
             Controls.Add(tbUsername);
             Name = "cLoginMenu";
             Text = "Mobinoko\n Festival Manager LogIn";
+            FormClosed += cLoginMenu_FormClosed;
             Load += cLoginMenu_Load;
             ResumeLayout(false);
             PerformLayout();

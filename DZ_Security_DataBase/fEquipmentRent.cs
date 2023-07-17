@@ -1,14 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.Data;
 using System.Data.SQLite;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace DZ_Security_DataBase
 {
@@ -454,6 +445,7 @@ namespace DZ_Security_DataBase
 
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
+            this.Hide();
             if (this.isAdmin)
             {
                 cAdminView cAdminView = new cAdminView();
@@ -468,7 +460,7 @@ namespace DZ_Security_DataBase
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+
             cFunk cFunk = new cFunk();
             cFunk.ShowDialog();
         }

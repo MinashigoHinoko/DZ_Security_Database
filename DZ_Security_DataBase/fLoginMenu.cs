@@ -177,5 +177,10 @@ namespace DZ_Security_DataBase
                 MessageBox.Show("Fehlerhafte Anmeldedaten, bitte versuchen Sie es erneut.");
             }
         }
+
+        private void cLoginMenu_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Hide();
+        }
     }
 }

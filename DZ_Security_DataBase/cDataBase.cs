@@ -14,7 +14,7 @@ namespace DZ_Security_DataBase
 
         internal static void createDatabase()
         {
-            restart:
+        restart:
             // If DbPath is null, ask the user for a path.
             if (DbPath == null)
             {
@@ -38,7 +38,7 @@ namespace DZ_Security_DataBase
                     // User clicked "Beenden"
                     Environment.Exit(0); // Exit the application
                 }
-                goto restart; 
+                goto restart;
             }
 
             // If the database file doesn't exist, create it.
@@ -53,7 +53,7 @@ namespace DZ_Security_DataBase
                     // Mitarbeiter Tabelle erstellen
                     string sql = @"CREATE TABLE Mitarbeiter (
                                     MitarbeiterID INT PRIMARY KEY NOT NULL, 
-                                    Firma TEXT NOT NULL,
+                                    Firma TEXT,
                                     Vorname TEXT, 
                                     Nachname TEXT,
                                     Geburtsname TEXT,
@@ -181,7 +181,7 @@ namespace DZ_Security_DataBase
             }
 
 
-                    using (var conn = new SQLiteConnection(GetConnectionString()))
+            using (var conn = new SQLiteConnection(GetConnectionString()))
             {
                 conn.Open();
 

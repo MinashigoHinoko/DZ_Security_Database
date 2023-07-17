@@ -93,6 +93,7 @@
             Controls.Add(button1);
             Name = "fInportData";
             Text = "FestivalManager Daten Einlese";
+            FormClosed += fInportData_FormClosed;
             ResumeLayout(false);
             PerformLayout();
         }

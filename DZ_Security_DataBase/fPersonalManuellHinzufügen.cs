@@ -1,15 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SQLite;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static NPOI.HSSF.Util.HSSFColor;
 
 namespace DZ_Security_DataBase
 {
@@ -20,6 +10,7 @@ namespace DZ_Security_DataBase
         public cPersonalManuellHinzufügen()
         {
             InitializeComponent();
+            this.TopMost = true;
         }
 
         private void bAddWorker_Click(object sender, EventArgs e)
@@ -38,7 +29,7 @@ namespace DZ_Security_DataBase
                             (@ID,@Firma, @Vorname, @Nachname, @Geburtsdatum, @Geburtsland, @Wohnort, @ChipNummer, @Gender, @Muttersprache, @Sprachen, @TelefonNummer, @Ansprechpartner, @Position)";
                     using (var cmd = new SQLiteCommand("SELECT COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
                     {
-                        workerID = (long)cmd.ExecuteScalar()+1;
+                        workerID = (long)cmd.ExecuteScalar() + 1;
                     }
                     using (var cmd = new SQLiteCommand(query, conn))
                     {
@@ -68,6 +59,11 @@ namespace DZ_Security_DataBase
             {
                 MessageBox.Show($"Fehler beim Hinzufügen des Mitarbeiters: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void cPersonalManuellHinzufügen_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Hide();
         }
     }
 }

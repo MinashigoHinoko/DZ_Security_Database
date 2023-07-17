@@ -1,10 +1,4 @@
-﻿using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using System.Data.SQLite;
-using System.Data;
-using System.Drawing.Printing;
-
-namespace DZ_Security_DataBase
+﻿namespace DZ_Security_DataBase
 {
     public partial class cMemberView : Form
     {
@@ -12,12 +6,11 @@ namespace DZ_Security_DataBase
         public cMemberView()
         {
             InitializeComponent();
-            this.TopMost = true;
         }
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
             viewManager.checkIn(sender, e, false);
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
@@ -27,12 +20,13 @@ namespace DZ_Security_DataBase
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
             viewManager.toolBorrow(sender, e, false);
         }
 
         private void cMemberView_FormClosed(object sender, FormClosedEventArgs e)
         {
+            this.Hide();
             cLoginMenu cLoginMenu = new cLoginMenu();
             cLoginMenu.ShowDialog();
         }

@@ -1,14 +1,9 @@
-﻿using NPOI.SS.UserModel;
+﻿using Microsoft.VisualBasic;
+using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Data;
+using System.Data.SQLite;
 using System.Drawing.Printing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 
 namespace DZ_Security_DataBase
 {
@@ -26,7 +21,7 @@ namespace DZ_Security_DataBase
             cEquipmentOverview equipment = new cEquipmentOverview(isAdmin);
             equipment.Show();
         }
-        public void printOut(object sender, EventArgs e,bool isAdmin)
+        public void printOut(object sender, EventArgs e, bool isAdmin)
         {
             cPrintOutView printOut = new cPrintOutView(isAdmin);
             printOut.Show();
@@ -45,8 +40,16 @@ namespace DZ_Security_DataBase
 
                 // Überschriften
                 IRow row = sheet.CreateRow(0);
-                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter", conn))
+                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter Where Firma = @Company", conn))
                 {
+                    string sChosenCompany = Interaction.InputBox("Für welche Firma benötigen Sie den Excel Export? ", "Firmen Abfrage", "", -1, -1);
+                    if (sChosenCompany == "")
+                    {
+                        MessageBox.Show("Sie müssen eine Firma eingeben", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    cmd.Parameters.AddWithValue("@Company", sChosenCompany);
                     using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
                     {
                         DataTable dt = new DataTable();
@@ -100,22 +103,22 @@ namespace DZ_Security_DataBase
                             DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
-                            }
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                        }
 
-                            // Daten
-                            for (int i = 0; i < dt.Rows.Count; i++)
+                        // Daten
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            row = sheet.CreateRow(i + 1);
+                            for (int j = 0; j < dt.Columns.Count; j++)
                             {
-                                row = sheet.CreateRow(i + 1);
-                                for (int j = 0; j < dt.Columns.Count; j++)
-                                {
-                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                                }
+                                row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
+                        }
 
-                        
+
                     }
                 }
                 sheet = workbook.CreateSheet("Ausruestung");
@@ -138,22 +141,22 @@ namespace DZ_Security_DataBase
                             return;
                         }
 
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
-                            }
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                        }
 
-                            // Daten
-                            for (int i = 0; i < dt.Rows.Count; i++)
+                        // Daten
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            row = sheet.CreateRow(i + 1);
+                            for (int j = 0; j < dt.Columns.Count; j++)
                             {
-                                row = sheet.CreateRow(i + 1);
-                                for (int j = 0; j < dt.Columns.Count; j++)
-                                {
-                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                                }
+                                row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
+                        }
 
-                        
+
                     }
                 }
                 sheet = workbook.CreateSheet("Position");
@@ -176,22 +179,22 @@ namespace DZ_Security_DataBase
                             return;
                         }
 
-                            for (int i = 0; i < dt.Columns.Count; i++)
-                            {
-                                row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
-                            }
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                        }
 
-                            // Daten
-                            for (int i = 0; i < dt.Rows.Count; i++)
+                        // Daten
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            row = sheet.CreateRow(i + 1);
+                            for (int j = 0; j < dt.Columns.Count; j++)
                             {
-                                row = sheet.CreateRow(i + 1);
-                                for (int j = 0; j < dt.Columns.Count; j++)
-                                {
-                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                                }
+                                row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
+                        }
 
-                        
+
                     }
                 }
                 conn.Close();
@@ -202,7 +205,7 @@ namespace DZ_Security_DataBase
                 }
             }
         }
-        public void toolBorrow(object sender, EventArgs e,bool isAdmin)
+        public void toolBorrow(object sender, EventArgs e, bool isAdmin)
         {
             cEquipmentRent checkIn = new cEquipmentRent(isAdmin);
             checkIn.ShowDialog();
@@ -333,13 +336,13 @@ namespace DZ_Security_DataBase
                             {
                                 string text = reader.GetString(0) == "true" ? "Laufzettel: CheckIn\n\n" : "Laufzettel: CheckOut\n\n";
                                 string positionNr = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-                                string quadrant = reader.GetString(2);
-                                string vorname = reader.GetString(3);
-                                string nachname = reader.GetString(4);
-                                string ansprechpartnerId = reader.GetString(5);
-                                string ansprechpartnerPosition = reader.GetString(6);
-                                string ansprechpartnerVorname = reader.GetString(7);
-                                string ansprechpartnerNachname = reader.GetString(8);
+                                string quadrant = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                                string vorname = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                                string nachname = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                                string ansprechpartnerId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                                string ansprechpartnerPosition = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                                string ansprechpartnerVorname = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                                string ansprechpartnerNachname = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
 
                                 // Fügt die abgerufenen Werte zum Text hinzu.
                                 text += "Positions Nr: " + positionNr + "\n";

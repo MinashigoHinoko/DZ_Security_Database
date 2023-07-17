@@ -1,6 +1,4 @@
 using Microsoft.IdentityModel.Tokens;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Data.SQLite;
 
@@ -352,6 +350,7 @@ namespace DZ_Security_DataBase
         }
         private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
         {
+            this.Hide();
             if (this.isAdmin)
             {
                 cAdminView cAdminView = new cAdminView();

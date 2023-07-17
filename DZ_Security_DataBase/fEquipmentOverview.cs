@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.Data;
 using System.Data.SQLite;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace DZ_Security_DataBase
 {
@@ -117,7 +109,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'Defekt \r\n", conn))
+                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'Defekt' \r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -191,7 +183,7 @@ namespace DZ_Security_DataBase
                         cmd.CommandText = @"
                         UPDATE Ausruestung
                         SET Zustand = @zustand,
-                        WHERE ID = @id AND Zustand IS NOT 'Defekt'";
+                        WHERE ID = @id";
                         cmd.Parameters.AddWithValue("@id", oCurrentID);
                         cmd.Parameters.AddWithValue("@zustand", "Defekt");
 
@@ -205,6 +197,7 @@ namespace DZ_Security_DataBase
 
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
+            this.Hide();
             if (this.isAdmin)
             {
                 cAdminView cAdminView = new cAdminView();
