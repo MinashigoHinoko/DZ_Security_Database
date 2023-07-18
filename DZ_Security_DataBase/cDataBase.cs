@@ -1,6 +1,7 @@
-﻿using System.Data.SQLite;
+﻿using System.Configuration;
+using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     internal static class cDataBase
     {
@@ -15,8 +16,21 @@ namespace DZ_Security_DataBase
         internal static void createDatabase()
         {
         restart:
-            // If DbPath is null, ask the user for a path.
-            if (DbPath == null)
+            // Lesen Sie den Pfad aus der App.config-Datei
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            KeyValueConfigurationElement dbPathSetting = config.AppSettings.Settings["DbPath"];
+
+            // Überprüfen Sie, ob die Einstellung existiert
+            if (dbPathSetting == null)
+            {
+                dbPathSetting = new KeyValueConfigurationElement("DbPath", string.Empty);
+                config.AppSettings.Settings.Add(dbPathSetting);
+            }
+
+            DbPath = dbPathSetting.Value;
+
+            // Wenn DbPath null oder ungültig ist, fragen Sie den Benutzer nach einem Pfad.
+            if (string.IsNullOrEmpty(DbPath) || !Directory.Exists(DbPath))
             {
                 // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
                 using (var fbd = new FolderBrowserDialog())
@@ -26,20 +40,15 @@ namespace DZ_Security_DataBase
                     if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                     {
                         cDataBase.DbPath = fbd.SelectedPath; // Speichern des Pfades in der statischen Eigenschaft
+
+                        // Pfad in der App.config-Datei aktualisieren
+                        dbPathSetting.Value = DbPath;
+                        config.Save(ConfigurationSaveMode.Modified);
+                        ConfigurationManager.RefreshSection("appSettings");
                     }
                 }
             }
-            if (DbPath == null)
-            {
-                DialogResult result = MessageBox.Show("Zugriff von Ihrem System verweigert, wollen Sie es erneut versuchen?", "Fehler", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
-                if (result == DialogResult.Cancel)
-                {
-                    // User clicked "Beenden"
-                    Environment.Exit(0); // Exit the application
-                }
-                goto restart;
-            }
 
             // If the database file doesn't exist, create it.
             if (!File.Exists($"{DbPath}\\Dz_Security.sqlite"))
@@ -80,6 +89,9 @@ namespace DZ_Security_DataBase
                                     ChipNummer INT,
                                     CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
+                                    CheckInSoll DATETIME,
+                                    CheckOutSoll DATETIME,
+                                    Nacht Text DEFAULT 'false' NOT NULL,
                                     WeitereInformationen TEXT
                                    );";
 
@@ -87,7 +99,6 @@ namespace DZ_Security_DataBase
                     {
                         command.ExecuteNonQuery();
                     }
-
                     // Arbeitszeiten Tabelle erstellen
                     sql = @"CREATE TABLE Arbeitszeiten (
                              MitarbeiterID INT NOT NULL, 
@@ -105,7 +116,9 @@ namespace DZ_Security_DataBase
                              Username TEXT PRIMARY KEY NOT NULL, 
                              HashedPassword TEXT NOT NULL,
                              Salt TEXT NOT NULL,
-                             Rights TEXT NOT NULL
+                             Rights TEXT NOT NULL,
+                             canEdit TEXT DEFAULT 'false' NOT NULL,
+                             PIN TEXT
                              );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
@@ -163,58 +176,6 @@ namespace DZ_Security_DataBase
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
-
-
-
-
-
-        internal static void editDatabase()
-        {
-            // Only proceed if the database was freshly created
-            if (DbPath == null || !freshlyCreated)
-            {
-                return;
-            }
-
-
-            using (var conn = new SQLiteConnection(GetConnectionString()))
-            {
-                conn.Open();
-
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    int[] mitarbeiterIds = { 1, 2, 3, 4 };
-                    string[] surNames = { "Max", "Max", "John", "Test" };
-                    string[] name = { "Mustermann", "Mustermann", "Doe", "Name" };
-                    string firma = "DZ_Security";
-                    string ChipNummer = "123456";
-                    string weitereInformationen = "Keine weiteren Informationen";
-
-                    for (int i = 0; i < mitarbeiterIds.Length; i++)
-                    {
-                        cmd.CommandText = $"SELECT COUNT(*) FROM Mitarbeiter WHERE MitarbeiterID = @MitarbeiterID";
-                        cmd.Parameters.AddWithValue("@MitarbeiterID", mitarbeiterIds[i]);
-
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
-                        if (count == 0)
-                        {
-                            cmd.CommandText = @"INSERT INTO Mitarbeiter 
-                            (MitarbeiterID,Firma, Vorname, Nachname, ChipNummer, WeitereInformationen) 
-                            VALUES (@MitarbeiterID,@Firma, @Vorname,@Nachname, @ChipNummer, @WeitereInformationen);";
-                            cmd.Parameters.AddWithValue("@MitarbeiterID", mitarbeiterIds[i]);
-                            cmd.Parameters.AddWithValue("@Firma", firma);
-                            cmd.Parameters.AddWithValue("@Vorname", surNames[i]);
-                            cmd.Parameters.AddWithValue("@Nachname", name[i]);
-                            cmd.Parameters.AddWithValue("@ChipNummer", ChipNummer);
-                            cmd.Parameters.AddWithValue("@WeitereInformationen", weitereInformationen);
-
-                            cmd.ExecuteNonQuery();
-                        }
-                        cmd.Parameters.Clear();
                     }
                 }
             }

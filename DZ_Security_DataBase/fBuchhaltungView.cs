@@ -1,17 +1,19 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     public partial class cBookingView : Form
     {
         cViewManager viewManager = new cViewManager();
-        public cBookingView()
+        string username;
+        public cBookingView(string username)
         {
             InitializeComponent();
+            this.username = username;
         }
 
         private void bPrint_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.printOut(sender, e, false);
+            viewManager.printOut(sender, e, false, username);
         }
 
         private void bExcelExport_Click(object sender, EventArgs e)

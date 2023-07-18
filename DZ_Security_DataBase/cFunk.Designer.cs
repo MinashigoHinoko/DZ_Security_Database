@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cFunk
     {
@@ -32,8 +32,6 @@
             label14 = new Label();
             lbHidden = new Label();
             label12 = new Label();
-            lbBatteries = new Label();
-            label10 = new Label();
             lbShaver = new Label();
             label8 = new Label();
             lbMicky = new Label();
@@ -47,7 +45,7 @@
             // lbRadio
             // 
             lbRadio.AutoSize = true;
-            lbRadio.Location = new Point(181, 35);
+            lbRadio.Location = new Point(181, 62);
             lbRadio.Name = "lbRadio";
             lbRadio.Size = new Size(17, 20);
             lbRadio.TabIndex = 40;
@@ -56,7 +54,7 @@
             // label14
             // 
             label14.AutoSize = true;
-            label14.Location = new Point(93, 35);
+            label14.Location = new Point(93, 62);
             label14.Name = "label14";
             label14.Size = new Size(77, 20);
             label14.TabIndex = 39;
@@ -65,7 +63,7 @@
             // lbHidden
             // 
             lbHidden.AutoSize = true;
-            lbHidden.Location = new Point(181, 95);
+            lbHidden.Location = new Point(181, 122);
             lbHidden.Name = "lbHidden";
             lbHidden.Size = new Size(17, 20);
             lbHidden.TabIndex = 38;
@@ -74,35 +72,16 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(104, 95);
+            label12.Location = new Point(104, 122);
             label12.Name = "label12";
             label12.Size = new Size(66, 20);
             label12.TabIndex = 37;
             label12.Text = "Tarn-Set:";
             // 
-            // lbBatteries
-            // 
-            lbBatteries.AutoSize = true;
-            lbBatteries.Location = new Point(181, 117);
-            lbBatteries.Name = "lbBatteries";
-            lbBatteries.Size = new Size(17, 20);
-            lbBatteries.TabIndex = 36;
-            lbBatteries.Text = "0";
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new Point(29, 115);
-            label10.Name = "label10";
-            label10.Size = new Size(141, 20);
-            label10.TabIndex = 35;
-            label10.Text = "Benötigte Batterien:";
-            label10.Click += label10_Click;
-            // 
             // lbShaver
             // 
             lbShaver.AutoSize = true;
-            lbShaver.Location = new Point(181, 75);
+            lbShaver.Location = new Point(181, 102);
             lbShaver.Name = "lbShaver";
             lbShaver.Size = new Size(17, 20);
             lbShaver.TabIndex = 34;
@@ -111,7 +90,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(105, 75);
+            label8.Location = new Point(105, 102);
             label8.Name = "label8";
             label8.Size = new Size(65, 20);
             label8.TabIndex = 33;
@@ -120,7 +99,7 @@
             // lbMicky
             // 
             lbMicky.AutoSize = true;
-            lbMicky.Location = new Point(181, 55);
+            lbMicky.Location = new Point(181, 82);
             lbMicky.Name = "lbMicky";
             lbMicky.Size = new Size(17, 20);
             lbMicky.TabIndex = 32;
@@ -129,7 +108,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(85, 55);
+            label6.Location = new Point(85, 82);
             label6.Name = "label6";
             label6.Size = new Size(85, 20);
             label6.TabIndex = 31;
@@ -164,7 +143,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(129, 9);
+            label11.Location = new Point(129, 36);
             label11.Name = "label11";
             label11.Size = new Size(54, 20);
             label11.TabIndex = 43;
@@ -193,14 +172,13 @@
             Controls.Add(label14);
             Controls.Add(lbHidden);
             Controls.Add(label12);
-            Controls.Add(lbBatteries);
-            Controls.Add(label10);
             Controls.Add(lbShaver);
             Controls.Add(label8);
             Controls.Add(lbMicky);
             Controls.Add(label6);
             Name = "cFunk";
-            Text = "cFunk";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Festival Manager Funk Ausleihe";
             Load += cFunk_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -212,8 +190,6 @@
         private Label label14;
         private Label lbHidden;
         private Label label12;
-        private Label lbBatteries;
-        private Label label10;
         private Label lbShaver;
         private Label label8;
         private Label lbMicky;

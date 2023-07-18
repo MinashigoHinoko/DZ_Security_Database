@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cEquipmentOverview
     {
@@ -208,6 +208,7 @@
             Controls.Add(cbEquipment);
             Controls.Add(Name);
             Controls.Add(label1);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Equipment Übersicht";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cEquipmentOverview_Load;

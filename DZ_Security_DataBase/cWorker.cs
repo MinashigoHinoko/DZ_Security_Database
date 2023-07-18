@@ -1,13 +1,14 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     public class cWorker
     {
         public string ID { get; set; }
         public string Name { get; set; }
         public string Position { get; set; }
+        public string ChipNumber { get; set; }
         public override string ToString()
         {
-            return $"{Name} - {ID} ({Position})";  // or just "{ID}" if you want
+            return $"{Name} - {ChipNumber} ({Position})";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)

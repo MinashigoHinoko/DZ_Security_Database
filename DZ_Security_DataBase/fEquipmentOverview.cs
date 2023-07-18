@@ -1,17 +1,19 @@
 ﻿using System.Data;
 using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cEquipmentOverview : Form
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         bool isAdmin = false;
-        public cEquipmentOverview(bool isAdmin)
+        string username;
+        public cEquipmentOverview(bool isAdmin, string username)
         {
             this.isAdmin = isAdmin;
             InitializeComponent();
+            this.username = username;
         }
         private void insertDatabaseInComboBox()
         {
@@ -201,12 +203,12 @@ namespace DZ_Security_DataBase
             this.Hide();
             if (this.isAdmin)
             {
-                cAdminView cAdminView = new cAdminView();
+                cAdminView cAdminView = new cAdminView(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView();
+                cMemberView cMemberView = new cMemberView(username);
                 cMemberView.ShowDialog();
             }
         }

@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cBookingView
     {
@@ -72,6 +72,7 @@
             Controls.Add(bExcelExport);
             Controls.Add(bPrint);
             Name = "cBookingView";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "cBuchHaltung";
             FormClosed += cBookingView_FormClosed;
             Load += cBookingView_Load;

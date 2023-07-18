@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cEquipmentRent
     {
@@ -183,6 +183,7 @@
             Controls.Add(bReturn);
             Controls.Add(bRent);
             Name = "cEquipmentRent";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "FestivalManager Ausrüstung Ausleih Menü";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cEquipmentRent_Load;

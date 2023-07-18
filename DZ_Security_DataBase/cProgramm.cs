@@ -1,4 +1,4 @@
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     internal static class cProgramm
     {

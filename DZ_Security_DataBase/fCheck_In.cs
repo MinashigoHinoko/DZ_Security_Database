@@ -2,17 +2,19 @@ using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cCheckIn : Form
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         bool isAdmin = false;
-        public cCheckIn(bool isAdmin)
+        string username;
+        public cCheckIn(bool isAdmin, string username)
         {
             InitializeComponent();
             this.isAdmin = isAdmin;
+            this.username = username;
         }
         private void buildDatabase()
         {
@@ -47,6 +49,7 @@ namespace DZ_Security_DataBase
             prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
+            prompt.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt eine TextBox und eine ListBox
             TextBox searchBox = new TextBox();
@@ -80,7 +83,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -89,7 +92,8 @@ namespace DZ_Security_DataBase
                             var employeeItem = new cWorker
                             {
                                 ID = reader.GetInt32(0).ToString(),
-                                Name = reader.GetString(1),
+                                ChipNumber = reader.GetInt32(1).ToString(),
+                                Name = reader.GetString(2),
                             };
                             allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
@@ -178,7 +182,7 @@ namespace DZ_Security_DataBase
                             }
                             conn.Close();
                         }
-                        cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin);
+                        cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin, username);
                         cEquipmentRent.ShowDialog();
                     }
                     else
@@ -204,6 +208,7 @@ namespace DZ_Security_DataBase
             prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
+            prompt.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt eine TextBox und eine ListBox
             TextBox searchBox = new TextBox();
@@ -237,7 +242,7 @@ namespace DZ_Security_DataBase
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND Position IS NULL", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND Position IS NULL", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -246,7 +251,8 @@ namespace DZ_Security_DataBase
                             var employeeItem = new cWorker
                             {
                                 ID = reader.GetInt32(0).ToString(),
-                                Name = reader.GetString(1)
+                                ChipNumber = reader.GetInt32(1).ToString(),
+                                Name = reader.GetString(2)
                             };
                             allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
@@ -353,12 +359,12 @@ namespace DZ_Security_DataBase
             this.Hide();
             if (this.isAdmin)
             {
-                cAdminView cAdminView = new cAdminView();
+                cAdminView cAdminView = new cAdminView(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView();
+                cMemberView cMemberView = new cMemberView(username);
                 cMemberView.ShowDialog();
             }
         }
@@ -371,8 +377,23 @@ namespace DZ_Security_DataBase
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin);
+            cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin, username);
             cEquipmentRent.ShowDialog();
+        }
+
+        private void panel5_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

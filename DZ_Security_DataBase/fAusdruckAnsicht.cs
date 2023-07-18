@@ -5,17 +5,19 @@ using System.Data;
 using System.Data.SQLite;
 
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cPrintOutView : Form
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         bool isAdmin = false;
-        public cPrintOutView(bool isAdmin)
+        string username;
+        public cPrintOutView(bool isAdmin, string username)
         {
             this.isAdmin = isAdmin;
             InitializeComponent();
+            this.username = username;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -233,12 +235,12 @@ namespace DZ_Security_DataBase
             this.Hide();
             if (this.isAdmin)
             {
-                cAdminView cAdminView = new cAdminView();
+                cAdminView cAdminView = new cAdminView(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cBookingView cMemberView = new cBookingView();
+                cBookingView cMemberView = new cBookingView(username);
                 cMemberView.ShowDialog();
             }
         }

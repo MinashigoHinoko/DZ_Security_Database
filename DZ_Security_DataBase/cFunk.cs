@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cFunk : Form
     {
@@ -37,19 +37,6 @@ namespace DZ_Security_DataBase
                 {
                     long countHidden = (long)cmd.ExecuteScalar();
                     lbHidden.Text = countHidden.ToString();
-                }
-                using (var cmd = new SQLiteCommand("SELECT SUM(Akku) FROM Funkgeraete", conn))
-                {
-                    object result = cmd.ExecuteScalar();
-                    long countBattery = 0;
-
-                    if (result != DBNull.Value)
-                    {
-                        countBattery = Convert.ToInt64(result);
-                    }
-
-                    lbBatteries.Text = countBattery.ToString();
-
                 }
 
                 conn.Close();

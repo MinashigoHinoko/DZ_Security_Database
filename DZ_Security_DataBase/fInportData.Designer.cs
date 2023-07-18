@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class fInportData
     {
@@ -61,6 +61,7 @@
             button3.TabIndex = 2;
             button3.Text = "Einlese Mitarbeiter Stammdaten";
             button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // button4
             // 
@@ -92,6 +93,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "fInportData";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "FestivalManager Daten Einlese";
             FormClosed += fInportData_FormClosed;
             Load += fInportData_Load;

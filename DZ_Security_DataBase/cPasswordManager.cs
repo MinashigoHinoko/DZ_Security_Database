@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     internal class cPasswordManager
     {
@@ -11,26 +11,58 @@ namespace DZ_Security_DataBase
 
             static string folderPath = cDataBase.DbPath;
             static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-            public void RegisterUser(string username, string password, string rights)
+            public bool RegisterUser(string username, string password, string rights, bool canEdit, string pin = null)
             {
                 // Generate a new salt
                 string salt = GenerateSalt();
 
                 // Hash the password with the salt
                 string hashedPassword = HashPasswordWithSalt(password, salt);
-
                 // Now store the username, hashed password and salt in the database
-                using (var conn = new SQLiteConnection(stConnectionString))
+                // Validiert die PIN-Eingabe, wenn die CheckBox aktiviert ist
+                if (canEdit)
                 {
-                    conn.Open();
-                    using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights) VALUES (@username, @password, @salt, @rights)", conn))
+                    if (int.TryParse(pin, out int pinNumber) && pin.Length == 4)
                     {
-                        cmd.Parameters.AddWithValue("@username", username);
-                        cmd.Parameters.AddWithValue("@password", hashedPassword);
-                        cmd.Parameters.AddWithValue("@salt", salt);
-                        cmd.Parameters.AddWithValue("@rights", rights);
-                        cmd.ExecuteNonQuery();
+                        using (var conn = new SQLiteConnection(stConnectionString))
+                        {
+                            conn.Open();
+                            using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
+                            {
+                                cmd.Parameters.AddWithValue("@username", username);
+                                cmd.Parameters.AddWithValue("@password", hashedPassword);
+                                cmd.Parameters.AddWithValue("@salt", salt);
+                                cmd.Parameters.AddWithValue("@rights", rights);
+                                cmd.Parameters.AddWithValue("@canEdit", canEdit);
+                                cmd.Parameters.AddWithValue("@pin", pinNumber == 0 ? DBNull.Value : pin);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        return true;
                     }
+                    else
+                    {
+                        MessageBox.Show("Die PIN muss eine vierstellige Zahl sein.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    using (var conn = new SQLiteConnection(stConnectionString))
+                    {
+                        conn.Open();
+                        using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@username", username);
+                            cmd.Parameters.AddWithValue("@password", hashedPassword);
+                            cmd.Parameters.AddWithValue("@salt", salt);
+                            cmd.Parameters.AddWithValue("@rights", rights);
+                            cmd.Parameters.AddWithValue("@canEdit", canEdit);
+                            cmd.Parameters.AddWithValue("@pin", DBNull.Value);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    return true;
                 }
             }
 
@@ -61,7 +93,111 @@ namespace DZ_Security_DataBase
                 }
             }
         }
+        public class CheckRights
+        {
+            static string folderPath = cDataBase.DbPath;
+            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            public bool CanEdit(string username)
+            {
+                string userRights = null;
+                string canEditString;
+                bool canEdit = false;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
 
+                    // SQL-Abfrage erstellen
+                    string sql = "SELECT canEdit,Rights FROM Passwort WHERE Username = @username";
+
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
+                        cmd.Parameters.AddWithValue("@username", username);
+
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                canEditString = reader.GetString(0);
+                                userRights = reader.GetString(1);
+                                canEdit = canEditString == "1" ? true : false;
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+
+                // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
+                return canEdit ? true : userRights == "admin" ? true : false;
+
+            }
+            public string rightCheck(string username)
+            {
+                string userRights = null;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    // SQL-Abfrage erstellen
+                    string sql = "SELECT Rights FROM Passwort WHERE Username = @username";
+
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
+                        cmd.Parameters.AddWithValue("@username", username);
+
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Salz, gehashtes Passwort und Rolle aus der Datenbank abrufen
+                                userRights = reader.GetString(0);
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+
+                // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
+                return userRights;
+            }
+            public bool AuthenticateUser(string username, string pin)
+            {
+                string userRights = null;
+                string userPin = null;
+                bool canEdit = false;
+                // Verbindung zur Datenbank herstellen
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+
+                    // SQL-Abfrage erstellen
+                    string sql = "SELECT canEdit,PIN,Rights FROM Passwort WHERE Username = @username";
+
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
+                        cmd.Parameters.AddWithValue("@username", username);
+
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Salz, gehashtes Passwort und Rolle aus der Datenbank abrufen
+                                canEdit = reader.GetString(0) == "1";
+                                userPin = reader.GetString(1);
+                                userRights = reader.GetString(2);
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+
+                // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
+
+                return canEdit ? pin == userPin ? true : false : userRights == "admin" ? true : false;
+            }
+        }
         public class Login
         {
             static string folderPath = cDataBase.DbPath;
@@ -137,8 +273,164 @@ namespace DZ_Security_DataBase
                 }
             }
         }
+        public class UserManagement
+        {
+            static string folderPath = cDataBase.DbPath;
+            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            public List<string> GetUsernames()
+            {
+                List<string> usernames = new List<string>();
 
+                using (var connection = new SQLiteConnection(stConnectionString))
+                {
+                    connection.Open();
+                    var command = new SQLiteCommand("SELECT Username FROM Passwort", connection);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            usernames.Add(reader.GetString(0));
+                        }
+                    }
+                }
 
+                return usernames;
+            }
 
+            public bool ChangeUserRights(string adminUsername, string targetUsername, string newRights)
+            {
+                // Verify the requesting user is an admin
+                if (!IsAdmin(adminUsername))
+                {
+                    MessageBox.Show("Only admin users can change user rights.");
+                    return false;
+                }
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET Rights = @rights WHERE Username = @username", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", targetUsername);
+                        cmd.Parameters.AddWithValue("@rights", newRights);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+
+            public bool ChangeUserPassword(string adminUsername, string targetUsername, string newPassword)
+            {
+                if (!IsAdmin(adminUsername))
+                {
+                    MessageBox.Show("Only admin users can change user passwords.");
+                    return false;
+                }
+
+                string newSalt = GenerateSalt();
+                string newHashedPassword = HashPasswordWithSalt(newPassword, newSalt);
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET HashedPassword = @password, Salt = @salt WHERE Username = @username", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", targetUsername);
+                        cmd.Parameters.AddWithValue("@password", newHashedPassword);
+                        cmd.Parameters.AddWithValue("@salt", newSalt);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+
+            public bool ChangeUserPin(string adminUsername, string username, string newPin)
+            {
+                if (!IsAdmin(adminUsername))
+                {
+                    MessageBox.Show("Only admin users can change user passwords.");
+                    return false;
+                }
+                if (newPin.Length != 4 || !int.TryParse(newPin, out _))
+                {
+                    MessageBox.Show("The PIN must be a four-digit number.");
+                    return false;
+                }
+
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET PIN = @pin WHERE Username = @username", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        cmd.Parameters.AddWithValue("@pin", newPin);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+
+            private static string GenerateSalt()
+            {
+                byte[] saltBytes = new byte[32];
+                using (var provider = new RNGCryptoServiceProvider())
+                {
+                    provider.GetNonZeroBytes(saltBytes);
+                }
+
+                return Convert.ToBase64String(saltBytes);
+            }
+
+            private static string HashPasswordWithSalt(string password, string salt)
+            {
+                using (SHA256 sha256Hash = SHA256.Create())
+                {
+                    var saltedPassword = $"{salt}{password}";
+                    byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < bytes.Length; i++)
+                    {
+                        builder.Append(bytes[i].ToString("x2"));
+                    }
+                    return builder.ToString();
+                }
+            }
+
+            private bool IsAdmin(string username)
+            {
+                string userRights = null;
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    string sql = "SELECT Rights FROM Passwort WHERE Username = @username";
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                userRights = reader.GetString(0);
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+                return userRights == "admin";
+            }
+            public bool DeleteUser(string targetUsername)
+            {
+                using (var conn = new SQLiteConnection(stConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SQLiteCommand("DELETE FROM Passwort WHERE Username = @username", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", targetUsername);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+
+        }
     }
 }

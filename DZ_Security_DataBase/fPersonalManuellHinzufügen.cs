@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cPersonalManuellHinzufügen : Form
     {

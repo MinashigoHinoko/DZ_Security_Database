@@ -1,6 +1,6 @@
 ﻿using System.Data.SQLite;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cLoginMenu : Form
     {
@@ -59,41 +59,62 @@ namespace DZ_Security_DataBase
             // Erzeugt ein neues Formular
             Form registrationForm = new Form();
             registrationForm.Width = 300;
-            registrationForm.Height = 250;
+            registrationForm.Height = 300;
             registrationForm.Text = "Benutzerregistrierung";
+            registrationForm.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt Labels für Benutzername, Passwort und Benutzerrolle
             Label lblUsername = new Label() { Left = 50, Top = 0, Width = 200, Text = "Nutzername:" };
             Label lblPassword = new Label() { Left = 50, Top = 50, Width = 200, Text = "Passwort:" };
             Label lblRole = new Label() { Left = 50, Top = 100, Width = 200, Text = "Benutzerrolle:" };
+            CheckBox chbPin = new CheckBox() { Left = 50, Top = 150, Width = 220, Text = "Darf der Nutzer Editieren?" };
+            Label lblPin = new Label() { Left = 50, Top = 170, Width = 200, Text = "PIN:" };
+            lblPin.Visible = false;
 
             // Erzeugt TextBoxen für Benutzername und Passwort
             TextBox txtUsername = new TextBox() { Left = 50, Top = 20, Width = 200 };
             TextBox txtPassword = new TextBox() { Left = 50, Top = 70, Width = 200, PasswordChar = '*' };
+            // Erzeugt ein TextBox für die PIN-Eingabe
+            TextBox txtPin = new TextBox() { Left = 50, Top = 190, Width = 200 };
+            txtPin.Visible = false; // Anfangs unsichtbar
 
             // Erzeugt ComboBox für die Benutzerrolle
             ComboBox cbRole = new ComboBox() { Left = 50, Top = 120, Width = 200 };
             cbRole.Items.AddRange(new string[] { "admin", "member", "booking" });
+            cbRole.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbRole.SelectedIndex = 1;
 
+
+            // Ereignishandler für die CheckBox
+            chbPin.Click += (sender, e) =>
+            {
+                // Zeigt das PIN-Eingabefeld an, wenn die CheckBox aktiviert ist; andernfalls versteckt es
+                txtPin.Visible = chbPin.Checked;
+                lblPin.Visible = chbPin.Checked;
+            };
             // Erzeugt einen neuen Button zum Einreichen der Benutzerregistrierung
             Button registerButton = new Button() { Text = "Registrieren", Dock = DockStyle.Bottom };
             registerButton.Width = 100; // Setzt die Breite
             registerButton.Height = 30; // Setzt die Höhe
-
             registerButton.Click += (sender, e) =>
             {
                 string username = txtUsername.Text;
                 string password = txtPassword.Text;
                 string role = cbRole.SelectedItem.ToString(); // Nehmen Sie die ausgewählte Rolle
+                bool canEdit = chbPin.Checked;
+                string pin = txtPin.Text;
 
                 // Erzeugt eine neue Instanz von cPasswordManager.Registration und versucht, den Benutzer zu registrieren
                 cPasswordManager.Registration registrationManager = new cPasswordManager.Registration();
 
                 try
                 {
-                    registrationManager.RegisterUser(username, password, role); // Passen Sie Ihre RegisterUser-Methode an, um eine Rolle zu akzeptieren
-                    MessageBox.Show("Benutzer erfolgreich registriert!");
-                    registrationForm.Close();
+                    bool success = registrationManager.RegisterUser(username, password, role, canEdit, pin); // Passen Sie Ihre RegisterUser-Methode an, um eine Rolle zu akzeptieren
+                    if (success)
+                    {
+                        MessageBox.Show("Benutzer erfolgreich registriert!");
+                        registrationForm.Close();
+                    }
                 }
                 catch (Exception ex) // Ändern Sie den Exception-Typ je nach verwendeter Datenbank
                 {
@@ -110,7 +131,12 @@ namespace DZ_Security_DataBase
                 }
             };
 
-
+            txtUsername.Cursor = Cursors.IBeam;
+            txtPassword.Cursor = Cursors.IBeam;
+            cbRole.Cursor = Cursors.Hand;
+            chbPin.Cursor = Cursors.Hand;
+            txtPin.Cursor = Cursors.IBeam;
+            registerButton.Cursor = Cursors.Hand;
             // Setzt die AcceptButton-Eigenschaft des Formulars
             registrationForm.AcceptButton = registerButton;
 
@@ -121,6 +147,9 @@ namespace DZ_Security_DataBase
             registrationForm.Controls.Add(txtPassword);
             registrationForm.Controls.Add(lblRole);
             registrationForm.Controls.Add(cbRole);
+            registrationForm.Controls.Add(chbPin);
+            registrationForm.Controls.Add(txtPin);
+            registrationForm.Controls.Add(lblPin);
             registrationForm.Controls.Add(registerButton);
 
             // Zeigt das Formular an
@@ -135,7 +164,6 @@ namespace DZ_Security_DataBase
             if (firstLoad)
             {
                 cDataBase.createDatabase();
-                cDataBase.editDatabase();
                 firstLoad = false;
             }
         }
@@ -158,17 +186,17 @@ namespace DZ_Security_DataBase
                 this.Hide();
                 if (role == "admin")
                 {
-                    cAdminView admin = new cAdminView();
+                    cAdminView admin = new cAdminView(username);
                     admin.Show();
                 }
                 else if (role == "member")
                 {
-                    cMemberView member = new cMemberView();
+                    cMemberView member = new cMemberView(username);
                     member.Show();
                 }
                 else if (role == "booking")
                 {
-                    cBookingView booking = new cBookingView();
+                    cBookingView booking = new cBookingView(username);
                     booking.Show();
                 }
             }

@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cPrintOutView
     {
@@ -96,6 +96,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "cPrintOutView";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "FestivalManager Ausdruck";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cPrintOutView_Load;

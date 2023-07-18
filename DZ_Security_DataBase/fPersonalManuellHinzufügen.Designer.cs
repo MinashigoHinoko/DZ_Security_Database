@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cPersonalManuellHinzufügen
     {
@@ -319,6 +319,7 @@
             Controls.Add(label16);
             Controls.Add(Position);
             Controls.Add(Name);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Personal Hinzufügen";
             FormClosed += cPersonalManuellHinzufügen_FormClosed;
             Load += cPersonalManuellHinzufügen_Load;

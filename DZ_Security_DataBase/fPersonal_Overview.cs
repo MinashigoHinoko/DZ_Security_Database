@@ -1,20 +1,22 @@
 ﻿using System.Data.SQLite;
 using System.Globalization;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     public partial class cPersonalOverview : Form
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         bool isAdmin = false;
+        string username;
         cWorker selectedWorker;
         string selectedCompany;
         int currentIndex;
         int isLoading;
-        public cPersonalOverview(bool isAdmin)
+        public cPersonalOverview(bool isAdmin, string username)
         {
             InitializeComponent();
+            this.username = username;
             this.isAdmin = isAdmin;
         }
 
@@ -26,7 +28,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT DISTINCT MitarbeiterID, Vorname || ' ' || Nachname AS Name,Position FROM Mitarbeiter", conn))
+                using (var cmd = new SQLiteCommand("SELECT DISTINCT ChipNummer,MitarbeiterID, Nachname || ' ' || Vorname AS Name,Position FROM Mitarbeiter", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -35,9 +37,10 @@ namespace DZ_Security_DataBase
                             string name = reader["Name"].ToString();
                             string id = reader["MitarbeiterID"].ToString();
                             string position = reader["Position"].ToString();
+                            string chipNumber = reader["ChipNummer"].ToString();
 
                             // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position };
+                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position, ChipNumber = chipNumber };
                             cbMitarbeiterID.Items.Add(mitarbeiter);
                         }
                     }
@@ -72,7 +75,7 @@ namespace DZ_Security_DataBase
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name, Position FROM Mitarbeiter WHERE Firma = @Company", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS Name, Position FROM Mitarbeiter WHERE Firma = @Company", conn))
                 {
                     cmd.Parameters.AddWithValue("@Company", selectedCompany);
                     using (var reader = cmd.ExecuteReader())
@@ -82,9 +85,10 @@ namespace DZ_Security_DataBase
                             string name = reader["Name"].ToString();
                             string id = reader["MitarbeiterID"].ToString();
                             string position = reader["Position"].ToString();
+                            string chipNumber = reader["ChipNummer"].ToString();
 
                             // Create a new cWorker object
-                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position };
+                            cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position, ChipNumber = chipNumber };
                             cbMitarbeiterID.Items.Add(mitarbeiter);
                         }
                     }
@@ -114,6 +118,11 @@ namespace DZ_Security_DataBase
 
         private void bAddWorker_Click(object sender, EventArgs e)
         {
+            bool hasRights = CheckRights();
+            if (!hasRights)
+            {
+                return;
+            }
             cPersonalManuellHinzufügen cPersonalManuellHinzufügen = new cPersonalManuellHinzufügen();
             cPersonalManuellHinzufügen.ShowDialog();
             insertDatabaseInComboBox();
@@ -123,18 +132,24 @@ namespace DZ_Security_DataBase
             this.Hide();
             if (this.isAdmin)
             {
-                cAdminView cAdminView = new cAdminView();
+                cAdminView cAdminView = new cAdminView(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView();
+                cMemberView cMemberView = new cMemberView(username);
                 cMemberView.ShowDialog();
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+
+            bool hasRights = CheckRights();
+            if (!hasRights)
+            {
+                return;
+            }
             try
             {
                 this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
@@ -280,8 +295,69 @@ namespace DZ_Security_DataBase
             }
         }
 
+        private bool CheckRights()
+        {
+            bool hasRights = false;
+            Form validateUser = new Form
+            {
+                Width = 220,
+                Height = 150,
+                Text = "Enter-PIN"
+            };
+            validateUser.StartPosition = FormStartPosition.CenterScreen;
+            Label lblPIN = new Label() { Left = 50, Top = 0, Width = 200, Text = "PIN:" };
+            TextBox txtPin = new TextBox() { Left = 50, Top = 20, Width = 200 };
+            Button bConfirm = new Button() { Text = "Bestätigen", Dock = DockStyle.Bottom };
+            bConfirm.Width = 100; // Setzt die Breite
+            bConfirm.Height = 30; // Setzt die Höhe
+
+            cPasswordManager.CheckRights checkRights = new cPasswordManager.CheckRights();
+            bConfirm.Click += (sender, e) =>
+            {
+                bool canEdit = checkRights.AuthenticateUser(username, txtPin.Text);
+                if (!canEdit)
+                {
+                    MessageBox.Show("Ihre PIN ist falsch, bitte probieren Sie es erneut",
+                                    "Falsche PIN", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    hasRights = false;
+                }
+                else
+                {
+                    validateUser.Close();
+                    hasRights = true;
+                }
+            };
+
+            validateUser.Controls.Add(lblPIN);
+            validateUser.Controls.Add(txtPin);
+            validateUser.Controls.Add(bConfirm);
+            validateUser.StartPosition = FormStartPosition.CenterScreen;
+
+            if (checkRights.CanEdit(username))
+            {
+                validateUser.TopMost = true;
+                validateUser.ShowDialog();
+            }
+            else if (checkRights.rightCheck(username) == "admin")
+            {
+                hasRights = true;
+
+            }
+            else
+            {
+                MessageBox.Show("Sie dürfen dies nicht.",
+                                "Fehlende Rechte", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                hasRights = false;
+            }
+            return hasRights;
+        }
         private void button2_Click(object sender, EventArgs e)
         {
+            bool hasRights = CheckRights();
+            if (!hasRights)
+            {
+                return;
+            }
             try
             {
                 this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;

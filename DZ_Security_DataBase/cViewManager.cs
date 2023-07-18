@@ -5,25 +5,25 @@ using System.Data;
 using System.Data.SQLite;
 using System.Drawing.Printing;
 
-namespace DZ_Security_DataBase
+namespace Festival_Manager
 {
     internal class cViewManager
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public void workerOverview(object sender, EventArgs e, bool isAdmin)
+        public void workerOverview(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cPersonalOverview personalOverview = new cPersonalOverview(isAdmin);
+            cPersonalOverview personalOverview = new cPersonalOverview(isAdmin, username);
             personalOverview.Show();
         }
-        public void toolOverview(object sender, EventArgs e, bool isAdmin)
+        public void toolOverview(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cEquipmentOverview equipment = new cEquipmentOverview(isAdmin);
+            cEquipmentOverview equipment = new cEquipmentOverview(isAdmin, username);
             equipment.Show();
         }
-        public void printOut(object sender, EventArgs e, bool isAdmin)
+        public void printOut(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cPrintOutView printOut = new cPrintOutView(isAdmin);
+            cPrintOutView printOut = new cPrintOutView(isAdmin, username);
             printOut.Show();
         }
         public void excelExport(object sender, EventArgs e)
@@ -205,14 +205,14 @@ namespace DZ_Security_DataBase
                 }
             }
         }
-        public void toolBorrow(object sender, EventArgs e, bool isAdmin)
+        public void toolBorrow(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cEquipmentRent checkIn = new cEquipmentRent(isAdmin);
+            cEquipmentRent checkIn = new cEquipmentRent(isAdmin, username);
             checkIn.ShowDialog();
         }
-        public void checkIn(object sender, EventArgs e, bool isAdmin)
+        public void checkIn(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cCheckIn checkIn = new cCheckIn(isAdmin);
+            cCheckIn checkIn = new cCheckIn(isAdmin, username);
             checkIn.ShowDialog();
         }
         public void printReceipt(object sender, EventArgs e)

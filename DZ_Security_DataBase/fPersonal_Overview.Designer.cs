@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cPersonalOverview
     {
@@ -400,6 +400,7 @@
             Controls.Add(Position);
             Controls.Add(Name);
             Controls.Add(label1);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Personal Übersicht";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cPersonalOverview_Load;

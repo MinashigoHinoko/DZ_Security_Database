@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cCheckIn
     {
@@ -186,6 +186,7 @@
             Controls.Add(start_Work_Timestamp);
             Margin = new Padding(3, 4, 3, 4);
             Name = "cCheckIn";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "FestivalManager CheckIn Menü";
             FormClosed += fCheckin_FormClosed;
             Load += cCheckIn_Load;

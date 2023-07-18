@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cLoginMenu
     {
@@ -39,6 +39,7 @@
             // 
             // tbUsername
             // 
+            tbUsername.Cursor = Cursors.IBeam;
             tbUsername.Location = new Point(107, 8);
             tbUsername.Name = "tbUsername";
             tbUsername.Size = new Size(125, 27);
@@ -64,6 +65,7 @@
             // 
             // tbPassword
             // 
+            tbPassword.Cursor = Cursors.IBeam;
             tbPassword.Location = new Point(107, 38);
             tbPassword.Name = "tbPassword";
             tbPassword.PasswordChar = '*';
@@ -72,6 +74,7 @@
             // 
             // bLogin
             // 
+            bLogin.Cursor = Cursors.Hand;
             bLogin.Location = new Point(12, 74);
             bLogin.Name = "bLogin";
             bLogin.Size = new Size(111, 29);
@@ -82,6 +85,7 @@
             // 
             // bRegister
             // 
+            bRegister.Cursor = Cursors.Hand;
             bRegister.Location = new Point(177, 74);
             bRegister.Name = "bRegister";
             bRegister.Size = new Size(111, 29);

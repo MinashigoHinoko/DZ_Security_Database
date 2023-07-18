@@ -1,17 +1,19 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     public partial class cMemberView : Form
     {
         cViewManager viewManager = new cViewManager();
-        public cMemberView()
+        string username;
+        public cMemberView(string username)
         {
             InitializeComponent();
+            this.username = username;
         }
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.checkIn(sender, e, false);
+            viewManager.checkIn(sender, e, false, username);
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
@@ -21,7 +23,7 @@
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
             this.Hide();
-            viewManager.toolBorrow(sender, e, false);
+            viewManager.toolBorrow(sender, e, false, username);
         }
 
         private void cMemberView_FormClosed(object sender, FormClosedEventArgs e)

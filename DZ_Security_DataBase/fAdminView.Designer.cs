@@ -1,4 +1,4 @@
-﻿namespace DZ_Security_DataBase
+﻿namespace Festival_Manager
 {
     partial class cAdminView
     {
@@ -37,11 +37,13 @@
             label1 = new Label();
             bPrintReceipt = new Button();
             button1 = new Button();
+            button2 = new Button();
             SuspendLayout();
             // 
             // bExcelExport
             // 
-            bExcelExport.Location = new Point(242, 191);
+            bExcelExport.Cursor = Cursors.Hand;
+            bExcelExport.Location = new Point(242, 182);
             bExcelExport.Name = "bExcelExport";
             bExcelExport.Size = new Size(185, 64);
             bExcelExport.TabIndex = 9;
@@ -51,7 +53,8 @@
             // 
             // bPrint
             // 
-            bPrint.Location = new Point(12, 191);
+            bPrint.Cursor = Cursors.Hand;
+            bPrint.Location = new Point(12, 182);
             bPrint.Name = "bPrint";
             bPrint.Size = new Size(185, 64);
             bPrint.TabIndex = 8;
@@ -61,7 +64,8 @@
             // 
             // bToolOverlay
             // 
-            bToolOverlay.Location = new Point(242, 102);
+            bToolOverlay.Cursor = Cursors.Hand;
+            bToolOverlay.Location = new Point(242, 95);
             bToolOverlay.Name = "bToolOverlay";
             bToolOverlay.Size = new Size(185, 64);
             bToolOverlay.TabIndex = 7;
@@ -71,7 +75,8 @@
             // 
             // bToolBorrow
             // 
-            bToolBorrow.Location = new Point(12, 102);
+            bToolBorrow.Cursor = Cursors.Hand;
+            bToolBorrow.Location = new Point(12, 95);
             bToolBorrow.Name = "bToolBorrow";
             bToolBorrow.Size = new Size(185, 64);
             bToolBorrow.TabIndex = 6;
@@ -81,6 +86,7 @@
             // 
             // bCheckIn
             // 
+            bCheckIn.Cursor = Cursors.Hand;
             bCheckIn.Location = new Point(12, 12);
             bCheckIn.Name = "bCheckIn";
             bCheckIn.Size = new Size(185, 64);
@@ -91,6 +97,7 @@
             // 
             // bWorkerOverview
             // 
+            bWorkerOverview.Cursor = Cursors.Hand;
             bWorkerOverview.Location = new Point(242, 12);
             bWorkerOverview.Name = "bWorkerOverview";
             bWorkerOverview.Size = new Size(185, 64);
@@ -111,7 +118,8 @@
             // 
             // bPrintReceipt
             // 
-            bPrintReceipt.Location = new Point(10, 271);
+            bPrintReceipt.Cursor = Cursors.Hand;
+            bPrintReceipt.Location = new Point(10, 262);
             bPrintReceipt.Name = "bPrintReceipt";
             bPrintReceipt.Size = new Size(187, 64);
             bPrintReceipt.TabIndex = 17;
@@ -121,18 +129,32 @@
             // 
             // button1
             // 
-            button1.Location = new Point(242, 271);
+            button1.Cursor = Cursors.Hand;
+            button1.Location = new Point(242, 262);
             button1.Name = "button1";
             button1.Size = new Size(185, 64);
             button1.TabIndex = 18;
             button1.Text = "Liste Inportieren";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // button2
+            // 
+            button2.Cursor = Cursors.Hand;
+            button2.Location = new Point(10, 353);
+            button2.Name = "button2";
+            button2.Size = new Size(417, 64);
+            button2.TabIndex = 19;
+            button2.Text = "Login Daten Anpassen";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // cAdminView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(486, 355);
+            ClientSize = new Size(486, 441);
+            Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(bPrintReceipt);
             Controls.Add(label1);
@@ -144,7 +166,8 @@
             Controls.Add(bCheckIn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "cAdminView";
-            Text = "DZ Security Admin Menü";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Festival Manager Admin Menü";
             FormClosed += cAdminView_FormClosed;
             Load += cAdminView_Load;
             ResumeLayout(false);
@@ -162,5 +185,6 @@
         private Label label1;
         private Button bPrintReceipt;
         private Button button1;
+        private Button button2;
     }
 }
