@@ -203,6 +203,7 @@ namespace Festival_Manager
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentMemberID = selectedWorker.ID;
 
+                cLogger.LogDatabaseChange($"Rückgabe Equipment {oCurrentID} von {oCurrentMemberID}", username);
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
@@ -217,17 +218,6 @@ namespace Festival_Manager
                         cmd.Parameters.AddWithValue("@id", oCurrentID);
                         cmd.Parameters.AddWithValue("@status", "Ausleihbar");
                         cmd.Parameters.AddWithValue("@mitarbeiterID", null);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                    using (var cmd = new SQLiteCommand(conn))
-                    {
-                        cmd.CommandText = @"
-                        UPDATE Mitarbeiter
-                        SET Position = @position
-                        WHERE MitarbeiterID = @id";
-                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
-                        cmd.Parameters.AddWithValue("@position", null);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -407,6 +397,7 @@ namespace Festival_Manager
                 string oCurrentMemberID = selectedWorker.ID;
                 string oCurrentPosition = selectedEquipment.Position;
                 bool bDoesEmployeeExist = false;
+                cLogger.LogDatabaseChange($"Verleihe Equipment {oCurrentID} an {oCurrentMemberID}", username);
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
@@ -434,16 +425,6 @@ namespace Festival_Manager
 
                         cmd.ExecuteNonQuery();
                     }
-                    using (var cmd = new SQLiteCommand(conn))
-                    {
-                        cmd.CommandText = @"
-                        UPDATE Mitarbeiter
-                        SET Position = @position
-                        WHERE MitarbeiterID = @id";
-                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
-                        cmd.Parameters.AddWithValue("@position", oCurrentPosition);
-                        cmd.ExecuteNonQuery();
-                    }
                     conn.Close();
                 }
                 buildDatabase();
@@ -452,23 +433,12 @@ namespace Festival_Manager
 
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            if (this.isAdmin)
-            {
-                cAdminView cAdminView = new cAdminView(username);
-                cAdminView.ShowDialog();
-            }
-            else
-            {
-                cMemberView cMemberView = new cMemberView(username);
-                cMemberView.ShowDialog();
-            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
 
-            cFunk cFunk = new cFunk();
+            cFunk cFunk = new cFunk(username);
             cFunk.ShowDialog();
         }
     }

@@ -1,5 +1,3 @@
-using Microsoft.IdentityModel.Tokens;
-using NPOI.SS.Formula.Functions;
 using System.Data;
 using System.Data.SQLite;
 
@@ -41,6 +39,8 @@ namespace Festival_Manager
                 }
                 conn.Close();
             }
+            cLogger.LogDatabaseChange("Load Checkin", username);
+
 
         }
 
@@ -84,8 +84,12 @@ namespace Festival_Manager
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                string today = "2023-07-24";//DateTime.Now.ToString("yyyy-MM-dd");
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName,Position, CheckInState \r\nFROM Mitarbeiter WHERE CheckInState IS 'false' AND date(CheckInSoll) = date(@today)", conn))
+                string today = "2023-07-24"; //DateTime.Now.ToString("yyyy-MM-dd");
+                using (var cmd = new SQLiteCommand(@"
+                SELECT m.MitarbeiterID, m.ChipNummer, m.Nachname || ' ' || m.Vorname AS FullName, m.Position, m.CheckInState
+                FROM Mitarbeiter m
+                INNER JOIN Arbeitszeitensoll a ON m.MitarbeiterID = a.MitarbeiterID
+                WHERE m.CheckInState IS 'false' AND date(a.CheckedInSoll) = date(@today)", conn))
                 {
                     cmd.Parameters.AddWithValue("@today", today);
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -154,7 +158,7 @@ namespace Festival_Manager
                         conn.Open();
 
                         // Retrieve the scheduled check-in time
-                        using (var cmd = new SQLiteCommand("SELECT CheckInSoll FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                        using (var cmd = new SQLiteCommand("SELECT CheckedInSoll FROM ArbeitszeitenSoll WHERE MitarbeiterID = @EmployeeId", conn))
                         {
                             cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
                             var result = cmd.ExecuteScalar();
@@ -180,6 +184,7 @@ namespace Festival_Manager
 
                     if (!bDoesEmployeeExist)
                     {
+                        cLogger.LogDatabaseChange($"CheckIn, MitarbeiterID: {oCurrentID}", username);
                         using (var conn = new SQLiteConnection(stConnectionString))
                         {
                             conn.Open();
@@ -204,8 +209,29 @@ namespace Festival_Manager
                                 cmd.Parameters.AddWithValue("id", oCurrentID);
 
                                 cmd.ExecuteNonQuery();
+
                             }
                             conn.Close();
+                        }
+
+                        using (var conn = new SQLiteConnection(stConnectionString))
+                        {
+                            conn.Open();
+                            using (var cmd = new SQLiteCommand(conn))
+                            {
+                                cmd.CommandText = @"SELECT ChipNummer FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId";
+                                cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+
+                                var result = cmd.ExecuteScalar();
+
+                                if (result == null || result == DBNull.Value)
+                                {
+                                    MessageBox.Show("Der aktuelle Mitarbeiter hat keine Chip-Nummer. Bitte fügen Sie eine Chip-Nummer hinzu.",
+                                                    "Fehlende Chip-Nummer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    cPersonalOverview cPersonalOverview = new cPersonalOverview(isAdmin,username, oCurrentID);
+                                    cPersonalOverview.ShowDialog();
+                                }
+                            }
                         }
                         cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin, username);
                         cEquipmentRent.ShowDialog();
@@ -344,6 +370,7 @@ namespace Festival_Manager
                 }
                 if (bDoesEmployeeExist)
                 {
+                    cLogger.LogDatabaseChange($"CheckOut, MitarbeiterID: {oCurrentID}", username);
                     using (var conn = new SQLiteConnection(stConnectionString))
                     {
                         conn.Open();

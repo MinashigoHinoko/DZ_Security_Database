@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             bAddWorker = new Button();
-            lbMobileNumber = new Label();
+            lbBlack = new Label();
             label36 = new Label();
-            lbLanguageLvL = new Label();
+            lbRed = new Label();
             label28 = new Label();
-            lbLanguage = new Label();
+            lbBlue = new Label();
             label30 = new Label();
             label32 = new Label();
             lbDefect = new Label();
@@ -55,14 +55,14 @@
             bAddWorker.UseVisualStyleBackColor = true;
             bAddWorker.Click += bAddWorker_Click;
             // 
-            // lbMobileNumber
+            // lbBlack
             // 
-            lbMobileNumber.AutoSize = true;
-            lbMobileNumber.Location = new Point(234, 109);
-            lbMobileNumber.Name = "lbMobileNumber";
-            lbMobileNumber.Size = new Size(17, 20);
-            lbMobileNumber.TabIndex = 92;
-            lbMobileNumber.Text = "1";
+            lbBlack.AutoSize = true;
+            lbBlack.Location = new Point(234, 109);
+            lbBlack.Name = "lbBlack";
+            lbBlack.Size = new Size(17, 20);
+            lbBlack.TabIndex = 92;
+            lbBlack.Text = "1";
             // 
             // label36
             // 
@@ -73,14 +73,14 @@
             label36.TabIndex = 91;
             label36.Text = "Schwarz:";
             // 
-            // lbLanguageLvL
+            // lbRed
             // 
-            lbLanguageLvL.AutoSize = true;
-            lbLanguageLvL.Location = new Point(234, 89);
-            lbLanguageLvL.Name = "lbLanguageLvL";
-            lbLanguageLvL.Size = new Size(17, 20);
-            lbLanguageLvL.TabIndex = 90;
-            lbLanguageLvL.Text = "2";
+            lbRed.AutoSize = true;
+            lbRed.Location = new Point(234, 89);
+            lbRed.Name = "lbRed";
+            lbRed.Size = new Size(17, 20);
+            lbRed.TabIndex = 90;
+            lbRed.Text = "2";
             // 
             // label28
             // 
@@ -91,14 +91,14 @@
             label28.TabIndex = 89;
             label28.Text = "Rot:";
             // 
-            // lbLanguage
+            // lbBlue
             // 
-            lbLanguage.AutoSize = true;
-            lbLanguage.Location = new Point(234, 69);
-            lbLanguage.Name = "lbLanguage";
-            lbLanguage.Size = new Size(17, 20);
-            lbLanguage.TabIndex = 88;
-            lbLanguage.Text = "1";
+            lbBlue.AutoSize = true;
+            lbBlue.Location = new Point(234, 69);
+            lbBlue.Name = "lbBlue";
+            lbBlue.Size = new Size(17, 20);
+            lbBlue.TabIndex = 88;
+            lbBlue.Text = "1";
             // 
             // label30
             // 
@@ -195,11 +195,11 @@
             ClientSize = new Size(326, 220);
             Controls.Add(label2);
             Controls.Add(bAddWorker);
-            Controls.Add(lbMobileNumber);
+            Controls.Add(lbBlack);
             Controls.Add(label36);
-            Controls.Add(lbLanguageLvL);
+            Controls.Add(lbRed);
             Controls.Add(label28);
-            Controls.Add(lbLanguage);
+            Controls.Add(lbBlue);
             Controls.Add(label30);
             Controls.Add(label32);
             Controls.Add(lbDefect);
@@ -218,11 +218,11 @@
 
         #endregion
         private Button bAddWorker;
-        private Label lbMobileNumber;
+        private Label lbBlack;
         private Label label36;
-        private Label lbLanguageLvL;
+        private Label lbRed;
         private Label label28;
-        private Label lbLanguage;
+        private Label lbBlue;
         private Label label30;
         private Label label32;
         private Label lbDefect;

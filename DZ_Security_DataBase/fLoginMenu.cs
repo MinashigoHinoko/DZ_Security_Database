@@ -112,6 +112,7 @@ namespace Festival_Manager
                     bool success = registrationManager.RegisterUser(username, password, role, canEdit, pin); // Passen Sie Ihre RegisterUser-Methode an, um eine Rolle zu akzeptieren
                     if (success)
                     {
+                        cLogger.LogDatabaseChange($"Registriert Nutzer mit {role} rechte", username);
                         MessageBox.Show("Benutzer erfolgreich registriert!");
                         registrationForm.Close();
                     }
@@ -182,6 +183,7 @@ namespace Festival_Manager
 
             if (role != null)
             {
+                cLogger.LogDatabaseChange($"Login {role}", username);
                 // Anmeldung war erfolgreich.
                 this.Hide();
                 if (role == "admin")

@@ -90,8 +90,6 @@ namespace Festival_Manager
                                     CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
                                     RentState TEXT DEFAULT 'false' NOT NULL,
-                                    CheckInSoll DATETIME,
-                                    CheckOutSoll DATETIME,
                                     Nacht Text DEFAULT 'false' NOT NULL,
                                     WeitereInformationen TEXT
                                    );";
@@ -112,6 +110,17 @@ namespace Festival_Manager
                     {
                         command.ExecuteNonQuery();
                     }
+                    sql = @"CREATE TABLE ArbeitszeitenSoll (
+                             MitarbeiterID INT NOT NULL, 
+                             CheckedInSoll DATETIME,
+                             CheckedOutSoll DATETIME,
+                             FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                     // Passwort Tabelle erstellen
                     sql = @"CREATE TABLE Passwort (
                              Username TEXT PRIMARY KEY NOT NULL, 
@@ -121,6 +130,18 @@ namespace Festival_Manager
                              canEdit TEXT DEFAULT 'false' NOT NULL,
                              PIN TEXT
                              );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    // Arbeitszeiten Tabelle erstellen
+                    sql = @"CREATE TABLE LogTable (
+                            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Timestamp TEXT NOT NULL,
+                            User TEXT NOT NULL,
+                            Action TEXT NOT NULL
+                        );";
 
                     using (var command = new SQLiteCommand(sql, m_dbConnection))
                     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Data.SQLite;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Festival_Manager
 {
@@ -7,9 +8,11 @@ namespace Festival_Manager
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public cPersonalManuellHinzufügen()
+        string username;
+        public cPersonalManuellHinzufügen(string username)
         {
             InitializeComponent();
+            this.username = username;
             this.TopMost = true;
         }
 
@@ -51,7 +54,7 @@ namespace Festival_Manager
                         cmd.ExecuteNonQuery();
                     }
                 }
-
+                cLogger.LogDatabaseChange($"Added New Worker {workerID}", username);
                 MessageBox.Show("Mitarbeiter erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }

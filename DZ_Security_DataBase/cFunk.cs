@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.SQLite;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Festival_Manager
 {
@@ -7,8 +8,10 @@ namespace Festival_Manager
     {
         static string folderPath = cDataBase.DbPath;
         static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        public cFunk()
+        string username;
+        public cFunk(string username)
         {
+            this.username = username;
             InitializeComponent();
         }
         private void buildDatabase()
@@ -22,7 +25,6 @@ namespace Festival_Manager
                     long countRadio = (long)cmd.ExecuteScalar();
                     lbRadio.Text = countRadio.ToString();
                 }
-
                 using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Mikimaus IS 'true'", conn))
                 {
                     long countMicky = (long)cmd.ExecuteScalar();
@@ -220,6 +222,7 @@ namespace Festival_Manager
                     }
                     conn.Close();
                 }
+                cLogger.LogDatabaseChange($"Ausleihen Funkgeraet: {oCurrentID}, MitarbeiterID: {oCurrentMemberID}", username);
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
@@ -237,17 +240,6 @@ namespace Festival_Manager
 
                         cmd.ExecuteNonQuery();
                     }
-                    using (var cmd = new SQLiteCommand(conn))
-                    {
-                        cmd.CommandText = @"
-                        UPDATE Mitarbeiter
-                        SET Position = @position
-                        WHERE MitarbeiterID = @id";
-                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
-                        cmd.Parameters.AddWithValue("@position", oCurrentPosition);
-                        cmd.ExecuteNonQuery();
-                    }
-                    conn.Close();
                 }
                 buildDatabase();
             }
@@ -415,7 +407,7 @@ namespace Festival_Manager
                 string oCurrentID = selectedEquipment.ID;
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentMemberID = selectedWorker.ID;
-
+                cLogger.LogDatabaseChange($"Rückgabe Funkgeraet: {oCurrentID}, MitarbeiterID: {oCurrentMemberID}", username);
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {
                     conn.Open();
@@ -430,17 +422,6 @@ namespace Festival_Manager
                         cmd.Parameters.AddWithValue("@id", oCurrentID);
                         cmd.Parameters.AddWithValue("@status", "Ausleihbar");
                         cmd.Parameters.AddWithValue("@mitarbeiterID", null);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                    using (var cmd = new SQLiteCommand(conn))
-                    {
-                        cmd.CommandText = @"
-                        UPDATE Mitarbeiter
-                        SET Position = @position
-                        WHERE MitarbeiterID = @id";
-                        cmd.Parameters.AddWithValue("@id", oCurrentMemberID);
-                        cmd.Parameters.AddWithValue("@position", null);
 
                         cmd.ExecuteNonQuery();
                     }

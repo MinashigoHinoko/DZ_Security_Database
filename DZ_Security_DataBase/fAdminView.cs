@@ -12,7 +12,7 @@
 
         private void bExcelExport_Click(object sender, EventArgs e)
         {
-            viewManager.excelExport(sender, e);
+            viewManager.excelExport(sender, e,username);
         }
 
         private void bCheckin_Click(object sender, EventArgs e)
@@ -23,13 +23,12 @@
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
-            this.Hide();
             viewManager.toolBorrow(sender, e, true, username);
         }
 
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            viewManager.printReceipt(sender, e);
+            viewManager.printReceipt(sender, e,username);
         }
 
         private void bPrint_Click(object sender, EventArgs e)

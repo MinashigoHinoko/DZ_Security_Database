@@ -69,6 +69,27 @@ namespace Festival_Manager
                     lbDefect.Text = countRentable.ToString();
                 }
                 conn.Close();
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'blau'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
+                    long countRentable = (long)cmd.ExecuteScalar();
+                    lbBlue.Text = countRentable.ToString();
+                }
+                conn.Close();
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'schwarz'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
+                    long countRentable = (long)cmd.ExecuteScalar();
+                    lbBlack.Text = countRentable.ToString();
+                }
+                conn.Close();
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'rot'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
+                    long countRentable = (long)cmd.ExecuteScalar();
+                    lbRed.Text = countRentable.ToString();
+                }
+                conn.Close();
             }
         }
 
@@ -166,6 +187,7 @@ namespace Festival_Manager
 
                 string oCurrentID = selectedEquipment.ID; // now oCurrentID is the ID string
                 string oCurrentPosition = selectedEquipment.Position;
+                cLogger.LogDatabaseChange($"Equipment Defekt Gemeldet: {oCurrentID}", username);
                 bool bDoesEmployeeExist = false;
                 using (var conn = new SQLiteConnection(stConnectionString))
                 {

@@ -18,21 +18,21 @@
 
         public UserManagementForm(string username)
         {
-            this.username = username;
+            username = username;
             _userManagement = new cPasswordManager.UserManagement();
 
             this.Text = "Festival Manager Account Bearbeiter";
-            this.Size = new Size(400, 330);
+            this.Size = new Size(400, 380);
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            _lblTargetUsername = new Label() { Text = "Account:", Left = 80, Top = 50, Width = 60 };
+            _lblTargetUsername = new Label() { Text = "Account:", Left = 60, Top = 50, Width = 70 };
             _cbTargetUsername = new ComboBox() { Left = 150, Top = 50, Width = 200 };
             LoadUsernames();
             _lblNewPassword = new Label() { Text = "Neues Passwort:", Left = 30, Top = 100, Width = 120 };
             _txtNewPassword = new TextBox() { Left = 150, Top = 100, Width = 200 };
             _cbTargetUsername.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            _lblRights = new Label() { Text = "Rechte:", Left = 80, Top = 150, Width = 40 };
+            _lblRights = new Label() { Text = "Rechte:", Left = 60, Top = 150, Width = 60 };
             _cbRole = new ComboBox() { Left = 150, Top = 150, Width = 200 };
             _cbRole.Items.AddRange(new string[] { "admin", "member", "booking" });
             _cbRole.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -100,6 +100,7 @@
             {
                 _userManagement.DeleteUser(targetUsername);
                 LoadUsernames();
+                cLogger.LogDatabaseChange($"Lösche Account: {targetUsername}", username);
             }
         }
         private void LoadUsernames()
@@ -125,6 +126,7 @@
 
             if (result == DialogResult.Yes)
             {
+                cLogger.LogDatabaseChange($"Speichere Änderungen an: {targetUsername}", username);
                 _userManagement.ChangeUserRights(username, targetUsername, rights);
                 if (!string.IsNullOrWhiteSpace(newPassword))
                 {
@@ -135,6 +137,27 @@
                     _userManagement.ChangeUserPin(username, targetUsername, newPin);
                 }
             }
+        }
+
+        private void InitializeComponent()
+        {
+            SuspendLayout();
+            // 
+            // UserManagementForm
+            // 
+            ClientSize = new Size(282, 253);
+            Name = "UserManagementForm";
+            Load += UserManagementForm_Load_1;
+            ResumeLayout(false);
+        }
+
+        private void UserManagementForm_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void UserManagementForm_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

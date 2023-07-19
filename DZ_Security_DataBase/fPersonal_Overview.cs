@@ -13,9 +13,11 @@ namespace Festival_Manager
         string selectedCompany;
         int currentIndex;
         int isLoading;
-        public cPersonalOverview(bool isAdmin, string username)
+        string chosenID;
+        public cPersonalOverview(bool isAdmin, string username, string chosenID = null)
         {
             InitializeComponent();
+            this.chosenID = chosenID;
             this.username = username;
             this.isAdmin = isAdmin;
         }
@@ -106,9 +108,35 @@ namespace Festival_Manager
             this.StartPosition = FormStartPosition.CenterScreen;
             isLoading = 2;
             insertDatabaseInComboBox();
-            cbMitarbeiterID.SelectedIndex = 0;
+            if (chosenID != null)
+            {
+                // Find the index of the item in the ComboBox that matches chosenID
+                int index = -1;
+                for (int i = 0; i < cbMitarbeiterID.Items.Count; i++)
+                {
+                    cWorker item = cbMitarbeiterID.Items[i] as cWorker;  // Cast the item to Mitarbeiter
+                    if (item != null && item.ID == chosenID) // Check if the MitarbeiterID matches chosenID
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                // If the item is found, set the selected index to the index of the found item
+                if (index != -1)
+                {
+                    cbMitarbeiterID.SelectedIndex = index;
+                    this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                }
+            }
+            else
+            {
+                cbMitarbeiterID.SelectedIndex = 0;
+            }
             FillData();
         }
+
+
 
         private void cbCompany_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -123,7 +151,7 @@ namespace Festival_Manager
             {
                 return;
             }
-            cPersonalManuellHinzufügen cPersonalManuellHinzufügen = new cPersonalManuellHinzufügen();
+            cPersonalManuellHinzufügen cPersonalManuellHinzufügen = new cPersonalManuellHinzufügen(username);
             cPersonalManuellHinzufügen.ShowDialog();
             insertDatabaseInComboBox();
         }
@@ -243,7 +271,7 @@ namespace Festival_Manager
                 }
             }
         }
-        public void FillData()
+        private void FillData()
         {
             try
             {
@@ -261,6 +289,7 @@ namespace Festival_Manager
                 FillEmployeeData(oCurrentID);
             }
         }
+
 
         private void FillEmployeeData(string employeeId)
         {

@@ -4,6 +4,7 @@ using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Drawing.Printing;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Festival_Manager
 {
@@ -26,7 +27,7 @@ namespace Festival_Manager
             cPrintOutView printOut = new cPrintOutView(isAdmin, username);
             printOut.Show();
         }
-        public void excelExport(object sender, EventArgs e)
+        public void excelExport(object sender, EventArgs e, string username)
         {
             using (var conn = new SQLiteConnection(stConnectionString))
             {
@@ -63,6 +64,7 @@ namespace Festival_Manager
                             DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
+                        cLogger.LogDatabaseChange($"Excel Export of: {sChosenCompany}", username);
 
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
@@ -196,6 +198,7 @@ namespace Festival_Manager
 
 
                     }
+
                 }
                 conn.Close();
                 // Speichern
@@ -215,7 +218,7 @@ namespace Festival_Manager
             cCheckIn checkIn = new cCheckIn(isAdmin, username);
             checkIn.ShowDialog();
         }
-        public void printReceipt(object sender, EventArgs e)
+        public void printReceipt(object sender, EventArgs e,string username)
         {
             PrintDocument printDoc = new PrintDocument();
 
@@ -232,6 +235,7 @@ namespace Festival_Manager
             {
                 printDoc.Print();
             }
+            cLogger.LogDatabaseChange($"Laufzettel Drucken", username);
         }
         void printDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -364,6 +368,7 @@ namespace Festival_Manager
                 }
             }
         }
+
 
 
     }

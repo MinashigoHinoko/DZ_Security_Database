@@ -128,7 +128,7 @@ namespace Festival_Manager
                 }
 
                 // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
-                return canEdit ? true : userRights == "admin" ? true : false;
+                return canEdit ? true : false;
 
             }
             public string rightCheck(string username)

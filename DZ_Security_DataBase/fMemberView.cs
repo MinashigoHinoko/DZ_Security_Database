@@ -17,12 +17,11 @@
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            viewManager.printReceipt(sender, e);
+            viewManager.printReceipt(sender, e,username);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
-            this.Hide();
             viewManager.toolBorrow(sender, e, false, username);
         }
 

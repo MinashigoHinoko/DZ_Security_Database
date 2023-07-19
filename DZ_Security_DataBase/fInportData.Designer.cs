@@ -43,6 +43,7 @@
             button1.TabIndex = 0;
             button1.Text = "Einlesen Funkgeräte Liste";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // button2
             // 
@@ -52,6 +53,7 @@
             button2.TabIndex = 1;
             button2.Text = "Einlesen Positionen mit Beschreibung";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button3
             // 
@@ -71,6 +73,7 @@
             button4.TabIndex = 3;
             button4.Text = "Einlesen Equipment";
             button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // label1
             // 
