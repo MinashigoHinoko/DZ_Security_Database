@@ -1,4 +1,5 @@
 using Microsoft.IdentityModel.Tokens;
+using NPOI.SS.Formula.Functions;
 using System.Data;
 using System.Data.SQLite;
 
@@ -83,18 +84,23 @@ namespace Festival_Manager
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
+                string today = "2023-07-24";//DateTime.Now.ToString("yyyy-MM-dd");
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName,Position, CheckInState \r\nFROM Mitarbeiter WHERE CheckInState IS 'false' AND date(CheckInSoll) = date(@today)", conn))
                 {
+                    cmd.Parameters.AddWithValue("@today", today);
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             var employeeItem = new cWorker
                             {
-                                ID = reader.GetInt32(0).ToString(),
-                                ChipNumber = reader.GetInt32(1).ToString(),
+                                ID = !reader.IsDBNull(0) ? reader.GetInt32(0).ToString() : "",
+                                ChipNumber = !reader.IsDBNull(1) ? reader.GetInt32(1).ToString() : "",
                                 Name = reader.GetString(2),
+                                Position = reader.GetString(3),
+                                CheckInState = reader.GetString(4).ToLower() == "eingechecked" ? true : false,
                             };
+
                             allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);
                         }
@@ -129,18 +135,31 @@ namespace Festival_Manager
             prompt.ShowDialog();
 
 
+            // ...
+
             // Nach dem Schlieﬂen des Dialogs ist der ausgew‰hlte Mitarbeiter der in der ListBox ausgew‰hlte Mitarbeiter
             if (employeeListBox.SelectedItem != null)
             {
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
 
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
-                if (selectedWorker.Position.IsNullOrEmpty())
+                if (!selectedWorker.CheckInState)
                 {
                     bool bDoesEmployeeExist = false;
+                    DateTime checkInTime = DateTime.Now;
+                    DateTime scheduledCheckInTime;
+
                     using (var conn = new SQLiteConnection(stConnectionString))
                     {
                         conn.Open();
+
+                        // Retrieve the scheduled check-in time
+                        using (var cmd = new SQLiteCommand("SELECT CheckInSoll FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
+                            var result = cmd.ExecuteScalar();
+                            scheduledCheckInTime = (result != null) ? Convert.ToDateTime(result) : checkInTime;
+                        }
 
                         using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
                         {
@@ -153,6 +172,12 @@ namespace Festival_Manager
                         conn.Close();
                     }
 
+                    // Use scheduled check-in time if check-in is before the scheduled time
+                    if (checkInTime < scheduledCheckInTime)
+                    {
+                        checkInTime = scheduledCheckInTime;
+                    }
+
                     if (!bDoesEmployeeExist)
                     {
                         using (var conn = new SQLiteConnection(stConnectionString))
@@ -162,19 +187,19 @@ namespace Festival_Manager
                             using (var cmd = new SQLiteCommand(conn))
                             {
                                 cmd.CommandText = @"
-                        INSERT INTO Arbeitszeiten (MitarbeiterID, CheckedIn, CheckedOut)
-                        VALUES (@id, @jetzt, NULL)";
+            INSERT INTO Arbeitszeiten (MitarbeiterID, CheckedIn, CheckedOut)
+            VALUES (@id, @jetzt, NULL)";
                                 cmd.Parameters.AddWithValue("@id", oCurrentID);
-                                cmd.Parameters.AddWithValue("@jetzt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                cmd.Parameters.AddWithValue("@jetzt", checkInTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
                                 cmd.ExecuteNonQuery();
                             }
                             using (var cmd = new SQLiteCommand(conn))
                             {
                                 cmd.CommandText = @"
-                        UPDATE Mitarbeiter
-                        SET CheckInState = @state
-                        WHERE MitarbeiterID =@id ";
+            UPDATE Mitarbeiter
+            SET CheckInState = @state
+            WHERE MitarbeiterID =@id ";
                                 cmd.Parameters.AddWithValue("@state", "true");
                                 cmd.Parameters.AddWithValue("id", oCurrentID);
 
@@ -195,7 +220,6 @@ namespace Festival_Manager
                     MessageBox.Show("Bitte trage zuerst den Aus-Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 buildDatabase();
-
             }
         }
 
@@ -242,7 +266,7 @@ namespace Festival_Manager
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND Position IS NULL", conn))
+                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName, Position \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND RentState IS 'false'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -250,9 +274,10 @@ namespace Festival_Manager
                         {
                             var employeeItem = new cWorker
                             {
-                                ID = reader.GetInt32(0).ToString(),
-                                ChipNumber = reader.GetInt32(1).ToString(),
-                                Name = reader.GetString(2)
+                                ID = !reader.IsDBNull(0) ? reader.GetInt32(0).ToString() : "",
+                                ChipNumber = !reader.IsDBNull(1) ? reader.GetInt32(1).ToString() : "",
+                                Name = reader.GetString(2),
+                                Position = reader.GetString(3),
                             };
                             allEmployee.Add(employeeItem);
                             employeeListBox.Items.Add(employeeItem);

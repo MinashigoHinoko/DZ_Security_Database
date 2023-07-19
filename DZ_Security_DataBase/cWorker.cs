@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Position { get; set; }
         public string ChipNumber { get; set; }
+        public bool CheckInState { get; set; }
         public override string ToString()
         {
             return $"{Name} - {ChipNumber} ({Position})";  // or just "{ID}" if you want

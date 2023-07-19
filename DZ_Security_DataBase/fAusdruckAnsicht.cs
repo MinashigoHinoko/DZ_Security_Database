@@ -127,12 +127,11 @@ namespace Festival_Manager
 
         private void button3_Click(object sender, EventArgs e)
         {
-
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT Vorname, Nachname,Firma,Position,CheckInState FROM Mitarbeiter", conn))
+                using (var cmd = new SQLiteCommand("SELECT Mitarbeiter.Vorname, Mitarbeiter.Nachname, Mitarbeiter.Firma, Mitarbeiter.Position, Position.Quadrant, Mitarbeiter.CheckInState FROM Mitarbeiter LEFT JOIN Position ON Mitarbeiter.Position = Position.Nr", conn))
                 {
                     using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
                     {
@@ -161,7 +160,15 @@ namespace Festival_Manager
                                 row = sheet.CreateRow(i + 1);
                                 for (int j = 0; j < dt.Columns.Count; j++)
                                 {
-                                    row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                                    var cellValue = dt.Rows[i][j];
+                                    if (cellValue != null)
+                                    {
+                                        row.CreateCell(j).SetCellValue(cellValue.ToString());
+                                    }
+                                    else
+                                    {
+                                        row.CreateCell(j).SetCellValue("NULL");
+                                    }
                                 }
                             }
 
@@ -170,12 +177,13 @@ namespace Festival_Manager
                             {
                                 workbook.Write(stream, false);
                             }
-
                         }
                     }
                 }
                 conn.Close();
             }
+
+
         }
 
         private void button2_Click(object sender, EventArgs e)

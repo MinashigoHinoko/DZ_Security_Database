@@ -89,6 +89,7 @@ namespace Festival_Manager
                                     ChipNummer INT,
                                     CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
+                                    RentState TEXT DEFAULT 'false' NOT NULL,
                                     CheckInSoll DATETIME,
                                     CheckOutSoll DATETIME,
                                     Nacht Text DEFAULT 'false' NOT NULL,
@@ -145,7 +146,8 @@ namespace Festival_Manager
                     sql = @"CREATE TABLE Position (
                              Nr INT PRIMARY KEY NOT NULL, 
                              Geschlecht TEXT,
-                             Quadrat INT,
+                             Quadrant TEXT,
+                             Farbe TEXT,
                              Bezeichnung TEXT,
                              Zusatz TEXT,
                              Bemerkung TEXT,
