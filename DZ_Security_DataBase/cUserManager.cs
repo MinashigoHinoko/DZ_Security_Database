@@ -30,7 +30,7 @@
             LoadUsernames();
             _lblNewPassword = new Label() { Text = "Neues Passwort:", Left = 30, Top = 100, Width = 120 };
             _txtNewPassword = new TextBox() { Left = 150, Top = 100, Width = 200 };
-            _cbTargetUsername.DropDownStyle = ComboBoxStyle.DropDownList;
+            _cbTargetUsername.DropDownStyle = ComboBoxStyle.DropDown;
 
             _lblRights = new Label() { Text = "Rechte:", Left = 60, Top = 150, Width = 60 };
             _cbRole = new ComboBox() { Left = 150, Top = 150, Width = 200 };

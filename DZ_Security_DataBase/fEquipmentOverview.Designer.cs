@@ -98,7 +98,7 @@
             lbBlue.Name = "lbBlue";
             lbBlue.Size = new Size(17, 20);
             lbBlue.TabIndex = 88;
-            lbBlue.Text = "1";
+            lbBlue.Text = "0";
             // 
             // label30
             // 

@@ -17,7 +17,7 @@
         }
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            viewManager.printReceipt(sender, e,username);
+            viewManager.printReceipt(sender, e, username);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)

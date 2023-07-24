@@ -102,7 +102,7 @@
             bWorkerOverview.Name = "bWorkerOverview";
             bWorkerOverview.Size = new Size(185, 64);
             bWorkerOverview.TabIndex = 10;
-            bWorkerOverview.Text = "Personal Übersicht";
+            bWorkerOverview.Text = "Personal-Daten";
             bWorkerOverview.UseVisualStyleBackColor = true;
             bWorkerOverview.Click += bWorkerOverview_Click;
             // 

@@ -71,7 +71,7 @@ namespace Festival_Manager
                 byte[] saltBytes = new byte[32];
                 using (var provider = new RNGCryptoServiceProvider())
                 {
-                    provider.GetNonZeroBytes(saltBytes);
+                    provider.GetBytes(saltBytes);
                 }
 
                 return Convert.ToBase64String(saltBytes);
@@ -79,19 +79,12 @@ namespace Festival_Manager
 
             private static string HashPasswordWithSalt(string password, string salt)
             {
-                using (SHA256 sha256Hash = SHA256.Create())
-                {
-                    var saltedPassword = $"{salt}{password}";
-                    byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < bytes.Length; i++)
-                    {
-                        builder.Append(bytes[i].ToString("x2"));
-                    }
-                    return builder.ToString();
-                }
+                byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
+                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                byte[] passwordBytes = pbkdf2.GetBytes(20);
+                return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
+
         }
         public class CheckRights
         {
@@ -242,22 +235,12 @@ namespace Festival_Manager
                 return hashedPassword == storedHashedPassword ? userRights : null;
             }
 
-
-
             private static string HashPasswordWithSalt(string password, string salt)
             {
-                using (SHA256 sha256Hash = SHA256.Create())
-                {
-                    var saltedPassword = $"{salt}{password}";
-                    byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < bytes.Length; i++)
-                    {
-                        builder.Append(bytes[i].ToString("x2"));
-                    }
-                    return builder.ToString();
-                }
+                byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
+                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                byte[] passwordBytes = pbkdf2.GetBytes(20);
+                return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
             public bool IsDatabaseEmpty()
             {
@@ -373,7 +356,7 @@ namespace Festival_Manager
                 byte[] saltBytes = new byte[32];
                 using (var provider = new RNGCryptoServiceProvider())
                 {
-                    provider.GetNonZeroBytes(saltBytes);
+                    provider.GetBytes(saltBytes);
                 }
 
                 return Convert.ToBase64String(saltBytes);
@@ -381,18 +364,10 @@ namespace Festival_Manager
 
             private static string HashPasswordWithSalt(string password, string salt)
             {
-                using (SHA256 sha256Hash = SHA256.Create())
-                {
-                    var saltedPassword = $"{salt}{password}";
-                    byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < bytes.Length; i++)
-                    {
-                        builder.Append(bytes[i].ToString("x2"));
-                    }
-                    return builder.ToString();
-                }
+                byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
+                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                byte[] passwordBytes = pbkdf2.GetBytes(20);
+                return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
 
             private bool IsAdmin(string username)

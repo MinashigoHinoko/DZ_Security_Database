@@ -58,7 +58,7 @@
             cbGender = new ComboBox();
             tbLanguage = new TextBox();
             cbOtherLanguage = new ComboBox();
-            tbNumber = new TextBox();
+            tbBirthName = new TextBox();
             tbContact = new TextBox();
             tbPosition = new TextBox();
             button2 = new Button();
@@ -93,10 +93,9 @@
             // 
             // cbMitarbeiterID
             // 
-            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cbMitarbeiterID.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cbMitarbeiterID.AutoCompleteSource = AutoCompleteSource.ListItems;
             cbMitarbeiterID.Cursor = Cursors.Hand;
-            cbMitarbeiterID.DropDownStyle = ComboBoxStyle.DropDownList;
             cbMitarbeiterID.DropDownWidth = 200;
             cbMitarbeiterID.FormattingEnabled = true;
             cbMitarbeiterID.Location = new Point(128, 9);
@@ -106,6 +105,7 @@
             cbMitarbeiterID.Sorted = true;
             cbMitarbeiterID.TabIndex = 16;
             cbMitarbeiterID.SelectedIndexChanged += cbMitarbeiterID_SelectedIndexChanged;
+            cbMitarbeiterID.TextChanged += cbMitarbeiterID_TextChanged;
             // 
             // label3
             // 
@@ -155,7 +155,7 @@
             // label22
             // 
             label22.AutoSize = true;
-            label22.Location = new Point(17, 144);
+            label22.Location = new Point(13, 177);
             label22.Name = "label22";
             label22.Size = new Size(106, 20);
             label22.TabIndex = 37;
@@ -164,7 +164,7 @@
             // label24
             // 
             label24.AutoSize = true;
-            label24.Location = new Point(50, 177);
+            label24.Location = new Point(46, 210);
             label24.Name = "label24";
             label24.Size = new Size(69, 20);
             label24.TabIndex = 39;
@@ -173,7 +173,7 @@
             // label26
             // 
             label26.AutoSize = true;
-            label26.Location = new Point(27, 212);
+            label26.Location = new Point(444, 108);
             label26.Name = "label26";
             label26.Size = new Size(92, 20);
             label26.TabIndex = 41;
@@ -191,7 +191,7 @@
             // label30
             // 
             label30.AutoSize = true;
-            label30.Location = new Point(429, 106);
+            label30.Location = new Point(429, 141);
             label30.Name = "label30";
             label30.Size = new Size(107, 20);
             label30.TabIndex = 45;
@@ -200,7 +200,7 @@
             // label28
             // 
             label28.AutoSize = true;
-            label28.Location = new Point(402, 139);
+            label28.Location = new Point(402, 174);
             label28.Name = "label28";
             label28.Size = new Size(134, 20);
             label28.TabIndex = 47;
@@ -209,11 +209,11 @@
             // label36
             // 
             label36.AutoSize = true;
-            label36.Location = new Point(452, 172);
+            label36.Location = new Point(19, 144);
             label36.Name = "label36";
-            label36.Size = new Size(84, 20);
+            label36.Size = new Size(100, 20);
             label36.TabIndex = 49;
-            label36.Text = "Telefon Nr.:";
+            label36.Text = "Gerbutsname:";
             // 
             // label34
             // 
@@ -279,21 +279,21 @@
             // 
             // tbBirthday
             // 
-            tbBirthday.Location = new Point(128, 141);
+            tbBirthday.Location = new Point(128, 174);
             tbBirthday.Name = "tbBirthday";
             tbBirthday.Size = new Size(139, 27);
             tbBirthday.TabIndex = 59;
             // 
             // tbLiving
             // 
-            tbLiving.Location = new Point(128, 174);
+            tbLiving.Location = new Point(128, 207);
             tbLiving.Name = "tbLiving";
             tbLiving.Size = new Size(139, 27);
             tbLiving.TabIndex = 60;
             // 
             // tbBirthPlace
             // 
-            tbBirthPlace.Location = new Point(128, 209);
+            tbBirthPlace.Location = new Point(550, 105);
             tbBirthPlace.Name = "tbBirthPlace";
             tbBirthPlace.Size = new Size(139, 27);
             tbBirthPlace.TabIndex = 61;
@@ -317,7 +317,7 @@
             // 
             // tbLanguage
             // 
-            tbLanguage.Location = new Point(550, 103);
+            tbLanguage.Location = new Point(550, 138);
             tbLanguage.Name = "tbLanguage";
             tbLanguage.Size = new Size(139, 27);
             tbLanguage.TabIndex = 64;
@@ -325,17 +325,19 @@
             // cbOtherLanguage
             // 
             cbOtherLanguage.FormattingEnabled = true;
-            cbOtherLanguage.Location = new Point(550, 136);
+            cbOtherLanguage.Location = new Point(550, 171);
             cbOtherLanguage.Name = "cbOtherLanguage";
             cbOtherLanguage.Size = new Size(140, 28);
             cbOtherLanguage.TabIndex = 65;
+            cbOtherLanguage.SelectedIndexChanged += cbOtherLanguage_SelectedIndexChanged;
+            cbOtherLanguage.TextChanged += cbOtherLanguage_TextChanged;
             // 
-            // tbNumber
+            // tbBirthName
             // 
-            tbNumber.Location = new Point(550, 170);
-            tbNumber.Name = "tbNumber";
-            tbNumber.Size = new Size(140, 27);
-            tbNumber.TabIndex = 66;
+            tbBirthName.Location = new Point(128, 141);
+            tbBirthName.Name = "tbBirthName";
+            tbBirthName.Size = new Size(140, 27);
+            tbBirthName.TabIndex = 66;
             // 
             // tbContact
             // 
@@ -369,7 +371,7 @@
             Controls.Add(button2);
             Controls.Add(tbPosition);
             Controls.Add(tbContact);
-            Controls.Add(tbNumber);
+            Controls.Add(tbBirthName);
             Controls.Add(cbOtherLanguage);
             Controls.Add(tbLanguage);
             Controls.Add(cbGender);
@@ -441,7 +443,7 @@
         private ComboBox cbGender;
         private TextBox tbLanguage;
         private ComboBox cbOtherLanguage;
-        private TextBox tbNumber;
+        private TextBox tbBirthName;
         private TextBox tbContact;
         private TextBox tbPosition;
         private Button button2;

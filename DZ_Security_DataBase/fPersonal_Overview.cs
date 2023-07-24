@@ -13,6 +13,9 @@ namespace Festival_Manager
         string selectedCompany;
         int currentIndex;
         int isLoading;
+        private List<cWorker> allWorkers = new List<cWorker>();
+        private bool deleteLanguage = false;
+        private int langIndex = 0;
         string chosenID;
         public cPersonalOverview(bool isAdmin, string username, string chosenID = null)
         {
@@ -21,11 +24,27 @@ namespace Festival_Manager
             this.username = username;
             this.isAdmin = isAdmin;
         }
+        private void cbMitarbeiterID_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = cbMitarbeiterID.Text;
+            cbMitarbeiterID.Items.Clear();
+
+            foreach (cWorker worker in allWorkers)
+            {
+                if (worker.ToString().Contains(searchText))
+                {
+                    cbMitarbeiterID.Items.Add(worker);
+                }
+            }
+
+            cbMitarbeiterID.DroppedDown = true;
+        }
 
         private void insertDatabaseInComboBox()
         {
             cbMitarbeiterID.Items.Clear();
-            cbCompany.Items.Clear();
+            allWorkers.Clear(); // clear the allWorkers list
+
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
@@ -43,11 +62,14 @@ namespace Festival_Manager
 
                             // Create a new cWorker object
                             cWorker mitarbeiter = new cWorker { ID = id, Name = name, Position = position, ChipNumber = chipNumber };
-                            cbMitarbeiterID.Items.Add(mitarbeiter);
+
+                            allWorkers.Add(mitarbeiter); // Add the worker to the list of all workers
+                            cbMitarbeiterID.Items.Add(mitarbeiter); // Add the worker object to the ComboBox
                         }
                     }
                 }
             }
+
 
             using (var conn = new SQLiteConnection(stConnectionString))
             {
@@ -131,9 +153,15 @@ namespace Festival_Manager
             }
             else
             {
-                cbMitarbeiterID.SelectedIndex = 0;
+                if (cbMitarbeiterID.Items.Count > 0)
+                {
+                    cbMitarbeiterID.SelectedIndex = 0;
+                }
             }
-            FillData();
+            if (cbMitarbeiterID.SelectedIndex != -1) // Check if an item is selected in the ComboBox
+            {
+                FillData();
+            }
         }
 
 
@@ -158,16 +186,6 @@ namespace Festival_Manager
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.Hide();
-            if (this.isAdmin)
-            {
-                cAdminView cAdminView = new cAdminView(username);
-                cAdminView.ShowDialog();
-            }
-            else
-            {
-                cMemberView cMemberView = new cMemberView(username);
-                cMemberView.ShowDialog();
-            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -178,40 +196,104 @@ namespace Festival_Manager
             {
                 return;
             }
-            try
+
+            if (cbMitarbeiterID.SelectedItem is cWorker selectedWorker)
             {
-                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
                 string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID 
                 this.currentIndex = cbMitarbeiterID.SelectedIndex;
 
                 // Ask the user to confirm the update
                 var confirmResult = MessageBox.Show("Möchten Sie die Änderungen speichern?",
-                                                     "Bestätigen Sie das Speichern!",
-                                                     MessageBoxButtons.YesNo);
+                                                    "Bestätigen Sie das Speichern!",
+                                                    MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    UpdateEmployeeData(oCurrentID);
-                    insertDatabaseInComboBox();
-                    cbMitarbeiterID.SelectedIndex = currentIndex;
-                    FillData();
+                    // Prüfen Sie, ob der Status "Löschen" ist
+                    if (deleteLanguage)
+                    {
+                        // Entfernen Sie das aktuell ausgewählte Element aus der ComboBox
+                        if (cbOtherLanguage.Items.Count >= 0)
+                        {
+                            cLogger.LogDatabaseChange($"Sprache {cbOtherLanguage.Items[langIndex].ToString()} vom nutzer {cbMitarbeiterID.SelectedItem.ToString()} wurde gelöscht", username);
+                            cbOtherLanguage.Items.RemoveAt(langIndex);
+                        }
+                        // Setzen Sie den Status zurück
+                        deleteLanguage = false;
+                    }
+                    string selectedLanguage = cbOtherLanguage.Text;
+                    if (!string.IsNullOrEmpty(selectedLanguage))
+                    {
+                        // Wenn der ausgewählte Text nicht leer ist und die Sprache noch nicht existiert, fügen Sie sie hinzu
+                        if (!cbOtherLanguage.Items.Contains(selectedLanguage))
+                        {
+                            cLogger.LogDatabaseChange($"Sprache {selectedLanguage} wurde zum nutzer {cbMitarbeiterID.SelectedItem.ToString()} hinzugefügt", username);
+                            cbOtherLanguage.Items.Add(selectedLanguage);
+                        }
+                    }
+                    try
+                    {
+                        UpdateEmployeeData(oCurrentID);
+                        insertDatabaseInComboBox();
+                        if (currentIndex < cbMitarbeiterID.Items.Count)
+                        {
+                            cbMitarbeiterID.SelectedIndex = currentIndex;
+                            FillData();
+                        }
+                    }
+                    catch
+                    {
+                        // Reset the ComboBox index and try to update the data again
+                        if (currentIndex < cbMitarbeiterID.Items.Count)
+                        {
+                            cbMitarbeiterID.SelectedIndex = currentIndex;
+                            if (cbMitarbeiterID.SelectedItem is cWorker retrySelectedWorker)
+                            {
+                                oCurrentID = retrySelectedWorker.ID;
+                                // Try to save again, but do not ask for confirmation this time
+                                UpdateEmployeeData(oCurrentID);
+                                insertDatabaseInComboBox();
+                                cbMitarbeiterID.SelectedIndex = currentIndex;
+                                FillData();
+                            }
+                        }
+                    }
+                    cLogger.LogDatabaseChange($"Änderungen an {cbMitarbeiterID.SelectedItem.ToString()} gespeichert", username);
+                    MessageBox.Show($"Änderungen an '{cbMitarbeiterID.SelectedItem.ToString()}' erfolgreisch gespeichert!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            catch
+            else
             {
-                // Reset the ComboBox index and try to update the data again
-                cbMitarbeiterID.SelectedIndex = currentIndex;
-                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
-                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID 
-
-                // Try to save again, but do not ask for confirmation this time
-                UpdateEmployeeData(oCurrentID);
-                insertDatabaseInComboBox();
-                cbMitarbeiterID.SelectedIndex = currentIndex;
-                FillData();
+                MessageBox.Show("Keinen Mitarbeiter ausgewählt.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void UpdateEmployeeLanguages(string employeeId, string motherLanguage, List<string> otherLanguages)
+        {
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    // Delete all languages of the employee
+                    cmd.CommandText = "DELETE FROM MitarbeiterSprachen WHERE MitarbeiterID = @EmployeeId";
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    cmd.ExecuteNonQuery();
 
+                    // Insert mother language of the employee
+                    cmd.CommandText = "INSERT INTO MitarbeiterSprachen (MitarbeiterID, Sprache, Muttersprache) VALUES (@EmployeeId, @Language, @IsMotherLanguage)";
+                    cmd.Parameters.AddWithValue("@Language", motherLanguage);
+                    cmd.Parameters.AddWithValue("@IsMotherLanguage", true);
+                    cmd.ExecuteNonQuery();
 
+                    // Insert other languages of the employee
+                    cmd.Parameters["@IsMotherLanguage"].Value = false;
+                    foreach (string language in otherLanguages)
+                    {
+                        cmd.Parameters["@Language"].Value = language;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
         private void UpdateEmployeeData(string employeeId)
         {
             DateTime dt;
@@ -242,14 +324,12 @@ namespace Festival_Manager
                         SET Firma = @Firma,
                         Vorname = @Vorname,
                         Nachname = @Nachname,
+                        Geburtsname = @geburtsname,
                         Geburtsdatum = @Geburtsdatum,
                         Geburtsland = @Geburtsland,
                         Wohnort = @Wohnort,
                         ChipNummer = @ChipNummer,
                         Gender = @Gender,
-                        Muttersprache = @Muttersprache,
-                        Sprachen = @Sprachen,
-                        TelefonNummer = @TelefonNummer,
                         Ansprechpartner = @Ansprechpartner,
                         Position = @Position
                         WHERE MitarbeiterID = @EmployeeId";
@@ -261,13 +341,14 @@ namespace Festival_Manager
                     cmd.Parameters.AddWithValue("@Wohnort", string.IsNullOrWhiteSpace(tbLiving.Text) ? (object)DBNull.Value : tbLiving.Text);
                     cmd.Parameters.AddWithValue("@ChipNummer", string.IsNullOrWhiteSpace(tbChip.Text) ? (object)DBNull.Value : tbChip.Text);
                     cmd.Parameters.AddWithValue("@Gender", string.IsNullOrWhiteSpace(cbGender.Text) ? (object)DBNull.Value : cbGender.Text);
-                    cmd.Parameters.AddWithValue("@Muttersprache", string.IsNullOrWhiteSpace(tbLanguage.Text) ? (object)DBNull.Value : tbLanguage.Text);
-                    cmd.Parameters.AddWithValue("@Sprachen", string.IsNullOrWhiteSpace(cbOtherLanguage.Text) ? (object)DBNull.Value : cbOtherLanguage.Text);
-                    cmd.Parameters.AddWithValue("@TelefonNummer", string.IsNullOrWhiteSpace(tbNumber.Text) ? (object)DBNull.Value : tbNumber.Text);
+                    cmd.Parameters.AddWithValue("@geburtsname", string.IsNullOrWhiteSpace(tbBirthName.Text) ? (object)DBNull.Value : tbBirthName.Text);
                     cmd.Parameters.AddWithValue("@Ansprechpartner", string.IsNullOrWhiteSpace(tbContact.Text) ? (object)DBNull.Value : tbContact.Text);
                     cmd.Parameters.AddWithValue("@Position", string.IsNullOrWhiteSpace(tbPosition.Text) ? (object)DBNull.Value : tbPosition.Text);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
                     cmd.ExecuteNonQuery();
+                    string motherLanguage = tbLanguage.Text;
+                    List<string> otherLanguages = cbOtherLanguage.Items.Cast<string>().ToList();
+                    UpdateEmployeeLanguages(employeeId, motherLanguage, otherLanguages);
                 }
             }
         }
@@ -276,21 +357,28 @@ namespace Festival_Manager
             try
             {
                 this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
-                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
-                this.currentIndex = cbMitarbeiterID.SelectedIndex;
-                FillEmployeeData(oCurrentID);
+                if (this.selectedWorker != null)
+                {
+                    string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
+                    this.currentIndex = cbMitarbeiterID.SelectedIndex;
+                    FillEmployeeData(oCurrentID);
+                }
             }
             catch
             {
-                // Reset the ComboBox index and reload the data
-                cbMitarbeiterID.SelectedIndex = currentIndex;
-                this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
-                string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
-                FillEmployeeData(oCurrentID);
+                if (cbMitarbeiterID.Items.Count > 0)
+                {
+                    // Reset the ComboBox index and reload the data
+                    cbMitarbeiterID.SelectedIndex = currentIndex;
+                    this.selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
+                    if (this.selectedWorker != null)
+                    {
+                        string oCurrentID = selectedWorker.ID; // now oCurrentID is the ID string
+                        FillEmployeeData(oCurrentID);
+                    }
+                }
             }
         }
-
-
         private void FillEmployeeData(string employeeId)
         {
             using (var conn = new SQLiteConnection(stConnectionString))
@@ -313,17 +401,51 @@ namespace Festival_Manager
                             lbCheckedIn.Text = reader["CheckInState"].ToString() == "true" ? "Eingechecked" : "Ausgechecked";
                             tbChip.Text = reader["ChipNummer"].ToString();
                             cbGender.Text = reader["Gender"].ToString();
-                            tbLanguage.Text = reader["Muttersprache"].ToString();
-                            cbOtherLanguage.Text = reader["Sprachen"].ToString();
-                            tbNumber.Text = reader["TelefonNummer"].ToString();
+                            tbBirthName.Text = reader["Geburtsname"].ToString();
                             tbContact.Text = reader["Ansprechpartner"].ToString();
                             tbPosition.Text = reader["Position"].ToString();
                         }
                     }
                 }
+
+                using (var cmd = new SQLiteCommand("SELECT * FROM MitarbeiterSprachen WHERE MitarbeiterID = @EmployeeId", conn))
+                {
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        List<string> languages = new List<string>();
+                        string motherLanguage = string.Empty;
+                        while (reader.Read())
+                        {
+                            bool isMotherLanguage = Convert.ToBoolean(reader["Muttersprache"]);
+                            string language = reader["Sprache"].ToString();
+                            if (isMotherLanguage)
+                            {
+                                motherLanguage = language;
+                            }
+                            else
+                            {
+                                languages.Add(language);
+                            }
+                        }
+
+                        tbLanguage.Text = motherLanguage;
+                        cbOtherLanguage.Items.Clear();  // Clear existing items
+                        languages.Sort();  // Sort the languages list
+                        foreach (string language in languages)
+                        {
+                            cbOtherLanguage.Items.Add(language);  // Add each language as a new item
+                        }
+                    }
+                }
+                if (cbOtherLanguage.Items.Count > 0)
+                {
+                    cbOtherLanguage.SelectedIndex = 0;  // Set the selected index only if there is at least one item
+                }
+
+
             }
         }
-
         private bool CheckRights()
         {
             bool hasRights = false;
@@ -458,6 +580,28 @@ namespace Festival_Manager
         private void cPersonalOverview_Shown(object sender, EventArgs e)
         {
             CheckChipIDForCurrentEmployee();
+        }
+
+        private void cbOtherLanguage_TextChanged(object sender, EventArgs e)
+        {
+            if (cbOtherLanguage != null)
+            {
+                // Prüfen Sie, ob der Textinhalt zu einem leeren String geändert wurde
+                if (string.IsNullOrEmpty(cbOtherLanguage.Text))
+                {
+                    // Setzen Sie den Status auf "Löschen"
+                    this.deleteLanguage = true;
+                }
+                else
+                {
+                    this.deleteLanguage = false;
+                }
+            }
+        }
+
+        private void cbOtherLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            langIndex = cbOtherLanguage.SelectedIndex;
         }
     }
 }

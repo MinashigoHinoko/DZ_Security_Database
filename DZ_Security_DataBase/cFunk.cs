@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Data.SQLite;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Festival_Manager
 {

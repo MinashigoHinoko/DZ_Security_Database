@@ -28,26 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
             button2 = new Button();
             button3 = new Button();
-            button4 = new Button();
             label1 = new Label();
+            button1 = new Button();
             SuspendLayout();
-            // 
-            // button1
-            // 
-            button1.Location = new Point(12, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(134, 60);
-            button1.TabIndex = 0;
-            button1.Text = "Einlesen Funkgeräte Liste";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // button2
             // 
-            button2.Location = new Point(163, 12);
+            button2.Location = new Point(172, 12);
             button2.Name = "button2";
             button2.Size = new Size(154, 60);
             button2.TabIndex = 1;
@@ -57,23 +46,13 @@
             // 
             // button3
             // 
-            button3.Location = new Point(163, 78);
+            button3.Location = new Point(12, 12);
             button3.Name = "button3";
             button3.Size = new Size(154, 60);
             button3.TabIndex = 2;
-            button3.Text = "Einlese Mitarbeiter Stammdaten";
+            button3.Text = "Einlesen Mitarbeiter Stammdaten";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(12, 78);
-            button4.Name = "button4";
-            button4.Size = new Size(134, 60);
-            button4.TabIndex = 3;
-            button4.Text = "Einlesen Equipment";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
             // 
             // label1
             // 
@@ -85,13 +64,22 @@
             label1.TabIndex = 4;
             label1.Text = "@Mobinoko";
             // 
+            // button1
+            // 
+            button1.Location = new Point(6, 78);
+            button1.Name = "button1";
+            button1.Size = new Size(320, 60);
+            button1.TabIndex = 0;
+            button1.Text = "Einlesen Arbeitsplan";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // fInportData
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(411, 149);
+            ClientSize = new Size(411, 146);
             Controls.Add(label1);
-            Controls.Add(button4);
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -105,11 +93,9 @@
         }
 
         #endregion
-
-        private Button button1;
         private Button button2;
         private Button button3;
-        private Button button4;
         private Label label1;
+        private Button button1;
     }
 }

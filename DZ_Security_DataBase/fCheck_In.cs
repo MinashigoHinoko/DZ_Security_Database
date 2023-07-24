@@ -84,11 +84,27 @@ namespace Festival_Manager
             using (var conn = new SQLiteConnection(stConnectionString))
             {
                 conn.Open();
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
+                {
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (count == 0)
+                    {
+                        MessageBox.Show("Es gibt derzeit kein Personal zum einchekcen.",
+                                        "Kein eincheckbares Personal",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+            }
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
                 string today = "2023-07-24"; //DateTime.Now.ToString("yyyy-MM-dd");
                 using (var cmd = new SQLiteCommand(@"
                 SELECT m.MitarbeiterID, m.ChipNummer, m.Nachname || ' ' || m.Vorname AS FullName, m.Position, m.CheckInState
                 FROM Mitarbeiter m
-                INNER JOIN Arbeitszeitensoll a ON m.MitarbeiterID = a.MitarbeiterID
+                INNER JOIN ArbeitszeitenSoll a ON m.MitarbeiterID = a.MitarbeiterID
                 WHERE m.CheckInState IS 'false' AND date(a.CheckedInSoll) = date(@today)", conn))
                 {
                     cmd.Parameters.AddWithValue("@today", today);
@@ -228,7 +244,7 @@ namespace Festival_Manager
                                 {
                                     MessageBox.Show("Der aktuelle Mitarbeiter hat keine Chip-Nummer. Bitte fügen Sie eine Chip-Nummer hinzu.",
                                                     "Fehlende Chip-Nummer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    cPersonalOverview cPersonalOverview = new cPersonalOverview(isAdmin,username, oCurrentID);
+                                    cPersonalOverview cPersonalOverview = new cPersonalOverview(isAdmin, username, oCurrentID);
                                     cPersonalOverview.ShowDialog();
                                 }
                             }
@@ -287,6 +303,22 @@ namespace Festival_Manager
 
             List<cWorker> allEmployee = new List<cWorker>();
 
+            using (var conn = new SQLiteConnection(stConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
+                {
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (count == 0)
+                    {
+                        MessageBox.Show("Es gibt derzeit kein Personal zum auschecken.",
+                                        "Kein auscheckbares Personal",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+            }
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die eingecheckt haben.
             using (var conn = new SQLiteConnection(stConnectionString))

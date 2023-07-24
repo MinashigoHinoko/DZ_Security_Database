@@ -4,7 +4,6 @@ using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Drawing.Printing;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Festival_Manager
 {
@@ -218,7 +217,7 @@ namespace Festival_Manager
             cCheckIn checkIn = new cCheckIn(isAdmin, username);
             checkIn.ShowDialog();
         }
-        public void printReceipt(object sender, EventArgs e,string username)
+        public void printReceipt(object sender, EventArgs e, string username)
         {
             PrintDocument printDoc = new PrintDocument();
 
@@ -325,7 +324,7 @@ namespace Festival_Manager
                 {
                     conn.Open();
                     using (var cmd = new SQLiteCommand(
-                        @"SELECT m.CheckInState, m.Position, p.Quadrat, m.Vorname, m.Nachname, 
+                        @"SELECT m.CheckInState, m.Position, m.Vorname, m.Nachname, 
                       m.Ansprechpartner, a.Position, a.Vorname, a.Nachname
                       FROM Mitarbeiter m 
                       LEFT JOIN Mitarbeiter a ON m.Ansprechpartner = a.MitarbeiterID
@@ -340,21 +339,21 @@ namespace Festival_Manager
                             {
                                 string text = reader.GetString(0) == "true" ? "Laufzettel: CheckIn\n\n" : "Laufzettel: CheckOut\n\n";
                                 string positionNr = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-                                string quadrant = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                                //string quadrant = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
                                 string vorname = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
                                 string nachname = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
                                 string ansprechpartnerId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
-                                string ansprechpartnerPosition = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                                //string ansprechpartnerPosition = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
                                 string ansprechpartnerVorname = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
                                 string ansprechpartnerNachname = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
 
                                 // Fügt die abgerufenen Werte zum Text hinzu.
                                 text += "Positions Nr: " + positionNr + "\n";
-                                text += "Quadrant: " + quadrant + "\n";
+                                //text += "Quadrant: " + quadrant + "\n";
                                 text += "Vorname: " + vorname + "\n";
                                 text += "Nachname: " + nachname + "\n";
                                 text += "Ansprechpartner Name: " + ansprechpartnerVorname + " " + ansprechpartnerNachname + "\n";
-                                text += "Ansprechpartner Positions Nr: " + ansprechpartnerPosition + "\n";
+                                //text += "Ansprechpartner Positions Nr: " + ansprechpartnerPosition + "\n";
 
                                 // Erzeugt das Font-Objekt.
                                 Font printFont = new Font("Arial", 10);

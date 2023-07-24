@@ -12,7 +12,7 @@
 
         private void bExcelExport_Click(object sender, EventArgs e)
         {
-            viewManager.excelExport(sender, e,username);
+            viewManager.excelExport(sender, e, username);
         }
 
         private void bCheckin_Click(object sender, EventArgs e)
@@ -28,7 +28,7 @@
 
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
-            viewManager.printReceipt(sender, e,username);
+            viewManager.printReceipt(sender, e, username);
         }
 
         private void bPrint_Click(object sender, EventArgs e)
@@ -45,7 +45,6 @@
 
         private void bWorkerOverview_Click(object sender, EventArgs e)
         {
-            this.Hide();
             viewManager.workerOverview(sender, e, true, username);
         }
 

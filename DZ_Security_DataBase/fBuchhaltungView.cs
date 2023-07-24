@@ -18,7 +18,7 @@
 
         private void bExcelExport_Click(object sender, EventArgs e)
         {
-            viewManager.excelExport(sender, e);
+            viewManager.excelExport(sender, e, username);
         }
 
         private void cBookingView_FormClosed(object sender, FormClosedEventArgs e)

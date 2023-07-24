@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Data.SQLite;
+using System.Security.Cryptography;
 
 namespace Festival_Manager
 {
@@ -46,29 +47,42 @@ namespace Festival_Manager
                         config.Save(ConfigurationSaveMode.Modified);
                         ConfigurationManager.RefreshSection("appSettings");
                     }
+                    else
+                    {
+                        // Der Benutzer hat keinen Pfad ausgewählt oder den Dialog abgebrochen. Wiederholen Sie den Vorgang oder beenden Sie die Methode.
+                        goto restart;
+                    }
                 }
             }
 
 
-            // If the database file doesn't exist, create it.
-            if (!File.Exists($"{DbPath}\\Dz_Security.sqlite"))
+
+            if (string.IsNullOrEmpty(DbPath))
+            {
+                throw new InvalidOperationException("DbPath is null or empty.");
+            }
+
+            string dbFilePath = System.IO.Path.Combine(DbPath, "Dz_Security.sqlite");
+
+            if (!File.Exists(dbFilePath))
             {
                 freshlyCreated = true;
-                SQLiteConnection.CreateFile($"{DbPath}\\Dz_Security.sqlite");
+                SQLiteConnection.CreateFile(dbFilePath);
                 using (var m_dbConnection = new SQLiteConnection(GetConnectionString()))
                 {
                     m_dbConnection.Open();
 
+
                     // Mitarbeiter Tabelle erstellen
                     string sql = @"CREATE TABLE Mitarbeiter (
-                                    MitarbeiterID INT PRIMARY KEY NOT NULL, 
-                                    Firma TEXT,
-                                    Vorname TEXT, 
-                                    Nachname TEXT,
+                                    MitarbeiterID INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    Firma TEXT NOT NULL,
+                                    Vorname TEXT NOT NULL, 
+                                    Nachname TEXT NOT NULL,
                                     Geburtsname TEXT,
                                     Geburtsort TEXT,
                                     Geburtsland TEXT,
-                                    Geburtsdatum TEXT,
+                                    Geburtsdatum TEXT NOT NULL,
                                     Nationalitaet TEXT,
                                     Straße TEXT,
                                     Hausnummer TEXT,
@@ -79,18 +93,13 @@ namespace Festival_Manager
                                     Ausweis_Nr TEXT,
                                     Bewacherregister_Nr TEXT,
                                     Security_Typ TEXT,
-                                    Muttersprache TEXT,
-                                    Sprachen TEXT,
-                                    SprachNiveau TEXT,
                                     Gender TEXT,
-                                    TelefonNummer TEXT,
                                     Ansprechpartner TEXT,
                                     Position TEXT,
                                     ChipNummer INT,
                                     CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
                                     RentState TEXT DEFAULT 'false' NOT NULL,
-                                    Nacht Text DEFAULT 'false' NOT NULL,
                                     WeitereInformationen TEXT
                                    );";
 
@@ -114,6 +123,19 @@ namespace Festival_Manager
                              MitarbeiterID INT NOT NULL, 
                              CheckedInSoll DATETIME,
                              CheckedOutSoll DATETIME,
+                             Nacht Text DEFAULT 'false' NOT NULL,
+                             Position TEXT,
+                             FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
+                             );";
+
+                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    sql = @"CREATE TABLE MitarbeiterSprachen (
+                             MitarbeiterID INT NOT NULL, 
+                             Sprache NOT NULL,
+                             Muttersprache DEFAULT 'false' NOT NULL,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
@@ -200,6 +222,33 @@ namespace Festival_Manager
                     {
                         command.ExecuteNonQuery();
                     }
+
+                    // Standard-Admin hinzufügen
+                    string username = "admin";
+                    string password = "admin";
+                    string rights = "admin";
+
+                    // Salt und hashed Password generieren
+                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                    byte[] saltBytes = new byte[32];
+                    rng.GetBytes(saltBytes);
+                    string salt = Convert.ToBase64String(saltBytes);
+
+                    Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                    byte[] passwordBytes = pbkdf2.GetBytes(20);
+                    string hashedPassword = Convert.ToBase64String(passwordBytes);
+
+                    sql = @"INSERT INTO Passwort (Username, HashedPassword, Salt, Rights) 
+               VALUES (@username, @hashedPassword, @salt, @rights)";
+                    using (var cmd = new SQLiteCommand(sql, m_dbConnection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        cmd.Parameters.AddWithValue("@hashedPassword", hashedPassword);
+                        cmd.Parameters.AddWithValue("@salt", salt);
+                        cmd.Parameters.AddWithValue("@rights", rights);
+                        cmd.ExecuteNonQuery();
+                    }
+
                 }
             }
         }
