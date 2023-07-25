@@ -9,10 +9,10 @@ namespace Festival_Manager
 {
     public partial class cPrintOutView : Form
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        bool isAdmin = false;
-        string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private bool isAdmin = false;
+        private string username;
         public cPrintOutView(bool isAdmin, string username)
         {
             this.isAdmin = isAdmin;
@@ -22,18 +22,18 @@ namespace Festival_Manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname, Nachname,Geburtsname,Gender,Geburtsdatum,Geburtsort,Wohnort FROM Mitarbeiter", conn))
+                using (SQLiteCommand cmd = new("SELECT MitarbeiterID, Vorname, Nachname,Geburtsname,Gender,Geburtsdatum,Geburtsort,Wohnort FROM Mitarbeiter", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         adapter.Fill(dt);
 
-                        SaveFileDialog sfd = new SaveFileDialog();
+                        SaveFileDialog sfd = new();
                         sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                         sfd.FileName = "export_OrdnungsAmt.xlsx";
 
@@ -60,7 +60,7 @@ namespace Festival_Manager
                             }
 
                             // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                            using (FileStream stream = new(sfd.FileName, FileMode.Create, FileAccess.Write))
                             {
                                 workbook.Write(stream, false);
                             }
@@ -75,18 +75,18 @@ namespace Festival_Manager
 
         private void button4_Click(object sender, EventArgs e)
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter", conn))
+                using (SQLiteCommand cmd = new("SELECT * FROM Mitarbeiter", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         adapter.Fill(dt);
 
-                        SaveFileDialog sfd = new SaveFileDialog();
+                        SaveFileDialog sfd = new();
                         sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                         sfd.FileName = "export_Eigener.xlsx";
 
@@ -113,7 +113,7 @@ namespace Festival_Manager
                             }
 
                             // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                            using (FileStream stream = new(sfd.FileName, FileMode.Create, FileAccess.Write))
                             {
                                 workbook.Write(stream, false);
                             }
@@ -127,18 +127,18 @@ namespace Festival_Manager
 
         private void button3_Click(object sender, EventArgs e)
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT Mitarbeiter.Vorname, Mitarbeiter.Nachname, Mitarbeiter.Firma, Mitarbeiter.Position, Position.Quadrant, Mitarbeiter.CheckInState FROM Mitarbeiter LEFT JOIN Position ON Mitarbeiter.Position = Position.Nr", conn))
+                using (SQLiteCommand cmd = new("SELECT Mitarbeiter.Vorname, Mitarbeiter.Nachname, Mitarbeiter.Firma, Mitarbeiter.Position, Position.Quadrant, Mitarbeiter.CheckInState FROM Mitarbeiter LEFT JOIN Position ON Mitarbeiter.Position = Position.Nr", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         adapter.Fill(dt);
 
-                        SaveFileDialog sfd = new SaveFileDialog();
+                        SaveFileDialog sfd = new();
                         sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                         sfd.FileName = "export_ZollAmt.xlsx";
 
@@ -160,7 +160,7 @@ namespace Festival_Manager
                                 row = sheet.CreateRow(i + 1);
                                 for (int j = 0; j < dt.Columns.Count; j++)
                                 {
-                                    var cellValue = dt.Rows[i][j];
+                                    object cellValue = dt.Rows[i][j];
                                     if (cellValue != null)
                                     {
                                         row.CreateCell(j).SetCellValue(cellValue.ToString());
@@ -173,7 +173,7 @@ namespace Festival_Manager
                             }
 
                             // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                            using (FileStream stream = new(sfd.FileName, FileMode.Create, FileAccess.Write))
                             {
                                 workbook.Write(stream, false);
                             }
@@ -189,18 +189,18 @@ namespace Festival_Manager
         private void button2_Click(object sender, EventArgs e)
         {
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT Vorname, Nachname,Firma,Position,CheckInState FROM Mitarbeiter", conn))
+                using (SQLiteCommand cmd = new("SELECT Vorname, Nachname,Firma,Position,CheckInState FROM Mitarbeiter", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         adapter.Fill(dt);
 
-                        SaveFileDialog sfd = new SaveFileDialog();
+                        SaveFileDialog sfd = new();
                         sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                         sfd.FileName = "export_Polizei.xlsx";
 
@@ -227,7 +227,7 @@ namespace Festival_Manager
                             }
 
                             // Speichern
-                            using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                            using (FileStream stream = new(sfd.FileName, FileMode.Create, FileAccess.Write))
                             {
                                 workbook.Write(stream, false);
                             }
@@ -240,22 +240,22 @@ namespace Festival_Manager
         }
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            if (this.isAdmin)
+            Hide();
+            if (isAdmin)
             {
-                cAdminView cAdminView = new cAdminView(username);
+                cAdminView cAdminView = new(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cBookingView cMemberView = new cBookingView(username);
+                cBookingView cMemberView = new(username);
                 cMemberView.ShowDialog();
             }
         }
 
         private void cPrintOutView_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
     }
 }

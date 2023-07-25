@@ -2,8 +2,8 @@
 {
     public partial class cBookingView : Form
     {
-        cViewManager viewManager = new cViewManager();
-        string username;
+        private cViewManager viewManager = new();
+        private string username;
         public cBookingView(string username)
         {
             InitializeComponent();
@@ -12,7 +12,7 @@
 
         private void bPrint_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
             viewManager.printOut(sender, e, false, username);
         }
 
@@ -23,14 +23,14 @@
 
         private void cBookingView_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            cLoginMenu cLoginMenu = new cLoginMenu();
+            Hide();
+            cLoginMenu cLoginMenu = new();
             cLoginMenu.ShowDialog();
         }
 
         private void cBookingView_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
     }
 }

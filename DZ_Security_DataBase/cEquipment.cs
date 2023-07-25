@@ -15,19 +15,23 @@
         {
             // If the object is null, return false
             if (obj == null)
+            {
                 return false;
+            }
 
             // If the object cannot be cast to cEquipment, return false
             cEquipment otherEquipmentID = obj as cEquipment;
             if (otherEquipmentID == null)
+            {
                 return false;
+            }
 
             // Return true if the ID fields match
-            return this.ID.Equals(otherEquipmentID.ID);
+            return ID.Equals(otherEquipmentID.ID);
         }
         public override int GetHashCode()
         {
-            return this.ID.GetHashCode();
+            return ID.GetHashCode();
         }
     }
 }

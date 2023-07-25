@@ -9,29 +9,29 @@ namespace Festival_Manager
 {
     internal class cViewManager
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         public void workerOverview(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cPersonalOverview personalOverview = new cPersonalOverview(isAdmin, username);
+            cPersonalOverview personalOverview = new(isAdmin, username);
             personalOverview.Show();
         }
         public void toolOverview(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cEquipmentOverview equipment = new cEquipmentOverview(isAdmin, username);
+            cEquipmentOverview equipment = new(isAdmin, username);
             equipment.Show();
         }
         public void printOut(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cPrintOutView printOut = new cPrintOutView(isAdmin, username);
+            cPrintOutView printOut = new(isAdmin, username);
             printOut.Show();
         }
         public void excelExport(object sender, EventArgs e, string username)
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                SaveFileDialog sfd = new SaveFileDialog();
+                SaveFileDialog sfd = new();
                 sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                 sfd.FileName = "export.xlsx";
 
@@ -40,7 +40,7 @@ namespace Festival_Manager
 
                 // Überschriften
                 IRow row = sheet.CreateRow(0);
-                using (var cmd = new SQLiteCommand("SELECT * FROM Mitarbeiter Where Firma = @Company", conn))
+                using (SQLiteCommand cmd = new("SELECT * FROM Mitarbeiter Where Firma = @Company", conn))
                 {
                     string sChosenCompany = Interaction.InputBox("Für welche Firma benötigen Sie den Excel Export? ", "Firmen Abfrage", "", -1, -1);
                     if (sChosenCompany == "")
@@ -50,9 +50,9 @@ namespace Festival_Manager
                     }
 
                     cmd.Parameters.AddWithValue("@Company", sChosenCompany);
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         try
                         {
                             adapter.Fill(dt);
@@ -89,11 +89,11 @@ namespace Festival_Manager
 
                 // Überschriften
                 row = sheet.CreateRow(0);
-                using (var cmd = new SQLiteCommand("SELECT * FROM Arbeitszeiten", conn))
+                using (SQLiteCommand cmd = new("SELECT * FROM Arbeitszeiten", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         try
                         {
                             adapter.Fill(dt);
@@ -126,11 +126,11 @@ namespace Festival_Manager
 
                 // Überschriften
                 row = sheet.CreateRow(0);
-                using (var cmd = new SQLiteCommand("SELECT * FROM Ausruestung", conn))
+                using (SQLiteCommand cmd = new("SELECT * FROM Ausruestung", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         try
                         {
                             adapter.Fill(dt);
@@ -164,11 +164,11 @@ namespace Festival_Manager
 
                 // Überschriften
                 row = sheet.CreateRow(0);
-                using (var cmd = new SQLiteCommand("SELECT * FROM Position", conn))
+                using (SQLiteCommand cmd = new("SELECT * FROM Position", conn))
                 {
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    using (SQLiteDataAdapter adapter = new(cmd))
                     {
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         try
                         {
                             adapter.Fill(dt);
@@ -201,7 +201,7 @@ namespace Festival_Manager
                 }
                 conn.Close();
                 // Speichern
-                using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                using (FileStream stream = new(sfd.FileName, FileMode.Create, FileAccess.Write))
                 {
                     workbook.Write(stream, false);
                 }
@@ -209,17 +209,17 @@ namespace Festival_Manager
         }
         public void toolBorrow(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cEquipmentRent checkIn = new cEquipmentRent(isAdmin, username);
+            cEquipmentRent checkIn = new(isAdmin, username);
             checkIn.ShowDialog();
         }
         public void checkIn(object sender, EventArgs e, bool isAdmin, string username)
         {
-            cCheckIn checkIn = new cCheckIn(isAdmin, username);
+            cCheckIn checkIn = new(isAdmin, username);
             checkIn.ShowDialog();
         }
         public void printReceipt(object sender, EventArgs e, string username)
         {
-            PrintDocument printDoc = new PrintDocument();
+            PrintDocument printDoc = new();
 
             // Stellen Sie die Papiereinstellungen ein
             printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720);
@@ -228,7 +228,7 @@ namespace Festival_Manager
             printDoc.PrintPage += new PrintPageEventHandler(printDoc_PrintPage);
 
             // Zeigen Sie den Druckdialog an und starten Sie den Druckvorgang, wenn der Benutzer auf "Drucken" klickt.
-            PrintDialog printDialog = new PrintDialog();
+            PrintDialog printDialog = new();
             printDialog.Document = printDoc;
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
@@ -236,18 +236,19 @@ namespace Festival_Manager
             }
             cLogger.LogDatabaseChange($"Laufzettel Drucken", username);
         }
-        void printDoc_PrintPage(object sender, PrintPageEventArgs e)
+
+        private void printDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 300; // adjust the height to accommodate another TextBox
             prompt.Text = "Wählen Sie ein Ausrüstungsteil aus und geben Sie die Mitarbeiter-ID ein";
 
-            TextBox employeeBox = new TextBox() { Dock = DockStyle.Top }; // New TextBox for employee ID
-            ListBox employeeListBox = new ListBox() { Dock = DockStyle.Top };
+            TextBox employeeBox = new() { Dock = DockStyle.Top }; // New TextBox for employee ID
+            ListBox employeeListBox = new() { Dock = DockStyle.Top };
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
                                       // Set the AcceptButton property of the Form
@@ -267,18 +268,18 @@ namespace Festival_Manager
                 }
             };
 
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cWorker> allEmployee = new();
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n", conn))
+                using (SQLiteCommand cmd = new("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var employeeItem = new cWorker
+                            cWorker employeeItem = new()
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
@@ -296,13 +297,13 @@ namespace Festival_Manager
                 string[] searchTerms = employeeBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEmployee.Where(item =>
+                IEnumerable<cWorker> matches = allEmployee.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                     )
                 );
                 employeeListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cWorker? match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
@@ -320,10 +321,10 @@ namespace Festival_Manager
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentID = selectedWorker.ID;
 
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand(
+                    using (SQLiteCommand cmd = new(
                         @"SELECT m.CheckInState, m.Position, m.Vorname, m.Nachname, 
                       m.Ansprechpartner, a.Position, a.Vorname, a.Nachname
                       FROM Mitarbeiter m 
@@ -356,7 +357,7 @@ namespace Festival_Manager
                                 //text += "Ansprechpartner Positions Nr: " + ansprechpartnerPosition + "\n";
 
                                 // Erzeugt das Font-Objekt.
-                                Font printFont = new Font("Arial", 10);
+                                Font printFont = new("Arial", 10);
 
                                 // Zeichnet den Text.
                                 e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);

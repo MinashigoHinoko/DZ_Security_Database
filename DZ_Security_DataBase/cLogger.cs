@@ -4,18 +4,18 @@ namespace Festival_Manager
 {
     internal class cLogger
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        static public void LogDatabaseChange(string action, string username)
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        public static void LogDatabaseChange(string action, string username)
         {
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string logEntry = $"[{timestamp}] {username} hat eine Aktion ausgeführt: {action}";
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand(conn))
+                using (SQLiteCommand cmd = new(conn))
                 {
                     cmd.CommandText = @"
             INSERT INTO LogTable (Timestamp, User, Action)

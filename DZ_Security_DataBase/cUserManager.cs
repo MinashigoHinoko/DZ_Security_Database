@@ -14,16 +14,16 @@
         private TextBox _txtNewPin;
         private Button _btnSaveChanges;
         private Button _btnDeleteUser;
-        string username;
+        private string username;
 
         public UserManagementForm(string username)
         {
             username = username;
             _userManagement = new cPasswordManager.UserManagement();
 
-            this.Text = "Festival Manager Account Bearbeiter";
-            this.Size = new Size(400, 380);
-            this.StartPosition = FormStartPosition.CenterScreen;
+            Text = "Festival Manager Account Bearbeiter";
+            Size = new Size(400, 380);
+            StartPosition = FormStartPosition.CenterScreen;
 
             _lblTargetUsername = new Label() { Text = "Account:", Left = 60, Top = 50, Width = 70 };
             _cbTargetUsername = new ComboBox() { Left = 150, Top = 50, Width = 200 };
@@ -39,7 +39,7 @@
 
             _cbTargetUsername.SelectedIndexChanged += (sender, e) =>
             {
-                cPasswordManager.CheckRights checkRights = new cPasswordManager.CheckRights();
+                cPasswordManager.CheckRights checkRights = new();
                 _cbRole.SelectedItem = checkRights.rightCheck(_cbTargetUsername.SelectedItem.ToString());
                 _txtNewPin.Text = null;
             };
@@ -63,20 +63,20 @@
             _btnDeleteUser = new Button() { Text = "Lösche Nutzer", Left = 210, Width = 150, Dock = DockStyle.Right };
             _btnDeleteUser.Click += OnDeleteUserClicked;
 
-            Panel bottomPanel = new Panel() { Dock = DockStyle.Bottom, Height = 50 };
+            Panel bottomPanel = new() { Dock = DockStyle.Bottom, Height = 50 };
             bottomPanel.Controls.Add(_btnSaveChanges);
             bottomPanel.Controls.Add(_btnDeleteUser);
 
-            this.Controls.Add(_lblTargetUsername);
-            this.Controls.Add(_cbTargetUsername);
-            this.Controls.Add(_lblNewPassword);
-            this.Controls.Add(_txtNewPassword);
-            this.Controls.Add(_lblRights);
-            this.Controls.Add(_cbRole);
-            this.Controls.Add(_chbPin);
-            this.Controls.Add(_lblNewPin);
-            this.Controls.Add(_txtNewPin);
-            this.Controls.Add(bottomPanel);
+            Controls.Add(_lblTargetUsername);
+            Controls.Add(_cbTargetUsername);
+            Controls.Add(_lblNewPassword);
+            Controls.Add(_txtNewPassword);
+            Controls.Add(_lblRights);
+            Controls.Add(_cbRole);
+            Controls.Add(_chbPin);
+            Controls.Add(_lblNewPin);
+            Controls.Add(_txtNewPin);
+            Controls.Add(bottomPanel);
         }
         private void OnDeleteUserClicked(object sender, EventArgs e)
         {
@@ -94,7 +94,7 @@
                 return;
             }
 
-            var result = MessageBox.Show($"Sind Sie sich sicher, dass Sie den Account '{targetUsername}' Löschen möchten ?", "Confirmation", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show($"Sind Sie sich sicher, dass Sie den Account '{targetUsername}' Löschen möchten ?", "Confirmation", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
@@ -122,7 +122,7 @@
             string newPin = _txtNewPin.Text;
             string newPassword = _txtNewPassword.Text;
 
-            var result = MessageBox.Show($"Sind Sie sich sicher, dass Sie den Account '{targetUsername}' Bearbeiten möchten ?", "Confirmation", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show($"Sind Sie sich sicher, dass Sie den Account '{targetUsername}' Bearbeiten möchten ?", "Confirmation", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {

@@ -109,7 +109,6 @@
             AcceptButton = bLogin;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            CancelButton = bRegister;
             ClientSize = new Size(300, 114);
             Controls.Add(label3);
             Controls.Add(bRegister);

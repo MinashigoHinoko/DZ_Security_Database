@@ -62,7 +62,7 @@
             lbBlack.Name = "lbBlack";
             lbBlack.Size = new Size(17, 20);
             lbBlack.TabIndex = 92;
-            lbBlack.Text = "1";
+            lbBlack.Text = "0";
             // 
             // label36
             // 
@@ -80,7 +80,7 @@
             lbRed.Name = "lbRed";
             lbRed.Size = new Size(17, 20);
             lbRed.TabIndex = 90;
-            lbRed.Text = "2";
+            lbRed.Text = "0";
             // 
             // label28
             // 
@@ -126,7 +126,7 @@
             lbDefect.Name = "lbDefect";
             lbDefect.Size = new Size(17, 20);
             lbDefect.TabIndex = 78;
-            lbDefect.Text = "2";
+            lbDefect.Text = "0";
             // 
             // label20
             // 
@@ -144,7 +144,7 @@
             lbBestand.Name = "lbBestand";
             lbBestand.Size = new Size(17, 20);
             lbBestand.TabIndex = 60;
-            lbBestand.Text = "4";
+            lbBestand.Text = "0";
             // 
             // cbEquipment
             // 

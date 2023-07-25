@@ -5,14 +5,14 @@ namespace Festival_Manager
 {
     public partial class cPersonalManuellHinzufügen : Form
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private string username;
         public cPersonalManuellHinzufügen(string username)
         {
             InitializeComponent();
             this.username = username;
-            this.TopMost = true;
+            TopMost = true;
         }
 
         private void bAddWorker_Click(object sender, EventArgs e)
@@ -21,7 +21,7 @@ namespace Festival_Manager
             try
             {
                 long workerID = 0;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
@@ -29,11 +29,11 @@ namespace Festival_Manager
                             (MitarbeiterID,Firma, Vorname, Nachname, Geburtsdatum, Geburtsland, Wohnort, ChipNummer, Gender, Muttersprache, Sprachen, TelefonNummer, Ansprechpartner, Position) 
                             VALUES 
                             (@ID,@Firma, @Vorname, @Nachname, @Geburtsdatum, @Geburtsland, @Wohnort, @ChipNummer, @Gender, @Muttersprache, @Sprachen, @TelefonNummer, @Ansprechpartner, @Position)";
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
                     {
                         workerID = (long)cmd.ExecuteScalar() + 1;
                     }
-                    using (var cmd = new SQLiteCommand(query, conn))
+                    using (SQLiteCommand cmd = new(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@ID", workerID);
                         cmd.Parameters.AddWithValue("@Firma", tbCompany.Text.IsNullOrEmpty() ? null : tbCompany.Text);
@@ -55,7 +55,8 @@ namespace Festival_Manager
                 }
                 cLogger.LogDatabaseChange($"Added New Worker {workerID}", username);
                 MessageBox.Show("Mitarbeiter erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                Hide();
+                Close();
             }
             catch (Exception ex)
             {
@@ -65,12 +66,12 @@ namespace Festival_Manager
 
         private void cPersonalManuellHinzufügen_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
+            Hide();
         }
 
         private void cPersonalManuellHinzufügen_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
     }
 }

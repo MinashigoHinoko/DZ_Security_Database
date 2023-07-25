@@ -1,6 +1,5 @@
 ﻿using System.Data.SQLite;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Festival_Manager
 {
@@ -8,9 +7,8 @@ namespace Festival_Manager
     {
         public class Registration
         {
-
-            static string folderPath = cDataBase.DbPath;
-            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            private static string folderPath = cDataBase.DbPath;
+            private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
             public bool RegisterUser(string username, string password, string rights, bool canEdit, string pin = null)
             {
                 // Generate a new salt
@@ -24,10 +22,10 @@ namespace Festival_Manager
                 {
                     if (int.TryParse(pin, out int pinNumber) && pin.Length == 4)
                     {
-                        using (var conn = new SQLiteConnection(stConnectionString))
+                        using (SQLiteConnection conn = new(stConnectionString))
                         {
                             conn.Open();
-                            using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
+                            using (SQLiteCommand cmd = new("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
                             {
                                 cmd.Parameters.AddWithValue("@username", username);
                                 cmd.Parameters.AddWithValue("@password", hashedPassword);
@@ -48,10 +46,10 @@ namespace Festival_Manager
                 }
                 else
                 {
-                    using (var conn = new SQLiteConnection(stConnectionString))
+                    using (SQLiteConnection conn = new(stConnectionString))
                     {
                         conn.Open();
-                        using (var cmd = new SQLiteCommand("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
+                        using (SQLiteCommand cmd = new("INSERT INTO Passwort (Username, HashedPassword, Salt, Rights, canEdit, PIN) VALUES (@username, @password, @salt, @rights, @canEdit, @pin)", conn))
                         {
                             cmd.Parameters.AddWithValue("@username", username);
                             cmd.Parameters.AddWithValue("@password", hashedPassword);
@@ -69,7 +67,7 @@ namespace Festival_Manager
             private static string GenerateSalt()
             {
                 byte[] saltBytes = new byte[32];
-                using (var provider = new RNGCryptoServiceProvider())
+                using (RNGCryptoServiceProvider provider = new())
                 {
                     provider.GetBytes(saltBytes);
                 }
@@ -80,7 +78,7 @@ namespace Festival_Manager
             private static string HashPasswordWithSalt(string password, string salt)
             {
                 byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
-                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                Rfc2898DeriveBytes pbkdf2 = new(password, saltBytes, 10000);
                 byte[] passwordBytes = pbkdf2.GetBytes(20);
                 return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
@@ -88,21 +86,21 @@ namespace Festival_Manager
         }
         public class CheckRights
         {
-            static string folderPath = cDataBase.DbPath;
-            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            private static string folderPath = cDataBase.DbPath;
+            private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
             public bool CanEdit(string username)
             {
                 string userRights = null;
                 string canEditString;
                 bool canEdit = false;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
                     // SQL-Abfrage erstellen
                     string sql = "SELECT canEdit,Rights FROM Passwort WHERE Username = @username";
 
-                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (SQLiteCommand cmd = new(sql, conn))
                     {
                         // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
                         cmd.Parameters.AddWithValue("@username", username);
@@ -113,7 +111,7 @@ namespace Festival_Manager
                             {
                                 canEditString = reader.GetString(0);
                                 userRights = reader.GetString(1);
-                                canEdit = canEditString == "1" ? true : false;
+                                canEdit = canEditString == "1";
                             }
                         }
                     }
@@ -121,20 +119,20 @@ namespace Festival_Manager
                 }
 
                 // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
-                return canEdit ? true : false;
+                return canEdit;
 
             }
             public string rightCheck(string username)
             {
                 string userRights = null;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
                     // SQL-Abfrage erstellen
                     string sql = "SELECT Rights FROM Passwort WHERE Username = @username";
 
-                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (SQLiteCommand cmd = new(sql, conn))
                     {
                         // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
                         cmd.Parameters.AddWithValue("@username", username);
@@ -160,14 +158,14 @@ namespace Festival_Manager
                 string userPin = null;
                 bool canEdit = false;
                 // Verbindung zur Datenbank herstellen
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
                     // SQL-Abfrage erstellen
                     string sql = "SELECT canEdit,PIN,Rights FROM Passwort WHERE Username = @username";
 
-                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (SQLiteCommand cmd = new(sql, conn))
                     {
                         // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
                         cmd.Parameters.AddWithValue("@username", username);
@@ -188,13 +186,13 @@ namespace Festival_Manager
 
                 // Überprüft, ob PIN mit dem gespeicherten PIN übereinstimmt
 
-                return canEdit ? pin == userPin ? true : false : userRights == "admin" ? true : false;
+                return canEdit ? pin == userPin : userRights == "admin";
             }
         }
         public class Login
         {
-            static string folderPath = cDataBase.DbPath;
-            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            private static string folderPath = cDataBase.DbPath;
+            private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
             public string AuthenticateUser(string username, string password)
             {
                 string storedSalt = "";
@@ -202,14 +200,14 @@ namespace Festival_Manager
                 string userRights = null;
 
                 // Verbindung zur Datenbank herstellen
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
                     // SQL-Abfrage erstellen
                     string sql = "SELECT Salt, HashedPassword, Rights FROM Passwort WHERE Username = @username";
 
-                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (SQLiteCommand cmd = new(sql, conn))
                     {
                         // Benutzernamen als Parameter hinzufügen, um SQL-Injection zu vermeiden
                         cmd.Parameters.AddWithValue("@username", username);
@@ -238,17 +236,17 @@ namespace Festival_Manager
             private static string HashPasswordWithSalt(string password, string salt)
             {
                 byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
-                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                Rfc2898DeriveBytes pbkdf2 = new(password, saltBytes, 10000);
                 byte[] passwordBytes = pbkdf2.GetBytes(20);
                 return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
             public bool IsDatabaseEmpty()
             {
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Passwort WHERE Rights IS 'admin'", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Passwort WHERE Rights IS 'admin'", conn))
                     {
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         return count == 0;
@@ -258,17 +256,17 @@ namespace Festival_Manager
         }
         public class UserManagement
         {
-            static string folderPath = cDataBase.DbPath;
-            static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+            private static string folderPath = cDataBase.DbPath;
+            private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
             public List<string> GetUsernames()
             {
-                List<string> usernames = new List<string>();
+                List<string> usernames = new();
 
-                using (var connection = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection connection = new(stConnectionString))
                 {
                     connection.Open();
-                    var command = new SQLiteCommand("SELECT Username FROM Passwort", connection);
-                    using (var reader = command.ExecuteReader())
+                    SQLiteCommand command = new("SELECT Username FROM Passwort", connection);
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -288,10 +286,10 @@ namespace Festival_Manager
                     MessageBox.Show("Only admin users can change user rights.");
                     return false;
                 }
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET Rights = @rights WHERE Username = @username", conn))
+                    using (SQLiteCommand cmd = new("UPDATE Passwort SET Rights = @rights WHERE Username = @username", conn))
                     {
                         cmd.Parameters.AddWithValue("@username", targetUsername);
                         cmd.Parameters.AddWithValue("@rights", newRights);
@@ -311,10 +309,10 @@ namespace Festival_Manager
 
                 string newSalt = GenerateSalt();
                 string newHashedPassword = HashPasswordWithSalt(newPassword, newSalt);
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET HashedPassword = @password, Salt = @salt WHERE Username = @username", conn))
+                    using (SQLiteCommand cmd = new("UPDATE Passwort SET HashedPassword = @password, Salt = @salt WHERE Username = @username", conn))
                     {
                         cmd.Parameters.AddWithValue("@username", targetUsername);
                         cmd.Parameters.AddWithValue("@password", newHashedPassword);
@@ -338,10 +336,10 @@ namespace Festival_Manager
                     return false;
                 }
 
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand("UPDATE Passwort SET PIN = @pin WHERE Username = @username", conn))
+                    using (SQLiteCommand cmd = new("UPDATE Passwort SET PIN = @pin WHERE Username = @username", conn))
                     {
                         cmd.Parameters.AddWithValue("@username", username);
                         cmd.Parameters.AddWithValue("@pin", newPin);
@@ -354,7 +352,7 @@ namespace Festival_Manager
             private static string GenerateSalt()
             {
                 byte[] saltBytes = new byte[32];
-                using (var provider = new RNGCryptoServiceProvider())
+                using (RNGCryptoServiceProvider provider = new())
                 {
                     provider.GetBytes(saltBytes);
                 }
@@ -365,7 +363,7 @@ namespace Festival_Manager
             private static string HashPasswordWithSalt(string password, string salt)
             {
                 byte[] saltBytes = Convert.FromBase64String(salt);  // Convert the salt string to a byte array
-                Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                Rfc2898DeriveBytes pbkdf2 = new(password, saltBytes, 10000);
                 byte[] passwordBytes = pbkdf2.GetBytes(20);
                 return Convert.ToBase64String(passwordBytes);  // Convert the hashed password to a string
             }
@@ -373,11 +371,11 @@ namespace Festival_Manager
             private bool IsAdmin(string username)
             {
                 string userRights = null;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
                     string sql = "SELECT Rights FROM Passwort WHERE Username = @username";
-                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (SQLiteCommand cmd = new(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@username", username);
                         using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -394,10 +392,10 @@ namespace Festival_Manager
             }
             public bool DeleteUser(string targetUsername)
             {
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
-                    using (var cmd = new SQLiteCommand("DELETE FROM Passwort WHERE Username = @username", conn))
+                    using (SQLiteCommand cmd = new("DELETE FROM Passwort WHERE Username = @username", conn))
                     {
                         cmd.Parameters.AddWithValue("@username", targetUsername);
                         cmd.ExecuteNonQuery();

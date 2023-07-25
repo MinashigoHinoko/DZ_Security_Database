@@ -2,8 +2,8 @@
 {
     public partial class cAdminView : Form
     {
-        cViewManager viewManager = new cViewManager();
-        string username;
+        private cViewManager viewManager = new();
+        private string username;
         public cAdminView(string username)
         {
             InitializeComponent();
@@ -17,12 +17,13 @@
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
             viewManager.checkIn(sender, e, true, username);
         }
 
         private void bToolBorrow_Click(object sender, EventArgs e)
         {
+            Hide();
             viewManager.toolBorrow(sender, e, true, username);
         }
 
@@ -33,44 +34,45 @@
 
         private void bPrint_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
             viewManager.printOut(sender, e, true, username);
         }
 
         private void bToolOverlay_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
             viewManager.toolOverview(sender, e, true, username);
         }
 
         private void bWorkerOverview_Click(object sender, EventArgs e)
         {
+            Hide();
             viewManager.workerOverview(sender, e, true, username);
         }
 
         private void cAdminView_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void cAdminView_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            cLoginMenu cLoginMenu = new cLoginMenu();
+            Hide();
+            cLoginMenu cLoginMenu = new();
             cLoginMenu.ShowDialog();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            UserManagementForm userManagementForm = new UserManagementForm(username);
+            Hide();
+            UserManagementForm userManagementForm = new(username);
             userManagementForm.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            fInportData inportData = new fInportData(true, username);
+            Hide();
+            fInportData inportData = new(true, username);
             inportData.ShowDialog();
         }
     }

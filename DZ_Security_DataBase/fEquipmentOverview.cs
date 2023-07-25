@@ -5,10 +5,10 @@ namespace Festival_Manager
 {
     public partial class cEquipmentOverview : Form
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        bool isAdmin = false;
-        string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private bool isAdmin = false;
+        private string username;
         public cEquipmentOverview(bool isAdmin, string username)
         {
             this.isAdmin = isAdmin;
@@ -18,13 +18,13 @@ namespace Festival_Manager
         private void insertDatabaseInComboBox()
         {
             cbEquipment.Items.Clear();
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe, Position FROM Ausruestung", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe, Position FROM Ausruestung", conn))
                 {
-                    using (var reader = cmd.ExecuteReader())
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -34,7 +34,7 @@ namespace Festival_Manager
                             string position = reader["Position"].ToString();
 
                             // Create a new cWorker object
-                            cEquipment equipment = new cEquipment { ID = id, Name = art, Color = farbe, Position = position };
+                            cEquipment equipment = new() { ID = id, Name = art, Color = farbe, Position = position };
                             cbEquipment.Items.Add(equipment);
                         }
                     }
@@ -44,46 +44,46 @@ namespace Festival_Manager
 
         private void cEquipmentOverview_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             insertDatabaseInComboBox();
         }
 
         public void cbEquipment_SelectedIndexChanged(object sender, EventArgs e)
         {
             cEquipment selectedEquipment = cbEquipment.SelectedItem as cEquipment;
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBestand.Text = countRentable.ToString();
                 }
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS 'Defekt'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS 'Defekt'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbDefect.Text = countRentable.ToString();
                 }
                 conn.Close();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'blau'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'blau'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBlue.Text = countRentable.ToString();
                 }
                 conn.Close();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'schwarz'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'schwarz'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBlack.Text = countRentable.ToString();
                 }
                 conn.Close();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'rot'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'rot'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
@@ -95,17 +95,17 @@ namespace Festival_Manager
 
         private void bAddWorker_Click(object sender, EventArgs e)
         {
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 300; // adjust the height to accommodate another TextBox
             prompt.Text = "Wählen Sie ein Ausrüstungsteil aus";
 
             // Erzeugt eine TextBox und eine ListBox
-            TextBox equipmentBox = new TextBox() { Dock = DockStyle.Top };
+            TextBox equipmentBox = new() { Dock = DockStyle.Top };
 
-            ListBox equipmentListBox = new ListBox() { Dock = DockStyle.Top };
+            ListBox equipmentListBox = new() { Dock = DockStyle.Top };
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
                                       // Set the AcceptButton property of the Form
@@ -125,21 +125,21 @@ namespace Festival_Manager
                 }
             };
 
-            List<cEquipment> allEquipment = new List<cEquipment>();
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cEquipment> allEquipment = new();
+            List<cWorker> allEmployee = new();
 
             // Füllen Sie die ComboBox mit den EquipmentIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'Defekt' \r\n", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'Defekt' \r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var equipmentItem = new cEquipment
+                            cEquipment equipmentItem = new()
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
@@ -161,7 +161,7 @@ namespace Festival_Manager
                 string[] searchTerms = equipmentBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEquipment.Where(item =>
+                IEnumerable<cEquipment> matches = allEquipment.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                         || item.Color.ToLower().Contains(term.Trim())
@@ -169,7 +169,7 @@ namespace Festival_Manager
                                     )
                 );
                 equipmentListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cEquipment? match in matches)
                 {
                     equipmentListBox.Items.Add(match);
                 }
@@ -188,22 +188,21 @@ namespace Festival_Manager
                 string oCurrentID = selectedEquipment.ID; // now oCurrentID is the ID string
                 string oCurrentPosition = selectedEquipment.Position;
                 cLogger.LogDatabaseChange($"Equipment Defekt Gemeldet: {oCurrentID}", username);
-                bool bDoesEmployeeExist = false;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Ausruestung WHERE ID = @AusruestungID AND Zustand IS NOT 'Defekt'", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE ID = @AusruestungID AND Zustand IS NOT 'Defekt'", conn))
                     {
                         cmd.Parameters.AddWithValue("@AusruestungID", oCurrentID);
                     }
                     conn.Close();
                 }
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand(conn))
+                    using (SQLiteCommand cmd = new(conn))
                     {
                         cmd.CommandText = @"
                         UPDATE Ausruestung
@@ -222,15 +221,15 @@ namespace Festival_Manager
 
         private void cEquipmentRent_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            if (this.isAdmin)
+            Hide();
+            if (isAdmin)
             {
-                cAdminView cAdminView = new cAdminView(username);
+                cAdminView cAdminView = new(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView(username);
+                cMemberView cMemberView = new(username);
                 cMemberView.ShowDialog();
             }
         }

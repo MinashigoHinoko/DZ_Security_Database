@@ -8,13 +8,13 @@ namespace Festival_Manager
         public cLoginMenu()
         {
             InitializeComponent();
-            this.TopMost = true;
+            TopMost = true;
         }
 
         private void bRegister_Click(object sender, EventArgs e)
         {
             // Erstellen Sie eine neue Instanz der Login-Klasse.
-            cPasswordManager.Login loginManager = new cPasswordManager.Login();
+            cPasswordManager.Login loginManager = new();
 
             // Überprüfen Sie, ob die Datenbank leer ist.
             bool isDatabaseEmpty = loginManager.IsDatabaseEmpty();
@@ -57,29 +57,29 @@ namespace Festival_Manager
         public void showRegistrationForm()
         {
             // Erzeugt ein neues Formular
-            Form registrationForm = new Form();
+            Form registrationForm = new();
             registrationForm.Width = 300;
             registrationForm.Height = 300;
             registrationForm.Text = "Benutzerregistrierung";
             registrationForm.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt Labels für Benutzername, Passwort und Benutzerrolle
-            Label lblUsername = new Label() { Left = 50, Top = 0, Width = 200, Text = "Nutzername:" };
-            Label lblPassword = new Label() { Left = 50, Top = 50, Width = 200, Text = "Passwort:" };
-            Label lblRole = new Label() { Left = 50, Top = 100, Width = 200, Text = "Benutzerrolle:" };
-            CheckBox chbPin = new CheckBox() { Left = 50, Top = 150, Width = 220, Text = "Darf der Nutzer Editieren?" };
-            Label lblPin = new Label() { Left = 50, Top = 170, Width = 200, Text = "PIN:" };
+            Label lblUsername = new() { Left = 50, Top = 0, Width = 200, Text = "Nutzername:" };
+            Label lblPassword = new() { Left = 50, Top = 50, Width = 200, Text = "Passwort:" };
+            Label lblRole = new() { Left = 50, Top = 100, Width = 200, Text = "Benutzerrolle:" };
+            CheckBox chbPin = new() { Left = 50, Top = 150, Width = 220, Text = "Darf der Nutzer Editieren?" };
+            Label lblPin = new() { Left = 50, Top = 170, Width = 200, Text = "PIN:" };
             lblPin.Visible = false;
 
             // Erzeugt TextBoxen für Benutzername und Passwort
-            TextBox txtUsername = new TextBox() { Left = 50, Top = 20, Width = 200 };
-            TextBox txtPassword = new TextBox() { Left = 50, Top = 70, Width = 200, PasswordChar = '*' };
+            TextBox txtUsername = new() { Left = 50, Top = 20, Width = 200 };
+            TextBox txtPassword = new() { Left = 50, Top = 70, Width = 200, PasswordChar = '*' };
             // Erzeugt ein TextBox für die PIN-Eingabe
-            TextBox txtPin = new TextBox() { Left = 50, Top = 190, Width = 200 };
+            TextBox txtPin = new() { Left = 50, Top = 190, Width = 200 };
             txtPin.Visible = false; // Anfangs unsichtbar
 
             // Erzeugt ComboBox für die Benutzerrolle
-            ComboBox cbRole = new ComboBox() { Left = 50, Top = 120, Width = 200 };
+            ComboBox cbRole = new() { Left = 50, Top = 120, Width = 200 };
             cbRole.Items.AddRange(new string[] { "admin", "member", "booking" });
             cbRole.DropDownStyle = ComboBoxStyle.DropDownList;
             cbRole.SelectedIndex = 1;
@@ -93,7 +93,7 @@ namespace Festival_Manager
                 lblPin.Visible = chbPin.Checked;
             };
             // Erzeugt einen neuen Button zum Einreichen der Benutzerregistrierung
-            Button registerButton = new Button() { Text = "Registrieren", Dock = DockStyle.Bottom };
+            Button registerButton = new() { Text = "Registrieren", Dock = DockStyle.Bottom };
             registerButton.Width = 100; // Setzt die Breite
             registerButton.Height = 30; // Setzt die Höhe
             registerButton.Click += (sender, e) =>
@@ -105,7 +105,7 @@ namespace Festival_Manager
                 string pin = txtPin.Text;
 
                 // Erzeugt eine neue Instanz von cPasswordManager.Registration und versucht, den Benutzer zu registrieren
-                cPasswordManager.Registration registrationManager = new cPasswordManager.Registration();
+                cPasswordManager.Registration registrationManager = new();
 
                 try
                 {
@@ -161,7 +161,7 @@ namespace Festival_Manager
 
         private void cLoginMenu_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             if (firstLoad)
             {
                 cDataBase.createDatabase();
@@ -176,7 +176,7 @@ namespace Festival_Manager
             string password = tbPassword.Text;
 
             // Erstellen Sie eine neue Instanz der Login-Klasse.
-            cPasswordManager.Login loginManager = new cPasswordManager.Login();
+            cPasswordManager.Login loginManager = new();
 
             // Überprüfen Sie die Anmeldedaten des Benutzers.
             string role = loginManager.AuthenticateUser(username, password);
@@ -185,20 +185,20 @@ namespace Festival_Manager
             {
                 cLogger.LogDatabaseChange($"Login {role}", username);
                 // Anmeldung war erfolgreich.
-                this.Hide();
+                Hide();
                 if (role == "admin")
                 {
-                    cAdminView admin = new cAdminView(username);
+                    cAdminView admin = new(username);
                     admin.Show();
                 }
                 else if (role == "member")
                 {
-                    cMemberView member = new cMemberView(username);
+                    cMemberView member = new(username);
                     member.Show();
                 }
                 else if (role == "booking")
                 {
-                    cBookingView booking = new cBookingView(username);
+                    cBookingView booking = new(username);
                     booking.Show();
                 }
             }
@@ -211,7 +211,7 @@ namespace Festival_Manager
 
         private void cLoginMenu_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
+            Hide();
         }
     }
 }

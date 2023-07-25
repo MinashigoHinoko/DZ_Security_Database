@@ -5,9 +5,9 @@ namespace Festival_Manager
 {
     public partial class cFunk : Form
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private string username;
         public cFunk(string username)
         {
             this.username = username;
@@ -15,26 +15,26 @@ namespace Festival_Manager
         }
         private void buildDatabase()
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Funkgeraet IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Funkgeraet IS 'true'", conn))
                 {
                     long countRadio = (long)cmd.ExecuteScalar();
                     lbRadio.Text = countRadio.ToString();
                 }
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Mikimaus IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Mikimaus IS 'true'", conn))
                 {
                     long countMicky = (long)cmd.ExecuteScalar();
                     lbMicky.Text = countMicky.ToString();
                 }
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Rasierer IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Rasierer IS 'true'", conn))
                 {
                     long countShaver = (long)cmd.ExecuteScalar();
                     lbShaver.Text = countShaver.ToString();
                 }
-                using (var cmd = new SQLiteCommand("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Tarn_Headset IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Funkgeraete WHERE Tarn_Headset IS 'true'", conn))
                 {
                     long countHidden = (long)cmd.ExecuteScalar();
                     lbHidden.Text = countHidden.ToString();
@@ -47,17 +47,17 @@ namespace Festival_Manager
 
         private void cFunk_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             buildDatabase();
         }
 
         private void bRent_Click(object sender, EventArgs e)
         {
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Funkgeraete WHERE Status IS 'Ausleihbar'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Funkgeraete WHERE Status IS 'Ausleihbar'", conn))
                 {
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     if (count == 0)
@@ -70,21 +70,21 @@ namespace Festival_Manager
                     }
                 }
             }
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 300; // adjust the height to accommodate another TextBox
             prompt.Text = "Wählen Sie ein Ausrüstungsteil aus und geben Sie die Mitarbeiter-ID ein";
 
             // Erzeugt eine TextBox und eine ListBox
-            TextBox equipmentBox = new TextBox() { Dock = DockStyle.Top };
+            TextBox equipmentBox = new() { Dock = DockStyle.Top };
 
-            ListBox equipmentListBox = new ListBox() { Dock = DockStyle.Top };
+            ListBox equipmentListBox = new() { Dock = DockStyle.Top };
 
-            TextBox employeeBox = new TextBox() { Dock = DockStyle.Top }; // New TextBox for employee ID
-            ListBox employeeListBox = new ListBox() { Dock = DockStyle.Top };
+            TextBox employeeBox = new() { Dock = DockStyle.Top }; // New TextBox for employee ID
+            ListBox employeeListBox = new() { Dock = DockStyle.Top };
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
                                       // Set the AcceptButton property of the Form
@@ -104,21 +104,21 @@ namespace Festival_Manager
                 }
             };
 
-            List<cEquipment> allEquipment = new List<cEquipment>();
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cEquipment> allEquipment = new();
+            List<cWorker> allEmployee = new();
 
             // Füllen Sie die ComboBox mit den EquipmentIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Bleibt \r\nFROM Funkgeraete WHERE Status IS 'Ausleihbar' \r\n", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Bleibt \r\nFROM Funkgeraete WHERE Status IS 'Ausleihbar' \r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var equipmentItem = new cEquipment
+                            cEquipment equipmentItem = new()
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
@@ -132,16 +132,16 @@ namespace Festival_Manager
             }
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n WHERE CheckInState IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n WHERE CheckInState IS 'true'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var employeeItem = new cWorker
+                            cWorker employeeItem = new()
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
@@ -160,7 +160,7 @@ namespace Festival_Manager
                 string[] searchTerms = equipmentBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEquipment.Where(item =>
+                IEnumerable<cEquipment> matches = allEquipment.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                         || item.Color.ToLower().Contains(term.Trim())
@@ -168,7 +168,7 @@ namespace Festival_Manager
                                     )
                 );
                 equipmentListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cEquipment? match in matches)
                 {
                     equipmentListBox.Items.Add(match);
                 }
@@ -181,13 +181,13 @@ namespace Festival_Manager
                 string[] searchTerms = employeeBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEmployee.Where(item =>
+                IEnumerable<cWorker> matches = allEmployee.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                     )
                 );
                 employeeListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cWorker? match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
@@ -210,23 +210,22 @@ namespace Festival_Manager
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentMemberID = selectedWorker.ID;
                 string oCurrentPosition = selectedEquipment.Position;
-                bool bDoesEmployeeExist = false;
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Funkgeraete WHERE ID = @FunkID AND Status IS 'Ausleihbar'", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Funkgeraete WHERE ID = @FunkID AND Status IS 'Ausleihbar'", conn))
                     {
                         cmd.Parameters.AddWithValue("@FunkID", oCurrentID);
                     }
                     conn.Close();
                 }
                 cLogger.LogDatabaseChange($"Ausleihen Funkgeraet: {oCurrentID}, MitarbeiterID: {oCurrentMemberID}", username);
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand(conn))
+                    using (SQLiteCommand cmd = new(conn))
                     {
                         cmd.CommandText = @"
                         UPDATE Funkgeraete
@@ -252,10 +251,10 @@ namespace Festival_Manager
         private void bReturn_Click(object sender, EventArgs e)
         {
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Funkgeraete WHERE Status IS 'Ausgeliehen'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Funkgeraete WHERE Status IS 'Ausgeliehen'", conn))
                 {
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     if (count == 0)
@@ -268,18 +267,18 @@ namespace Festival_Manager
                     }
                 }
             }
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 300;
             prompt.Text = "Wählen Sie ein Ausrüstungsteil aus und geben Sie die Mitarbeiter-ID ein";
 
-            TextBox equipmentBox = new TextBox() { Dock = DockStyle.Top };
-            ListBox equipmentListBox = new ListBox() { Dock = DockStyle.Top };
+            TextBox equipmentBox = new() { Dock = DockStyle.Top };
+            ListBox equipmentListBox = new() { Dock = DockStyle.Top };
 
-            TextBox employeeBox = new TextBox() { Dock = DockStyle.Top };
-            ListBox employeeListBox = new ListBox() { Dock = DockStyle.Top };
+            TextBox employeeBox = new() { Dock = DockStyle.Top };
+            ListBox employeeListBox = new() { Dock = DockStyle.Top };
 
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
             prompt.AcceptButton = confirmation;
@@ -298,19 +297,19 @@ namespace Festival_Manager
                 }
             };
 
-            List<cEquipment> allEquipment = new List<cEquipment>();
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cEquipment> allEquipment = new();
+            List<cWorker> allEmployee = new();
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT ID,Art,Bleibt FROM Funkgeraete WHERE Status IS 'Ausgeliehen'", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Bleibt FROM Funkgeraete WHERE Status IS 'Ausgeliehen'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var equipmentItem = new cEquipment
+                            cEquipment equipmentItem = new()
                             {
                                 ID = reader.GetInt32(0).ToString(),
                                 Name = reader.GetString(1),
@@ -330,10 +329,10 @@ namespace Festival_Manager
                     allEmployee.Clear();
                     employeeListBox.Items.Clear();
 
-                    using (var conn = new SQLiteConnection(stConnectionString))
+                    using (SQLiteConnection conn = new(stConnectionString))
                     {
                         conn.Open();
-                        using (var cmd = new SQLiteCommand(
+                        using (SQLiteCommand cmd = new(
                             "SELECT Mitarbeiter.MitarbeiterID, Mitarbeiter.Vorname || ' ' || Mitarbeiter.Nachname AS Name, Mitarbeiter.Position " +
                             "FROM Mitarbeiter " +
                             "JOIN Funkgeraete ON Mitarbeiter.MitarbeiterID = Funkgeraete.MitarbeiterID " +
@@ -344,7 +343,7 @@ namespace Festival_Manager
                             {
                                 while (reader.Read())
                                 {
-                                    var employeeItem = new cWorker
+                                    cWorker employeeItem = new()
                                     {
                                         ID = reader.GetInt32(0).ToString(),
                                         Name = reader.GetString(1),
@@ -363,7 +362,7 @@ namespace Festival_Manager
             {
                 string[] searchTerms = equipmentBox.Text.ToLower().Split(',');
 
-                var matches = allEquipment.Where(item =>
+                IEnumerable<cEquipment> matches = allEquipment.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                         || item.Color.ToLower().Contains(term.Trim())
@@ -371,7 +370,7 @@ namespace Festival_Manager
                                     )
                 );
                 equipmentListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cEquipment? match in matches)
                 {
                     equipmentListBox.Items.Add(match);
                 }
@@ -381,13 +380,13 @@ namespace Festival_Manager
             {
                 string[] searchTerms = employeeBox.Text.ToLower().Split(',');
 
-                var matches = allEmployee.Where(item =>
+                IEnumerable<cWorker> matches = allEmployee.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                     )
                 );
                 employeeListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cWorker? match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
@@ -407,11 +406,11 @@ namespace Festival_Manager
                 cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
                 string oCurrentMemberID = selectedWorker.ID;
                 cLogger.LogDatabaseChange($"Rückgabe Funkgeraet: {oCurrentID}, MitarbeiterID: {oCurrentMemberID}", username);
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand(conn))
+                    using (SQLiteCommand cmd = new(conn))
                     {
                         cmd.CommandText = @"
                         UPDATE Funkgeraete

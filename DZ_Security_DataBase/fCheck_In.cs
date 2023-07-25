@@ -5,10 +5,10 @@ namespace Festival_Manager
 {
     public partial class cCheckIn : Form
     {
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
-        bool isAdmin = false;
-        string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private bool isAdmin = false;
+        private string username;
         public cCheckIn(bool isAdmin, string username)
         {
             InitializeComponent();
@@ -17,22 +17,22 @@ namespace Festival_Manager
         }
         private void buildDatabase()
         {
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(CheckInState) FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(CheckInState) FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
                 {
                     long countCheckIn = (long)cmd.ExecuteScalar();
                     lbCheckedIn.Text = countCheckIn.ToString();
                 }
 
-                using (var cmd = new SQLiteCommand("SELECT COUNT(CheckInState) FROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(CheckInState) FROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
                 {
                     long countCheckOut = (long)cmd.ExecuteScalar();
                     lbCheckedOut.Text = countCheckOut.ToString();
                 }
-                using (var cmd = new SQLiteCommand("Select COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
+                using (SQLiteCommand cmd = new("Select COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
                 {
                     long countCheckTotal = (long)cmd.ExecuteScalar();
                     lbTotalCount.Text = countCheckTotal.ToString();
@@ -46,21 +46,21 @@ namespace Festival_Manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
             prompt.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt eine TextBox und eine ListBox
-            TextBox searchBox = new TextBox();
+            TextBox searchBox = new();
             searchBox.Dock = DockStyle.Top;
 
-            ListBox employeeListBox = new ListBox();
+            ListBox employeeListBox = new();
             employeeListBox.Dock = DockStyle.Fill;
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
             // Set the AcceptButton property of the Form
@@ -77,14 +77,14 @@ namespace Festival_Manager
                 }
             };
 
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cWorker> allEmployee = new();
 
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die noch nicht eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'false'", conn))
                 {
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     if (count == 0)
@@ -97,11 +97,11 @@ namespace Festival_Manager
                     }
                 }
             }
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
                 string today = "2023-07-24"; //DateTime.Now.ToString("yyyy-MM-dd");
-                using (var cmd = new SQLiteCommand(@"
+                using (SQLiteCommand cmd = new(@"
                 SELECT m.MitarbeiterID, m.ChipNummer, m.Nachname || ' ' || m.Vorname AS FullName, m.Position, m.CheckInState
                 FROM Mitarbeiter m
                 INNER JOIN ArbeitszeitenSoll a ON m.MitarbeiterID = a.MitarbeiterID
@@ -112,13 +112,13 @@ namespace Festival_Manager
                     {
                         while (reader.Read())
                         {
-                            var employeeItem = new cWorker
+                            cWorker employeeItem = new()
                             {
                                 ID = !reader.IsDBNull(0) ? reader.GetInt32(0).ToString() : "",
                                 ChipNumber = !reader.IsDBNull(1) ? reader.GetInt32(1).ToString() : "",
                                 Name = reader.GetString(2),
                                 Position = reader.GetString(3),
-                                CheckInState = reader.GetString(4).ToLower() == "eingechecked" ? true : false,
+                                CheckInState = reader.GetString(4).ToLower() == "eingechecked",
                             };
 
                             allEmployee.Add(employeeItem);
@@ -135,13 +135,13 @@ namespace Festival_Manager
                 string[] searchTerms = searchBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEmployee.Where(item =>
+                IEnumerable<cWorker> matches = allEmployee.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                     )
                 );
                 employeeListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cWorker? match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
@@ -169,25 +169,25 @@ namespace Festival_Manager
                     DateTime checkInTime = DateTime.Now;
                     DateTime scheduledCheckInTime;
 
-                    using (var conn = new SQLiteConnection(stConnectionString))
+                    using (SQLiteConnection conn = new(stConnectionString))
                     {
                         conn.Open();
 
                         // Retrieve the scheduled check-in time
-                        using (var cmd = new SQLiteCommand("SELECT CheckedInSoll FROM ArbeitszeitenSoll WHERE MitarbeiterID = @EmployeeId", conn))
+                        using (SQLiteCommand cmd = new("SELECT CheckedInSoll FROM ArbeitszeitenSoll WHERE MitarbeiterID = @EmployeeId", conn))
                         {
                             cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
-                            var result = cmd.ExecuteScalar();
+                            object result = cmd.ExecuteScalar();
                             scheduledCheckInTime = (result != null) ? Convert.ToDateTime(result) : checkInTime;
                         }
 
-                        using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
+                        using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
                         {
                             cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
 
                             int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
 
-                            bDoesEmployeeExist = rowCount > 0 ? true : false;
+                            bDoesEmployeeExist = rowCount > 0;
                         }
                         conn.Close();
                     }
@@ -201,11 +201,11 @@ namespace Festival_Manager
                     if (!bDoesEmployeeExist)
                     {
                         cLogger.LogDatabaseChange($"CheckIn, MitarbeiterID: {oCurrentID}", username);
-                        using (var conn = new SQLiteConnection(stConnectionString))
+                        using (SQLiteConnection conn = new(stConnectionString))
                         {
                             conn.Open();
 
-                            using (var cmd = new SQLiteCommand(conn))
+                            using (SQLiteCommand cmd = new(conn))
                             {
                                 cmd.CommandText = @"
             INSERT INTO Arbeitszeiten (MitarbeiterID, CheckedIn, CheckedOut)
@@ -215,7 +215,7 @@ namespace Festival_Manager
 
                                 cmd.ExecuteNonQuery();
                             }
-                            using (var cmd = new SQLiteCommand(conn))
+                            using (SQLiteCommand cmd = new(conn))
                             {
                                 cmd.CommandText = @"
             UPDATE Mitarbeiter
@@ -230,26 +230,26 @@ namespace Festival_Manager
                             conn.Close();
                         }
 
-                        using (var conn = new SQLiteConnection(stConnectionString))
+                        using (SQLiteConnection conn = new(stConnectionString))
                         {
                             conn.Open();
-                            using (var cmd = new SQLiteCommand(conn))
+                            using (SQLiteCommand cmd = new(conn))
                             {
                                 cmd.CommandText = @"SELECT ChipNummer FROM Mitarbeiter WHERE MitarbeiterID = @EmployeeId";
                                 cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
 
-                                var result = cmd.ExecuteScalar();
+                                object result = cmd.ExecuteScalar();
 
                                 if (result == null || result == DBNull.Value)
                                 {
                                     MessageBox.Show("Der aktuelle Mitarbeiter hat keine Chip-Nummer. Bitte fügen Sie eine Chip-Nummer hinzu.",
                                                     "Fehlende Chip-Nummer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    cPersonalOverview cPersonalOverview = new cPersonalOverview(isAdmin, username, oCurrentID);
+                                    cPersonalOverview cPersonalOverview = new(isAdmin, username, oCurrentID);
                                     cPersonalOverview.ShowDialog();
                                 }
                             }
                         }
-                        cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin, username);
+                        cEquipmentRent cEquipmentRent = new(isAdmin, username);
                         cEquipmentRent.ShowDialog();
                     }
                     else
@@ -270,21 +270,21 @@ namespace Festival_Manager
         {
             // Erzeugt ein neues Formular
             bool bDoesEmployeeExist = false;
-            Form prompt = new Form();
+            Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 150;
             prompt.Text = "Wählen Sie einen Mitarbeiter aus";
             prompt.StartPosition = FormStartPosition.CenterScreen;
 
             // Erzeugt eine TextBox und eine ListBox
-            TextBox searchBox = new TextBox();
+            TextBox searchBox = new();
             searchBox.Dock = DockStyle.Top;
 
-            ListBox employeeListBox = new ListBox();
+            ListBox employeeListBox = new();
             employeeListBox.Dock = DockStyle.Fill;
 
             // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new Button() { Text = "Ok", Dock = DockStyle.Bottom };
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
             confirmation.Width = 100; // Set the width
             confirmation.Height = 30; // Set the height
             // Set the AcceptButton property of the Form
@@ -301,12 +301,12 @@ namespace Festival_Manager
                 }
             };
 
-            List<cWorker> allEmployee = new List<cWorker>();
+            List<cWorker> allEmployee = new();
 
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Mitarbeiter WHERE CheckInState IS 'true'", conn))
                 {
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     if (count == 0)
@@ -321,16 +321,16 @@ namespace Festival_Manager
             }
             // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
             // die eingecheckt haben.
-            using (var conn = new SQLiteConnection(stConnectionString))
+            using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName, Position \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND RentState IS 'false'", conn))
+                using (SQLiteCommand cmd = new("SELECT MitarbeiterID,ChipNummer, Nachname || ' ' || Vorname AS FullName, Position \r\nFROM Mitarbeiter WHERE CheckInState IS 'true' AND RentState IS 'false'", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var employeeItem = new cWorker
+                            cWorker employeeItem = new()
                             {
                                 ID = !reader.IsDBNull(0) ? reader.GetInt32(0).ToString() : "",
                                 ChipNumber = !reader.IsDBNull(1) ? reader.GetInt32(1).ToString() : "",
@@ -353,13 +353,13 @@ namespace Festival_Manager
                 string[] searchTerms = searchBox.Text.ToLower().Split(',');
 
                 // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                var matches = allEmployee.Where(item =>
+                IEnumerable<cWorker> matches = allEmployee.Where(item =>
                     searchTerms.All(term => item.ID.Contains(term.Trim())
                                         || item.Name.ToLower().Contains(term.Trim())
                                     )
                 );
                 employeeListBox.Items.Clear();
-                foreach (var match in matches)
+                foreach (cWorker? match in matches)
                 {
                     employeeListBox.Items.Add(match);
                 }
@@ -386,28 +386,28 @@ namespace Festival_Manager
                     return;
                 }
 
-                using (var conn = new SQLiteConnection(stConnectionString))
+                using (SQLiteConnection conn = new(stConnectionString))
                 {
                     conn.Open();
 
-                    using (var cmd = new SQLiteCommand("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Arbeitszeiten WHERE MitarbeiterID = @EmployeeId AND CheckedOut IS NULL", conn))
                     {
                         cmd.Parameters.AddWithValue("@EmployeeId", oCurrentID);
 
                         int rowCount = Convert.ToInt32(cmd.ExecuteScalar());
 
-                        bDoesEmployeeExist = rowCount > 0 ? true : false;
+                        bDoesEmployeeExist = rowCount > 0;
                     }
                     conn.Close();
                 }
                 if (bDoesEmployeeExist)
                 {
                     cLogger.LogDatabaseChange($"CheckOut, MitarbeiterID: {oCurrentID}", username);
-                    using (var conn = new SQLiteConnection(stConnectionString))
+                    using (SQLiteConnection conn = new(stConnectionString))
                     {
                         conn.Open();
 
-                        using (var cmd = new SQLiteCommand(conn))
+                        using (SQLiteCommand cmd = new(conn))
                         {
                             cmd.CommandText = @"
                 UPDATE Arbeitszeiten
@@ -418,7 +418,7 @@ namespace Festival_Manager
 
                             cmd.ExecuteNonQuery();
                         }
-                        using (var cmd = new SQLiteCommand(conn))
+                        using (SQLiteCommand cmd = new(conn))
                         {
                             cmd.CommandText = @"
                         UPDATE Mitarbeiter
@@ -440,28 +440,28 @@ namespace Festival_Manager
         }
         private void fCheckin_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            if (this.isAdmin)
+            Hide();
+            if (isAdmin)
             {
-                cAdminView cAdminView = new cAdminView(username);
+                cAdminView cAdminView = new(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView(username);
+                cMemberView cMemberView = new(username);
                 cMemberView.ShowDialog();
             }
         }
 
         private void cCheckIn_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             buildDatabase();
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            cEquipmentRent cEquipmentRent = new cEquipmentRent(isAdmin, username);
+            cEquipmentRent cEquipmentRent = new(isAdmin, username);
             cEquipmentRent.ShowDialog();
         }
 

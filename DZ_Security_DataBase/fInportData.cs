@@ -7,10 +7,10 @@ namespace Festival_Manager
 {
     public partial class fInportData : Form
     {
-        bool isAdmin = false;
-        string username;
-        static string folderPath = cDataBase.DbPath;
-        static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private bool isAdmin = false;
+        private string username;
+        private static string folderPath = cDataBase.DbPath;
+        private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
         public fInportData(bool isAdmin, string username)
         {
             InitializeComponent();
@@ -20,22 +20,22 @@ namespace Festival_Manager
 
         private void fInportData_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Hide();
-            if (this.isAdmin)
+            Hide();
+            if (isAdmin)
             {
-                cAdminView cAdminView = new cAdminView(username);
+                cAdminView cAdminView = new(username);
                 cAdminView.ShowDialog();
             }
             else
             {
-                cMemberView cMemberView = new cMemberView(username);
+                cMemberView cMemberView = new(username);
                 cMemberView.ShowDialog();
             }
         }
 
         private void fInportData_Load(object sender, EventArgs e)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -44,7 +44,7 @@ namespace Festival_Manager
             string excelPath = "";
 
             // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
-            using (var ofd = new OpenFileDialog())
+            using (OpenFileDialog ofd = new())
             {
                 ofd.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
                 DialogResult resu = ofd.ShowDialog();
@@ -60,10 +60,10 @@ namespace Festival_Manager
             }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            using var excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
-            using var reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
+            using FileStream excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
+            using IExcelDataReader reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
 
-            var conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new()
             {
                 ConfigureDataTable = _ => new ExcelDataTableConfiguration
                 {
@@ -71,19 +71,19 @@ namespace Festival_Manager
                 }
             };
 
-            var result = reader.AsDataSet(conf);
+            DataSet result = reader.AsDataSet(conf);
             DataTable table = result.Tables[0];
 
 
             // Verbindung zur SQLite-Datenbank herstellen
-            using var conn = new SQLiteConnection(stConnectionString);
+            using SQLiteConnection conn = new(stConnectionString);
             conn.Open();
             foreach (DataRow row in table.Rows)
             {
-                string mFirma = row[0].ToString().ToLower();
-                string mName = row[1].ToString().ToLower();
-                string mSurname = row[2].ToString().ToLower();
-                string mBirthdayRaw = row[6].ToString().ToLower();
+                string mFirma = row[0].ToString().ToLower().Trim();
+                string mName = row[1].ToString().ToLower().Trim();
+                string mSurname = row[2].ToString().ToLower().Trim();
+                string mBirthdayRaw = row[6].ToString().ToLower().Trim();
                 string mBirthday;
                 DateTime parsedDate;
                 if (DateTime.TryParse(mBirthdayRaw, out parsedDate))
@@ -103,34 +103,34 @@ namespace Festival_Manager
                 }
 
                 // Für andere Felder, setzen Sie sie auf NULL, wenn sie keinen Wert haben
-                string mBirthname = string.IsNullOrEmpty(row[3].ToString()) ? null : row[3].ToString().ToLower();
-                string mBirthplace = string.IsNullOrEmpty(row[4].ToString()) ? null : row[4].ToString().ToLower();
-                string mBirthcountry = string.IsNullOrEmpty(row[5].ToString()) ? null : row[5].ToString().ToLower();
-                string mCountry = string.IsNullOrEmpty(row[7].ToString()) ? null : row[7].ToString().ToLower();
-                string mGender = string.IsNullOrEmpty(row[8].ToString()) ? null : row[8].ToString().ToLower();
-                string mStreet = string.IsNullOrEmpty(row[9].ToString()) ? null : row[9].ToString().ToLower();
-                string mStreetNumber = string.IsNullOrEmpty(row[10].ToString()) ? null : row[10].ToString().ToLower();
-                string mPLZ = string.IsNullOrEmpty(row[11].ToString()) ? null : row[11].ToString().ToLower();
-                string mCity = string.IsNullOrEmpty(row[12].ToString()) ? null : row[12].ToString().ToLower();
-                string mBundes = string.IsNullOrEmpty(row[13].ToString()) ? null : row[13].ToString().ToLower();
-                string mAusweisArt = string.IsNullOrEmpty(row[14].ToString()) ? null : row[14].ToString().ToLower();
-                string mAusweisnummer = string.IsNullOrEmpty(row[15].ToString()) ? null : row[15].ToString().ToLower();
-                string mBewacherregister = string.IsNullOrEmpty(row[16].ToString()) ? null : row[16].ToString().ToLower();
-                string mSecurityKind = string.IsNullOrEmpty(row[17].ToString()) ? null : row[17].ToString().ToLower();
-                string mMainLanguage = string.IsNullOrEmpty(row[18].ToString()) ? null : row[18].ToString().ToLower();
+                string mBirthname = string.IsNullOrEmpty(row[3].ToString()) ? null : row[3].ToString().ToLower().Trim();
+                string mBirthplace = string.IsNullOrEmpty(row[4].ToString()) ? null : row[4].ToString().ToLower().Trim();
+                string mBirthcountry = string.IsNullOrEmpty(row[5].ToString()) ? null : row[5].ToString().ToLower().Trim();
+                string mCountry = string.IsNullOrEmpty(row[7].ToString()) ? null : row[7].ToString().ToLower().Trim();
+                string mGender = string.IsNullOrEmpty(row[8].ToString()) ? null : row[8].ToString().ToLower().Trim();
+                string mStreet = string.IsNullOrEmpty(row[9].ToString()) ? null : row[9].ToString().ToLower().Trim();
+                string mStreetNumber = string.IsNullOrEmpty(row[10].ToString()) ? null : row[10].ToString().ToLower().Trim();
+                string mPLZ = string.IsNullOrEmpty(row[11].ToString()) ? null : row[11].ToString().ToLower().Trim();
+                string mCity = string.IsNullOrEmpty(row[12].ToString()) ? null : row[12].ToString().ToLower().Trim();
+                string mBundes = string.IsNullOrEmpty(row[13].ToString()) ? null : row[13].ToString().ToLower().Trim();
+                string mAusweisArt = string.IsNullOrEmpty(row[14].ToString()) ? null : row[14].ToString().ToLower().Trim();
+                string mAusweisnummer = string.IsNullOrEmpty(row[15].ToString()) ? null : row[15].ToString().ToLower().Trim();
+                string mBewacherregister = string.IsNullOrEmpty(row[16].ToString()) ? null : row[16].ToString().ToLower().Trim();
+                string mSecurityKind = string.IsNullOrEmpty(row[17].ToString()) ? null : row[17].ToString().ToLower().Trim();
+                string mMainLanguage = string.IsNullOrEmpty(row[18].ToString()) ? null : row[18].ToString().ToLower().Trim();
                 string mLanguage = string.IsNullOrEmpty(row[19].ToString()) ? null : row[19].ToString().ToLower().Trim();
                 string[] mLanguageArray = mLanguage == null ? new string[0] : mLanguage.Split(',');
                 string mBesonderheiten = string.IsNullOrEmpty(row[20].ToString()) ? null : row[20].ToString().ToLower();
 
 
                 string checkSql = @"SELECT COUNT(*) FROM Mitarbeiter WHERE Nachname = @nachname AND Vorname = @vorname AND Firma = @firma AND Geburtsdatum = @geburtsdatum";
-                using (var checkCmd = new SQLiteCommand(checkSql, conn))
+                using (SQLiteCommand checkCmd = new(checkSql, conn))
                 {
                     checkCmd.Parameters.AddWithValue("@vorname", mSurname);
                     checkCmd.Parameters.AddWithValue("@nachname", mName);
                     checkCmd.Parameters.AddWithValue("@firma", mFirma);
                     checkCmd.Parameters.AddWithValue("@geburtsdatum", mBirthday);
-                    var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (count == 0)
                     {
                         // Der Mitarbeiter existiert nicht, füge ihn hinzu
@@ -148,7 +148,7 @@ namespace Festival_Manager
                                     @wohnort, @bundesland, @ausweis_art, @ausweis_nr, 
                                     @bewacherregister_nr, @security_typ, @gender,
                                     @weitereInformationen)";
-                        using var cmd = new SQLiteCommand(sql, conn);
+                        using SQLiteCommand cmd = new(sql, conn);
                         cmd.Parameters.AddWithValue("@firma", mFirma);
                         cmd.Parameters.AddWithValue("@nachname", mName);
                         cmd.Parameters.AddWithValue("@vorname", mSurname);
@@ -173,28 +173,39 @@ namespace Festival_Manager
 
                         // Erstellen Sie eine neue Abfrage, um die zuletzt eingefügte ID zu erhalten
                         string idSql = "SELECT last_insert_rowid()";
-                        using var idCmd = new SQLiteCommand(idSql, conn);
+                        using SQLiteCommand idCmd = new(idSql, conn);
                         long mitarbeiterID = (long)idCmd.ExecuteScalar();
 
                         // Fügen Sie die Muttersprache des Mitarbeiters hinzu
                         string langSQL = @"INSERT INTO MitarbeiterSprachen (MitarbeiterID,Sprache,Muttersprache)
                    VALUES (@employeeID,@lang,@mother)";
-                        using var langCMD = new SQLiteCommand(langSQL, conn);
-                        langCMD.Parameters.AddWithValue("@employeeID", mitarbeiterID);
-                        langCMD.Parameters.AddWithValue("@lang", mMainLanguage);
-                        langCMD.Parameters.AddWithValue("@mother", true);
-                        langCMD.ExecuteNonQuery();
-                        cLogger.LogDatabaseChange($"MutterSprache {mMainLanguage} Hinzugefügt zu Mitarbeiter {mitarbeiterID} in Liste", username);
 
+                        // Überprüfen Sie, ob mMainLanguage einen Wert hat
+                        if (!string.IsNullOrEmpty(mMainLanguage))
+                        {
+                            using SQLiteCommand langCMD = new(langSQL, conn);
+                            langCMD.Parameters.AddWithValue("@employeeID", mitarbeiterID);
+                            langCMD.Parameters.AddWithValue("@lang", mMainLanguage);
+                            langCMD.Parameters.AddWithValue("@mother", true);
+                            langCMD.ExecuteNonQuery();
+                            cLogger.LogDatabaseChange($"MutterSprache {mMainLanguage} Hinzugefügt zu Mitarbeiter {mitarbeiterID} in Liste", username);
+
+                        }
+                        else
+                        {
+                            // Behandeln Sie den Fall, wenn mMainLanguage keinen Wert hat
+                            cLogger.LogDatabaseChange($"MutterSprache {mMainLanguage} vo Mitarbeiter {mitarbeiterID} darf nicht leer sein", username);
+
+                        }
                         foreach (string sprache in mLanguageArray)  // Durchlaufen Sie jede Sprache im Array
                         {
                             // Überprüfen Sie zuerst, ob die Sprache bereits existiert
                             string checkLanguageSql = @"SELECT COUNT(*) FROM MitarbeiterSprachen WHERE MitarbeiterID = @mitarbeiterID AND Sprache = @sprache";
-                            using (var checkLanguageCmd = new SQLiteCommand(checkLanguageSql, conn))
+                            using (SQLiteCommand checkLanguageCmd = new(checkLanguageSql, conn))
                             {
                                 checkLanguageCmd.Parameters.AddWithValue("@mitarbeiterID", mitarbeiterID);
                                 checkLanguageCmd.Parameters.AddWithValue("@sprache", sprache.Trim());
-                                var count2 = Convert.ToInt32(checkLanguageCmd.ExecuteScalar());
+                                int count2 = Convert.ToInt32(checkLanguageCmd.ExecuteScalar());
                                 if (count2 > 0)
                                 {
                                     // Die Sprache existiert bereits, fahren Sie mit der nächsten Sprache fort
@@ -204,7 +215,7 @@ namespace Festival_Manager
 
                             // Wenn die Sprache nicht existiert, fügen Sie sie hinzu
                             string foreachSQL = @"INSERT INTO MitarbeiterSprachen (MitarbeiterID, Sprache) VALUES (@mitarbeiterID, @sprache)";
-                            using (var foreachCMD = new SQLiteCommand(foreachSQL, conn))
+                            using (SQLiteCommand foreachCMD = new(foreachSQL, conn))
                             {
                                 // Fügen Sie die Parameter zur SQL-Abfrage hinzu
                                 foreachCMD.Parameters.AddWithValue("@mitarbeiterID", mitarbeiterID);
@@ -241,7 +252,7 @@ namespace Festival_Manager
             string excelPath = "";
 
             // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
-            using (var ofd = new OpenFileDialog())
+            using (OpenFileDialog ofd = new())
             {
                 ofd.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
                 DialogResult resu = ofd.ShowDialog();
@@ -257,10 +268,10 @@ namespace Festival_Manager
             }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            using var excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
-            using var reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
+            using FileStream excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
+            using IExcelDataReader reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
 
-            var conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new()
             {
                 ConfigureDataTable = _ => new ExcelDataTableConfiguration
                 {
@@ -268,14 +279,13 @@ namespace Festival_Manager
                 }
             };
 
-            var result = reader.AsDataSet(conf);
+            DataSet result = reader.AsDataSet(conf);
             DataTable table = result.Tables[0];
 
 
             // Verbindung zur SQLite-Datenbank herstellen
-            using var conn = new SQLiteConnection(stConnectionString);
+            using SQLiteConnection conn = new(stConnectionString);
             conn.Open();
-            bool isNight = true;
             foreach (DataRow row in table.Rows)
             {
                 string position = row[0].ToString().ToLower();
@@ -288,16 +298,16 @@ namespace Festival_Manager
                 string psuperVisor = row[7].ToString().ToLower();
                 // Überprüfen Sie, ob die Position bereits in der Tabelle ist
                 string checkSql = @"SELECT COUNT(*) FROM Position WHERE Nr = @ID";
-                using (var checkCmd = new SQLiteCommand(checkSql, conn))
+                using (SQLiteCommand checkCmd = new(checkSql, conn))
                 {
                     checkCmd.Parameters.AddWithValue("@ID", position);
-                    var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (count == 0)
                     {
                         // Die Position existiert nicht, füge sie hinzu
                         string sql = @"INSERT INTO Position (Nr,Quadrant, Geschlecht, Bezeichnung, Zusatz,Bemerkung,Benötigt,Vorgesetzter) 
                            VALUES (@ID,@quadrant, @gender, @bezeichnung, @zusatz,@bemerkung,@benötigt,@vorgesetzter)";
-                        using var cmdPos = new SQLiteCommand(sql, conn);
+                        using SQLiteCommand cmdPos = new(sql, conn);
                         cmdPos.Parameters.AddWithValue("@ID", position);
                         cmdPos.Parameters.AddWithValue("@quadrant", pQuadrant);
                         cmdPos.Parameters.AddWithValue("@gender", pGender);
@@ -321,7 +331,7 @@ namespace Festival_Manager
             string excelPath = "";
 
             // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
-            using (var ofd = new OpenFileDialog())
+            using (OpenFileDialog ofd = new())
             {
                 ofd.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
                 DialogResult resu = ofd.ShowDialog();
@@ -330,7 +340,6 @@ namespace Festival_Manager
                     excelPath = ofd.FileName;
                 }
             }
-            string tagOderNacht = "tag";
 
             if (string.IsNullOrEmpty(excelPath))
             {
@@ -339,10 +348,10 @@ namespace Festival_Manager
             }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            using var excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
-            using var reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
+            using FileStream excelStream = File.Open(excelPath, FileMode.Open, FileAccess.Read);
+            using IExcelDataReader reader = ExcelDataReader.ExcelReaderFactory.CreateReader(excelStream);
 
-            var conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new()
             {
                 ConfigureDataTable = _ => new ExcelDataTableConfiguration
                 {
@@ -358,12 +367,12 @@ namespace Festival_Manager
                 }
             };
 
-            var result = reader.AsDataSet(conf);
+            DataSet result = reader.AsDataSet(conf);
             DataTable table = result.Tables[0];
 
 
             // Verbindung zur SQLite-Datenbank herstellen
-            using var conn = new SQLiteConnection(stConnectionString);
+            using SQLiteConnection conn = new(stConnectionString);
             conn.Open();
             bool isNight = true;
             foreach (DataRow row in table.Rows)
@@ -432,12 +441,12 @@ namespace Festival_Manager
 
 
                 string selectSQL = @"SELECT MitarbeiterID FROM Mitarbeiter WHERE Vorname = @vorname AND Nachname = @nachname AND Firma = @firma";
-                using (var selectCmd = new SQLiteCommand(selectSQL, conn))
+                using (SQLiteCommand selectCmd = new(selectSQL, conn))
                 {
                     selectCmd.Parameters.AddWithValue("@vorname", vorname);
                     selectCmd.Parameters.AddWithValue("@nachname", nachname);
                     selectCmd.Parameters.AddWithValue("@firma", firma);
-                    var employeeID = selectCmd.ExecuteScalar();
+                    object employeeID = selectCmd.ExecuteScalar();
 
                     if (employeeID == null)
                     {
@@ -446,19 +455,27 @@ namespace Festival_Manager
                     }
                     string sql = @"INSERT INTO ArbeitszeitenSoll (MitarbeiterID,CheckedInSoll,CheckedOutSoll, Nacht, Position) 
                            VALUES (@ID,@checkin, @checkout,@nacht,@position)";
-                    using var cmdPoss = new SQLiteCommand(sql, conn);
+                    using SQLiteCommand cmdPoss = new(sql, conn);
 
                     cmdPoss.Parameters.AddWithValue("@ID", employeeID);
                     // Überprüfen ob die Werte NULL sind, bevor Sie sie in die Datenbank einfügen
                     if (checkInSoll == DateTime.MinValue)
+                    {
                         cmdPoss.Parameters.AddWithValue("@checkin", DBNull.Value);
+                    }
                     else
+                    {
                         cmdPoss.Parameters.AddWithValue("@checkin", checkInSoll);
+                    }
 
                     if (checkOutSoll == DateTime.MinValue)
+                    {
                         cmdPoss.Parameters.AddWithValue("@checkout", DBNull.Value);
+                    }
                     else
+                    {
                         cmdPoss.Parameters.AddWithValue("@checkout", checkOutSoll);
+                    }
 
                     cmdPoss.Parameters.AddWithValue("@nacht", isNight ? "true" : "false");
                     cmdPoss.Parameters.AddWithValue("@position", position);

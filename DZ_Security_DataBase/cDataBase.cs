@@ -34,7 +34,7 @@ namespace Festival_Manager
             if (string.IsNullOrEmpty(DbPath) || !Directory.Exists(DbPath))
             {
                 // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
-                using (var fbd = new FolderBrowserDialog())
+                using (FolderBrowserDialog fbd = new())
                 {
                     DialogResult result = fbd.ShowDialog();
 
@@ -68,7 +68,7 @@ namespace Festival_Manager
             {
                 freshlyCreated = true;
                 SQLiteConnection.CreateFile(dbFilePath);
-                using (var m_dbConnection = new SQLiteConnection(GetConnectionString()))
+                using (SQLiteConnection m_dbConnection = new(GetConnectionString()))
                 {
                     m_dbConnection.Open();
 
@@ -103,7 +103,7 @@ namespace Festival_Manager
                                     WeitereInformationen TEXT
                                    );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -115,7 +115,7 @@ namespace Festival_Manager
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -128,7 +128,7 @@ namespace Festival_Manager
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -139,7 +139,7 @@ namespace Festival_Manager
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -153,7 +153,7 @@ namespace Festival_Manager
                              PIN TEXT
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -165,7 +165,7 @@ namespace Festival_Manager
                             Action TEXT NOT NULL
                         );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -175,13 +175,12 @@ namespace Festival_Manager
                              Art TEXT NOT NULL,
                              Farbe TEXT NOT NULL,
                              Position TEXT NOT NULL,
-                             Status TEXT DEFAULT 'Ausleihbar' NOT NULL,
                              MitarbeiterID INT,
                              Zustand TEXT DEFAULT 'Gut' NOT NULL,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -198,7 +197,7 @@ namespace Festival_Manager
                              Vorgesetzer INT
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -218,7 +217,7 @@ namespace Festival_Manager
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
-                    using (var command = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand command = new(sql, m_dbConnection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -229,18 +228,18 @@ namespace Festival_Manager
                     string rights = "admin";
 
                     // Salt und hashed Password generieren
-                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                    RNGCryptoServiceProvider rng = new();
                     byte[] saltBytes = new byte[32];
                     rng.GetBytes(saltBytes);
                     string salt = Convert.ToBase64String(saltBytes);
 
-                    Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000);
+                    Rfc2898DeriveBytes pbkdf2 = new(password, saltBytes, 10000);
                     byte[] passwordBytes = pbkdf2.GetBytes(20);
                     string hashedPassword = Convert.ToBase64String(passwordBytes);
 
                     sql = @"INSERT INTO Passwort (Username, HashedPassword, Salt, Rights) 
                VALUES (@username, @hashedPassword, @salt, @rights)";
-                    using (var cmd = new SQLiteCommand(sql, m_dbConnection))
+                    using (SQLiteCommand cmd = new(sql, m_dbConnection))
                     {
                         cmd.Parameters.AddWithValue("@username", username);
                         cmd.Parameters.AddWithValue("@hashedPassword", hashedPassword);

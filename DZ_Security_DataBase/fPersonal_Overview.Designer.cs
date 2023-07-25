@@ -62,6 +62,9 @@
             tbContact = new TextBox();
             tbPosition = new TextBox();
             button2 = new Button();
+            bCheckIn = new Button();
+            bCheckOut = new Button();
+            bRent = new Button();
             SuspendLayout();
             // 
             // label1
@@ -85,7 +88,7 @@
             // Position
             // 
             Position.AutoSize = true;
-            Position.Location = new Point(472, 239);
+            Position.Location = new Point(558, 239);
             Position.Name = "Position";
             Position.Size = new Size(64, 20);
             Position.TabIndex = 14;
@@ -173,7 +176,7 @@
             // label26
             // 
             label26.AutoSize = true;
-            label26.Location = new Point(444, 108);
+            label26.Location = new Point(530, 108);
             label26.Name = "label26";
             label26.Size = new Size(92, 20);
             label26.TabIndex = 41;
@@ -182,7 +185,7 @@
             // label32
             // 
             label32.AutoSize = true;
-            label32.Location = new Point(453, 72);
+            label32.Location = new Point(539, 72);
             label32.Name = "label32";
             label32.Size = new Size(83, 20);
             label32.TabIndex = 43;
@@ -191,7 +194,7 @@
             // label30
             // 
             label30.AutoSize = true;
-            label30.Location = new Point(429, 141);
+            label30.Location = new Point(515, 141);
             label30.Name = "label30";
             label30.Size = new Size(107, 20);
             label30.TabIndex = 45;
@@ -200,7 +203,7 @@
             // label28
             // 
             label28.AutoSize = true;
-            label28.Location = new Point(402, 174);
+            label28.Location = new Point(488, 174);
             label28.Name = "label28";
             label28.Size = new Size(134, 20);
             label28.TabIndex = 47;
@@ -218,7 +221,7 @@
             // label34
             // 
             label34.AutoSize = true;
-            label34.Location = new Point(415, 206);
+            label34.Location = new Point(501, 206);
             label34.Name = "label34";
             label34.Size = new Size(121, 20);
             label34.TabIndex = 51;
@@ -226,12 +229,13 @@
             // 
             // bAddWorker
             // 
-            bAddWorker.Location = new Point(6, 343);
+            bAddWorker.Location = new Point(6, 360);
             bAddWorker.Name = "bAddWorker";
-            bAddWorker.Size = new Size(217, 65);
+            bAddWorker.Size = new Size(92, 48);
             bAddWorker.TabIndex = 53;
             bAddWorker.Text = "Neues Personal Hinzufügen";
             bAddWorker.UseVisualStyleBackColor = true;
+            bAddWorker.Visible = false;
             bAddWorker.Click += bAddWorker_Click;
             // 
             // cbCompany
@@ -245,19 +249,20 @@
             // 
             // button1
             // 
-            button1.Location = new Point(474, 343);
+            button1.Location = new Point(225, 360);
             button1.Name = "button1";
-            button1.Size = new Size(220, 65);
+            button1.Size = new Size(109, 48);
             button1.TabIndex = 55;
             button1.Text = "Änderungen Speichern";
             button1.UseVisualStyleBackColor = true;
+            button1.Visible = false;
             button1.Click += button1_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 5F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(639, 9);
+            label2.Location = new Point(725, 9);
             label2.Name = "label2";
             label2.Size = new Size(53, 12);
             label2.TabIndex = 56;
@@ -293,7 +298,7 @@
             // 
             // tbBirthPlace
             // 
-            tbBirthPlace.Location = new Point(550, 105);
+            tbBirthPlace.Location = new Point(636, 105);
             tbBirthPlace.Name = "tbBirthPlace";
             tbBirthPlace.Size = new Size(139, 27);
             tbBirthPlace.TabIndex = 61;
@@ -310,14 +315,14 @@
             cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
             cbGender.FormattingEnabled = true;
             cbGender.Items.AddRange(new object[] { "m", "w", "d" });
-            cbGender.Location = new Point(550, 69);
+            cbGender.Location = new Point(636, 69);
             cbGender.Name = "cbGender";
             cbGender.Size = new Size(139, 28);
             cbGender.TabIndex = 63;
             // 
             // tbLanguage
             // 
-            tbLanguage.Location = new Point(550, 138);
+            tbLanguage.Location = new Point(636, 138);
             tbLanguage.Name = "tbLanguage";
             tbLanguage.Size = new Size(139, 27);
             tbLanguage.TabIndex = 64;
@@ -325,7 +330,7 @@
             // cbOtherLanguage
             // 
             cbOtherLanguage.FormattingEnabled = true;
-            cbOtherLanguage.Location = new Point(550, 171);
+            cbOtherLanguage.Location = new Point(636, 171);
             cbOtherLanguage.Name = "cbOtherLanguage";
             cbOtherLanguage.Size = new Size(140, 28);
             cbOtherLanguage.TabIndex = 65;
@@ -341,33 +346,70 @@
             // 
             // tbContact
             // 
-            tbContact.Location = new Point(550, 203);
+            tbContact.Location = new Point(636, 203);
             tbContact.Name = "tbContact";
             tbContact.Size = new Size(140, 27);
             tbContact.TabIndex = 67;
             // 
             // tbPosition
             // 
-            tbPosition.Location = new Point(550, 236);
+            tbPosition.Location = new Point(636, 236);
             tbPosition.Name = "tbPosition";
             tbPosition.Size = new Size(140, 27);
             tbPosition.TabIndex = 68;
             // 
             // button2
             // 
-            button2.Location = new Point(242, 343);
+            button2.Location = new Point(115, 360);
             button2.Name = "button2";
-            button2.Size = new Size(217, 65);
+            button2.Size = new Size(92, 48);
             button2.TabIndex = 69;
             button2.Text = "Personal Löschen";
             button2.UseVisualStyleBackColor = true;
+            button2.Visible = false;
             button2.Click += button2_Click;
+            // 
+            // bCheckIn
+            // 
+            bCheckIn.Location = new Point(429, 360);
+            bCheckIn.Name = "bCheckIn";
+            bCheckIn.Size = new Size(109, 48);
+            bCheckIn.TabIndex = 70;
+            bCheckIn.Text = "Ein-Checken";
+            bCheckIn.UseVisualStyleBackColor = true;
+            bCheckIn.Visible = false;
+            bCheckIn.Click += bCheckIn_Click;
+            // 
+            // bCheckOut
+            // 
+            bCheckOut.Location = new Point(550, 360);
+            bCheckOut.Name = "bCheckOut";
+            bCheckOut.Size = new Size(109, 48);
+            bCheckOut.TabIndex = 71;
+            bCheckOut.Text = "Aus-Checken";
+            bCheckOut.UseVisualStyleBackColor = true;
+            bCheckOut.Visible = false;
+            bCheckOut.Click += bCheckOut_Click;
+            // 
+            // bRent
+            // 
+            bRent.Location = new Point(669, 360);
+            bRent.Name = "bRent";
+            bRent.Size = new Size(109, 48);
+            bRent.TabIndex = 72;
+            bRent.Text = "Equipment Ausleihe";
+            bRent.UseVisualStyleBackColor = true;
+            bRent.Visible = false;
+            bRent.Click += bRent_Click;
             // 
             // cPersonalOverview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(703, 416);
+            ClientSize = new Size(790, 417);
+            Controls.Add(bRent);
+            Controls.Add(bCheckOut);
+            Controls.Add(bCheckIn);
             Controls.Add(button2);
             Controls.Add(tbPosition);
             Controls.Add(tbContact);
@@ -403,7 +445,7 @@
             Controls.Add(Name);
             Controls.Add(label1);
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Festival Manager Personal Übersicht";
+            Text = "Festival Manager Personal Check";
             FormClosed += cEquipmentRent_FormClosed;
             Load += cPersonalOverview_Load;
             Shown += cPersonalOverview_Shown;
@@ -447,5 +489,8 @@
         private TextBox tbContact;
         private TextBox tbPosition;
         private Button button2;
+        private Button bCheckIn;
+        private Button bCheckOut;
+        private Button bRent;
     }
 }

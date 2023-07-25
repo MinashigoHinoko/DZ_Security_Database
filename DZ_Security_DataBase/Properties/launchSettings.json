@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Festival_Manager": {
+      "commandName": "Project",
+      "sqlDebugging": true,
+      "hotReloadEnabled": false
+    }
+  }
+}

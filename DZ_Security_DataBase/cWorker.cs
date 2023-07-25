@@ -16,20 +16,24 @@
         {
             // If the object is null, return false
             if (obj == null)
+            {
                 return false;
+            }
 
             // If the object cannot be cast to cWorker, return false
             cWorker otherWorker = obj as cWorker;
             if (otherWorker == null)
+            {
                 return false;
+            }
 
             // Return true if the ID fields match
-            return this.ID.Equals(otherWorker.ID);
+            return ID.Equals(otherWorker.ID);
         }
 
         public override int GetHashCode()
         {
-            return this.ID.GetHashCode();
+            return ID.GetHashCode();
         }
     }
 }
