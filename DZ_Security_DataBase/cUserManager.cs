@@ -18,7 +18,8 @@
 
         public UserManagementForm(string username)
         {
-            username = username;
+            FormClosed += UserManagementForm_FormClosed;
+            this.username = username;
             _userManagement = new cPasswordManager.UserManagement();
 
             Text = "Festival Manager Account Bearbeiter";
@@ -147,17 +148,14 @@
             // 
             ClientSize = new Size(282, 253);
             Name = "UserManagementForm";
-            Load += UserManagementForm_Load_1;
             ResumeLayout(false);
         }
 
-        private void UserManagementForm_Load(object sender, EventArgs e)
+        private void UserManagementForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-        }
-
-        private void UserManagementForm_Load_1(object sender, EventArgs e)
-        {
-
+            Hide();
+            cAdminView cAdminView = new(username);
+            cAdminView.ShowDialog();
         }
     }
 }

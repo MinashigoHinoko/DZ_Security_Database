@@ -30,6 +30,7 @@ namespace Festival_Manager
 
             DbPath = dbPathSetting.Value;
 
+
             // Wenn DbPath null oder ungültig ist, fragen Sie den Benutzer nach einem Pfad.
             if (string.IsNullOrEmpty(DbPath) || !Directory.Exists(DbPath))
             {
@@ -54,6 +55,33 @@ namespace Festival_Manager
                     }
                 }
             }
+            else
+            {
+                string dbFile = System.IO.Path.Combine(DbPath, "Dz_Security.sqlite");
+                if (!File.Exists(dbFile))
+                {
+                    // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
+                    using (FolderBrowserDialog fbd = new())
+                    {
+                        DialogResult result = fbd.ShowDialog();
+
+                        if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                        {
+                            cDataBase.DbPath = fbd.SelectedPath; // Speichern des Pfades in der statischen Eigenschaft
+
+                            // Pfad in der App.config-Datei aktualisieren
+                            dbPathSetting.Value = DbPath;
+                            config.Save(ConfigurationSaveMode.Modified);
+                            ConfigurationManager.RefreshSection("appSettings");
+                        }
+                        else
+                        {
+                            // Der Benutzer hat keinen Pfad ausgewählt oder den Dialog abgebrochen. Wiederholen Sie den Vorgang oder beenden Sie die Methode.
+                            goto restart;
+                        }
+                    }
+                }
+                }
 
 
 
@@ -94,9 +122,8 @@ namespace Festival_Manager
                                     Bewacherregister_Nr TEXT,
                                     Security_Typ TEXT,
                                     Gender TEXT,
-                                    Ansprechpartner TEXT,
                                     Position TEXT,
-                                    ChipNummer INT,
+                                    ChipNummer TEXT,
                                     CheckInState TEXT DEFAULT 'false' NOT NULL,
                                     IstKrank TEXT,
                                     RentState TEXT DEFAULT 'false' NOT NULL,
@@ -171,12 +198,11 @@ namespace Festival_Manager
                     }
                     // Ausrüstungs Tabelle erstellen
                     sql = @"CREATE TABLE Ausruestung (
-                             ID INT PRIMARY KEY NOT NULL, 
+                             ID TEXT PRIMARY KEY NOT NULL, 
                              Art TEXT NOT NULL,
                              Farbe TEXT NOT NULL,
-                             Position TEXT NOT NULL,
                              MitarbeiterID INT,
-                             Zustand TEXT DEFAULT 'Gut' NOT NULL,
+                             Zustand TEXT DEFAULT 'gut' NOT NULL,
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 
@@ -194,7 +220,7 @@ namespace Festival_Manager
                              Zusatz TEXT,
                              Bemerkung TEXT,
                              Benötigt TEXT,
-                             Vorgesetzer INT
+                             Vorgesetzter INT
                              );";
 
                     using (SQLiteCommand command = new(sql, m_dbConnection))
@@ -203,14 +229,13 @@ namespace Festival_Manager
                     }
                     // Ausrüstungs Tabelle erstellen
                     sql = @"CREATE TABLE Funkgeraete (
-                             ID INT PRIMARY KEY NOT NULL, 
-                             Bleibt TEXT NOT NULL,
+                             ID TEXT PRIMARY KEY NOT NULL, 
+                             Bleibt TEXT DEFAULT 'false' NOT NULL,
                              Akku INT DEFAULT 0 NOT NULL,
-                             Funkgeraet TEXT,
-                             Tarn_Headset TEXT,
-                             Rasierer TEXT,
-                             Mikimaus TEXT,
-                             Status TEXT DEFAULT 'Ausleihbar' NOT NULL,
+                             Funkgeraet TEXT DEFAULT 'false' NOT NULL,
+                             Tarn_Headset TEXT DEFAULT 'false' NOT NULL,
+                             Rasierer TEXT DEFAULT 'false' NOT NULL,
+                             Mikimaus TEXTDEFAULT 'false' NOT NULL,
                              MitarbeiterID INT,
                              Verbrauchsmaterial TEXT,
                              Sonstiges TEXT,

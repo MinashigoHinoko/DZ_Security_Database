@@ -28,41 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            bCheckIn = new Button();
-            bToolBorrow = new Button();
-            bPrintReceipt = new Button();
             label1 = new Label();
+            bWorkerOverview = new Button();
             SuspendLayout();
-            // 
-            // bCheckIn
-            // 
-            bCheckIn.Location = new Point(7, 15);
-            bCheckIn.Name = "bCheckIn";
-            bCheckIn.Size = new Size(185, 64);
-            bCheckIn.TabIndex = 0;
-            bCheckIn.Text = "Check-In";
-            bCheckIn.UseVisualStyleBackColor = true;
-            bCheckIn.Click += bCheckin_Click;
-            // 
-            // bToolBorrow
-            // 
-            bToolBorrow.Location = new Point(238, 15);
-            bToolBorrow.Name = "bToolBorrow";
-            bToolBorrow.Size = new Size(185, 64);
-            bToolBorrow.TabIndex = 3;
-            bToolBorrow.Text = "Equipment Ausleihe";
-            bToolBorrow.UseVisualStyleBackColor = true;
-            bToolBorrow.Click += bToolBorrow_Click;
-            // 
-            // bPrintReceipt
-            // 
-            bPrintReceipt.Location = new Point(7, 84);
-            bPrintReceipt.Name = "bPrintReceipt";
-            bPrintReceipt.Size = new Size(417, 64);
-            bPrintReceipt.TabIndex = 4;
-            bPrintReceipt.Text = "Laufzettel manuell drucken";
-            bPrintReceipt.UseVisualStyleBackColor = true;
-            bPrintReceipt.Click += bPrintReceipt_Click;
             // 
             // label1
             // 
@@ -74,6 +42,17 @@
             label1.TabIndex = 16;
             label1.Text = "@Mobinoko";
             // 
+            // bWorkerOverview
+            // 
+            bWorkerOverview.Cursor = Cursors.Hand;
+            bWorkerOverview.Location = new Point(7, 14);
+            bWorkerOverview.Name = "bWorkerOverview";
+            bWorkerOverview.Size = new Size(417, 64);
+            bWorkerOverview.TabIndex = 17;
+            bWorkerOverview.Text = "Personal-Kontrolle";
+            bWorkerOverview.UseVisualStyleBackColor = true;
+            bWorkerOverview.Click += bWorkerOverview_Click;
+            // 
             // cMemberView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -81,10 +60,8 @@
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ClientSize = new Size(488, 157);
+            Controls.Add(bWorkerOverview);
             Controls.Add(label1);
-            Controls.Add(bPrintReceipt);
-            Controls.Add(bToolBorrow);
-            Controls.Add(bCheckIn);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "cMemberView";
             StartPosition = FormStartPosition.CenterScreen;
@@ -96,10 +73,7 @@
         }
 
         #endregion
-
-        private Button bCheckIn;
-        private Button bToolBorrow;
-        private Button bPrintReceipt;
         private Label label1;
+        private Button bWorkerOverview;
     }
 }

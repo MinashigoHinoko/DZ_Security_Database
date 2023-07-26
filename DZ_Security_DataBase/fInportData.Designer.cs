@@ -42,13 +42,14 @@
             button2.TabIndex = 1;
             button2.Text = "Einlesen Positionen mit Beschreibung";
             button2.UseVisualStyleBackColor = true;
+            button2.Visible = false;
             button2.Click += button2_Click;
             // 
             // button3
             // 
             button3.Location = new Point(12, 12);
             button3.Name = "button3";
-            button3.Size = new Size(154, 60);
+            button3.Size = new Size(314, 60);
             button3.TabIndex = 2;
             button3.Text = "Einlesen Mitarbeiter Stammdaten";
             button3.UseVisualStyleBackColor = true;

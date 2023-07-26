@@ -180,27 +180,28 @@ namespace Festival_Manager
 
             // Überprüfen Sie die Anmeldedaten des Benutzers.
             string role = loginManager.AuthenticateUser(username, password);
-
             if (role != null)
             {
+                Hide();
                 cLogger.LogDatabaseChange($"Login {role}", username);
                 // Anmeldung war erfolgreich.
-                Hide();
                 if (role == "admin")
                 {
                     cAdminView admin = new(username);
-                    admin.Show();
+                    admin.ShowDialog();
                 }
                 else if (role == "member")
                 {
-                    cMemberView member = new(username);
-                    member.Show();
+                    cPersonalOverview member = new(false, username);
+                    member.ShowDialog();
                 }
                 else if (role == "booking")
                 {
                     cBookingView booking = new(username);
-                    booking.Show();
+                    booking.ShowDialog();
                 }
+                Close();
+
             }
             else
             {

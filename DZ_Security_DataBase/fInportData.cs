@@ -40,6 +40,7 @@ namespace Festival_Manager
 
         private void button3_Click(object sender, EventArgs e)
         {
+            bool importSuccess = true;
 
             string excelPath = "";
 
@@ -232,6 +233,7 @@ namespace Festival_Manager
                         // Jetzt enthält mitarbeiterID die ID des neu eingefügten Mitarbeiters
 
                         cLogger.LogDatabaseChange($"Importiert Mitarbeiter {mitarbeiterID} in Liste", username);
+                        importSuccess = true;
                     }
                     else
                     {
@@ -241,9 +243,15 @@ namespace Festival_Manager
                 }
 
             }
-            cLogger.LogDatabaseChange($"Importiert MitarbeiterStammdaten Liste", username);
-            MessageBox.Show("Mitarbeiter Stammdaten erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             conn.Close();
+            if (importSuccess)
+            {
+                MessageBox.Show("Der Importvorgang wurde erfolgreich abgeschlossen.", "Import erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Es gab Probleme beim Importieren einiger Daten.", "Import teilweise erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -397,7 +405,7 @@ namespace Festival_Manager
                 if (row[0].ToString().ToLower() == "gesamt")
                 {
                     cLogger.LogDatabaseChange($"Importiert Mitarbeiter", username);
-                    MessageBox.Show("Mitarbeiter erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Arbeitsplan erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     conn.Close();
                     return;
                 }
@@ -455,35 +463,48 @@ namespace Festival_Manager
                     }
                     string sql = @"INSERT INTO ArbeitszeitenSoll (MitarbeiterID,CheckedInSoll,CheckedOutSoll, Nacht, Position) 
                            VALUES (@ID,@checkin, @checkout,@nacht,@position)";
-                    using SQLiteCommand cmdPoss = new(sql, conn);
+                    using SQLiteCommand cmdTimeSoll = new(sql, conn);
 
-                    cmdPoss.Parameters.AddWithValue("@ID", employeeID);
+                    cmdTimeSoll.Parameters.AddWithValue("@ID", employeeID);
                     // Überprüfen ob die Werte NULL sind, bevor Sie sie in die Datenbank einfügen
                     if (checkInSoll == DateTime.MinValue)
                     {
-                        cmdPoss.Parameters.AddWithValue("@checkin", DBNull.Value);
+                        cmdTimeSoll.Parameters.AddWithValue("@checkin", DBNull.Value);
                     }
                     else
                     {
-                        cmdPoss.Parameters.AddWithValue("@checkin", checkInSoll);
+                        cmdTimeSoll.Parameters.AddWithValue("@checkin", checkInSoll);
                     }
 
                     if (checkOutSoll == DateTime.MinValue)
                     {
-                        cmdPoss.Parameters.AddWithValue("@checkout", DBNull.Value);
+                        cmdTimeSoll.Parameters.AddWithValue("@checkout", DBNull.Value);
                     }
                     else
                     {
-                        cmdPoss.Parameters.AddWithValue("@checkout", checkOutSoll);
+                        cmdTimeSoll.Parameters.AddWithValue("@checkout", checkOutSoll);
                     }
 
-                    cmdPoss.Parameters.AddWithValue("@nacht", isNight ? "true" : "false");
-                    cmdPoss.Parameters.AddWithValue("@position", position);
+                    cmdTimeSoll.Parameters.AddWithValue("@nacht", isNight ? "true" : "false");
+                    cmdTimeSoll.Parameters.AddWithValue("@position", position);
+                    cmdTimeSoll.ExecuteNonQuery();
+
+                    sql = @"INSERT INTO Position (Nr,Quadrant,Bezeichnung, Farbe, Zusatz) 
+                           VALUES (@pos,@quadrant, @bezeichnung,@farbe,@zusatz)";
+                    using SQLiteCommand cmdPoss = new(sql, conn);
+
+                    cmdPoss.Parameters.AddWithValue("@pos", position);
+                    cmdPoss.Parameters.AddWithValue("@quadrant", pQuadrant);
+                    cmdPoss.Parameters.AddWithValue("@bezeichnung", posBezeichnung);
+                    cmdPoss.Parameters.AddWithValue("@farbe", pColor);
+                    cmdPoss.Parameters.AddWithValue("@zusatz", pZusatz);
                     cmdPoss.ExecuteNonQuery();
 
                 }
             }
             conn.Close();
+
+
         }
     }
 }

@@ -54,7 +54,6 @@
             tbBirthday = new TextBox();
             tbLiving = new TextBox();
             tbBirthPlace = new TextBox();
-            tbChip = new TextBox();
             cbGender = new ComboBox();
             tbLanguage = new TextBox();
             cbOtherLanguage = new ComboBox();
@@ -65,6 +64,14 @@
             bCheckIn = new Button();
             bCheckOut = new Button();
             bRent = new Button();
+            bReturn = new Button();
+            lbRented = new Label();
+            label5 = new Label();
+            bPrintReceipt = new Button();
+            bFReturn = new Button();
+            bFRent = new Button();
+            bRead = new Button();
+            lbChip = new Label();
             SuspendLayout();
             // 
             // label1
@@ -88,7 +95,7 @@
             // Position
             // 
             Position.AutoSize = true;
-            Position.Location = new Point(558, 239);
+            Position.Location = new Point(559, 211);
             Position.Name = "Position";
             Position.Size = new Size(64, 20);
             Position.TabIndex = 14;
@@ -113,7 +120,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(6, 245);
+            label3.Location = new Point(512, 269);
             label3.Name = "label3";
             label3.Size = new Size(113, 20);
             label3.TabIndex = 19;
@@ -122,7 +129,7 @@
             // lbCheckedIn
             // 
             lbCheckedIn.AutoSize = true;
-            lbCheckedIn.Location = new Point(149, 245);
+            lbCheckedIn.Location = new Point(655, 269);
             lbCheckedIn.Name = "lbCheckedIn";
             lbCheckedIn.Size = new Size(102, 20);
             lbCheckedIn.TabIndex = 20;
@@ -131,7 +138,7 @@
             // label16
             // 
             label16.AutoSize = true;
-            label16.Location = new Point(13, 272);
+            label16.Location = new Point(13, 245);
             label16.Name = "label16";
             label16.Size = new Size(106, 20);
             label16.TabIndex = 31;
@@ -176,7 +183,7 @@
             // label26
             // 
             label26.AutoSize = true;
-            label26.Location = new Point(530, 108);
+            label26.Location = new Point(531, 80);
             label26.Name = "label26";
             label26.Size = new Size(92, 20);
             label26.TabIndex = 41;
@@ -185,7 +192,7 @@
             // label32
             // 
             label32.AutoSize = true;
-            label32.Location = new Point(539, 72);
+            label32.Location = new Point(540, 44);
             label32.Name = "label32";
             label32.Size = new Size(83, 20);
             label32.TabIndex = 43;
@@ -194,7 +201,7 @@
             // label30
             // 
             label30.AutoSize = true;
-            label30.Location = new Point(515, 141);
+            label30.Location = new Point(516, 113);
             label30.Name = "label30";
             label30.Size = new Size(107, 20);
             label30.TabIndex = 45;
@@ -203,7 +210,7 @@
             // label28
             // 
             label28.AutoSize = true;
-            label28.Location = new Point(488, 174);
+            label28.Location = new Point(489, 146);
             label28.Name = "label28";
             label28.Size = new Size(134, 20);
             label28.TabIndex = 47;
@@ -221,7 +228,7 @@
             // label34
             // 
             label34.AutoSize = true;
-            label34.Location = new Point(501, 206);
+            label34.Location = new Point(502, 178);
             label34.Name = "label34";
             label34.Size = new Size(121, 20);
             label34.TabIndex = 51;
@@ -229,9 +236,11 @@
             // 
             // bAddWorker
             // 
-            bAddWorker.Location = new Point(6, 360);
+            bAddWorker.AutoSize = true;
+            bAddWorker.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bAddWorker.Location = new Point(585, 304);
             bAddWorker.Name = "bAddWorker";
-            bAddWorker.Size = new Size(92, 48);
+            bAddWorker.Size = new Size(199, 30);
             bAddWorker.TabIndex = 53;
             bAddWorker.Text = "Neues Personal Hinzufügen";
             bAddWorker.UseVisualStyleBackColor = true;
@@ -249,9 +258,11 @@
             // 
             // button1
             // 
-            button1.Location = new Point(225, 360);
+            button1.AutoSize = true;
+            button1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            button1.Location = new Point(615, 348);
             button1.Name = "button1";
-            button1.Size = new Size(109, 48);
+            button1.Size = new Size(169, 30);
             button1.TabIndex = 55;
             button1.Text = "Änderungen Speichern";
             button1.UseVisualStyleBackColor = true;
@@ -298,31 +309,24 @@
             // 
             // tbBirthPlace
             // 
-            tbBirthPlace.Location = new Point(636, 105);
+            tbBirthPlace.Location = new Point(637, 77);
             tbBirthPlace.Name = "tbBirthPlace";
             tbBirthPlace.Size = new Size(139, 27);
             tbBirthPlace.TabIndex = 61;
-            // 
-            // tbChip
-            // 
-            tbChip.Location = new Point(128, 269);
-            tbChip.Name = "tbChip";
-            tbChip.Size = new Size(139, 27);
-            tbChip.TabIndex = 62;
             // 
             // cbGender
             // 
             cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
             cbGender.FormattingEnabled = true;
             cbGender.Items.AddRange(new object[] { "m", "w", "d" });
-            cbGender.Location = new Point(636, 69);
+            cbGender.Location = new Point(637, 41);
             cbGender.Name = "cbGender";
             cbGender.Size = new Size(139, 28);
             cbGender.TabIndex = 63;
             // 
             // tbLanguage
             // 
-            tbLanguage.Location = new Point(636, 138);
+            tbLanguage.Location = new Point(637, 110);
             tbLanguage.Name = "tbLanguage";
             tbLanguage.Size = new Size(139, 27);
             tbLanguage.TabIndex = 64;
@@ -330,7 +334,7 @@
             // cbOtherLanguage
             // 
             cbOtherLanguage.FormattingEnabled = true;
-            cbOtherLanguage.Location = new Point(636, 171);
+            cbOtherLanguage.Location = new Point(637, 143);
             cbOtherLanguage.Name = "cbOtherLanguage";
             cbOtherLanguage.Size = new Size(140, 28);
             cbOtherLanguage.TabIndex = 65;
@@ -346,23 +350,25 @@
             // 
             // tbContact
             // 
-            tbContact.Location = new Point(636, 203);
+            tbContact.Location = new Point(637, 175);
             tbContact.Name = "tbContact";
             tbContact.Size = new Size(140, 27);
             tbContact.TabIndex = 67;
             // 
             // tbPosition
             // 
-            tbPosition.Location = new Point(636, 236);
+            tbPosition.Location = new Point(637, 208);
             tbPosition.Name = "tbPosition";
             tbPosition.Size = new Size(140, 27);
             tbPosition.TabIndex = 68;
             // 
             // button2
             // 
-            button2.Location = new Point(115, 360);
+            button2.AutoSize = true;
+            button2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            button2.Location = new Point(653, 384);
             button2.Name = "button2";
-            button2.Size = new Size(92, 48);
+            button2.Size = new Size(131, 30);
             button2.TabIndex = 69;
             button2.Text = "Personal Löschen";
             button2.UseVisualStyleBackColor = true;
@@ -371,42 +377,140 @@
             // 
             // bCheckIn
             // 
-            bCheckIn.Location = new Point(429, 360);
+            bCheckIn.AutoSize = true;
+            bCheckIn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bCheckIn.Location = new Point(15, 395);
             bCheckIn.Name = "bCheckIn";
-            bCheckIn.Size = new Size(109, 48);
+            bCheckIn.Size = new Size(100, 30);
             bCheckIn.TabIndex = 70;
             bCheckIn.Text = "Ein-Checken";
             bCheckIn.UseVisualStyleBackColor = true;
-            bCheckIn.Visible = false;
             bCheckIn.Click += bCheckIn_Click;
             // 
             // bCheckOut
             // 
-            bCheckOut.Location = new Point(550, 360);
+            bCheckOut.AutoSize = true;
+            bCheckOut.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bCheckOut.Location = new Point(13, 431);
             bCheckOut.Name = "bCheckOut";
-            bCheckOut.Size = new Size(109, 48);
+            bCheckOut.Size = new Size(104, 30);
             bCheckOut.TabIndex = 71;
             bCheckOut.Text = "Aus-Checken";
             bCheckOut.UseVisualStyleBackColor = true;
-            bCheckOut.Visible = false;
             bCheckOut.Click += bCheckOut_Click;
             // 
             // bRent
             // 
-            bRent.Location = new Point(669, 360);
+            bRent.AutoSize = true;
+            bRent.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bRent.Location = new Point(330, 395);
             bRent.Name = "bRent";
-            bRent.Size = new Size(109, 48);
+            bRent.Size = new Size(159, 30);
             bRent.TabIndex = 72;
-            bRent.Text = "Equipment Ausleihe";
+            bRent.Text = "Equipment Ausleihen";
             bRent.UseVisualStyleBackColor = true;
-            bRent.Visible = false;
             bRent.Click += bRent_Click;
+            // 
+            // bReturn
+            // 
+            bReturn.AutoSize = true;
+            bReturn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bReturn.Location = new Point(329, 431);
+            bReturn.Name = "bReturn";
+            bReturn.Size = new Size(160, 30);
+            bReturn.TabIndex = 73;
+            bReturn.Text = "Equipment Rückgabe";
+            bReturn.UseVisualStyleBackColor = true;
+            bReturn.Click += bReturn_Click;
+            // 
+            // lbRented
+            // 
+            lbRented.AutoSize = true;
+            lbRented.Location = new Point(655, 245);
+            lbRented.Name = "lbRented";
+            lbRented.Size = new Size(102, 20);
+            lbRented.TabIndex = 75;
+            lbRented.Text = "Keine Angabe";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(481, 245);
+            label5.Name = "label5";
+            label5.Size = new Size(142, 20);
+            label5.TabIndex = 74;
+            label5.Text = "Etwas Ausgeliehen?:";
+            // 
+            // bPrintReceipt
+            // 
+            bPrintReceipt.AutoSize = true;
+            bPrintReceipt.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bPrintReceipt.Location = new Point(511, 431);
+            bPrintReceipt.Name = "bPrintReceipt";
+            bPrintReceipt.Size = new Size(164, 30);
+            bPrintReceipt.TabIndex = 76;
+            bPrintReceipt.Text = "Laufzettel Ausdrucken";
+            bPrintReceipt.UseVisualStyleBackColor = true;
+            bPrintReceipt.Click += bPrintReceipt_Click;
+            // 
+            // bFReturn
+            // 
+            bFReturn.AutoSize = true;
+            bFReturn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bFReturn.Location = new Point(150, 430);
+            bFReturn.Name = "bFReturn";
+            bFReturn.Size = new Size(153, 30);
+            bFReturn.TabIndex = 78;
+            bFReturn.Text = "Funkgerät Rückgabe";
+            bFReturn.UseVisualStyleBackColor = true;
+            bFReturn.Click += bFReturn_Click;
+            // 
+            // bFRent
+            // 
+            bFRent.AutoSize = true;
+            bFRent.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bFRent.Location = new Point(150, 395);
+            bFRent.Name = "bFRent";
+            bFRent.Size = new Size(152, 30);
+            bFRent.TabIndex = 77;
+            bFRent.Text = "Funkgerät Ausleihen";
+            bFRent.UseVisualStyleBackColor = true;
+            bFRent.Click += bFRent_Click;
+            // 
+            // bRead
+            // 
+            bRead.AutoSize = true;
+            bRead.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bRead.Location = new Point(128, 269);
+            bRead.Name = "bRead";
+            bRead.Size = new Size(113, 30);
+            bRead.TabIndex = 79;
+            bRead.Text = "Chip-Einfügen";
+            bRead.UseVisualStyleBackColor = true;
+            bRead.Click += bRead_Click;
+            // 
+            // lbChip
+            // 
+            lbChip.AutoSize = true;
+            lbChip.Location = new Point(147, 245);
+            lbChip.Name = "lbChip";
+            lbChip.Size = new Size(102, 20);
+            lbChip.TabIndex = 80;
+            lbChip.Text = "Keine Angabe";
             // 
             // cPersonalOverview
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(790, 417);
+            ClientSize = new Size(796, 472);
+            Controls.Add(lbChip);
+            Controls.Add(bRead);
+            Controls.Add(bFReturn);
+            Controls.Add(bFRent);
+            Controls.Add(bPrintReceipt);
+            Controls.Add(lbRented);
+            Controls.Add(label5);
+            Controls.Add(bReturn);
             Controls.Add(bRent);
             Controls.Add(bCheckOut);
             Controls.Add(bCheckIn);
@@ -417,7 +521,6 @@
             Controls.Add(cbOtherLanguage);
             Controls.Add(tbLanguage);
             Controls.Add(cbGender);
-            Controls.Add(tbChip);
             Controls.Add(tbBirthPlace);
             Controls.Add(tbLiving);
             Controls.Add(tbBirthday);
@@ -481,7 +584,6 @@
         private TextBox tbBirthday;
         private TextBox tbLiving;
         private TextBox tbBirthPlace;
-        private TextBox tbChip;
         private ComboBox cbGender;
         private TextBox tbLanguage;
         private ComboBox cbOtherLanguage;
@@ -492,5 +594,13 @@
         private Button bCheckIn;
         private Button bCheckOut;
         private Button bRent;
+        private Button bReturn;
+        private Label lbRented;
+        private Label label5;
+        private Button bPrintReceipt;
+        private Button bFReturn;
+        private Button bFRent;
+        private Button bRead;
+        private Label lbChip;
     }
 }

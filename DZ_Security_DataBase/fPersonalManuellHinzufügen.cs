@@ -17,7 +17,6 @@ namespace Festival_Manager
 
         private void bAddWorker_Click(object sender, EventArgs e)
         {
-
             try
             {
                 long workerID = 0;
@@ -26,16 +25,18 @@ namespace Festival_Manager
                     conn.Open();
 
                     string query = @"INSERT INTO Mitarbeiter 
-                            (MitarbeiterID,Firma, Vorname, Nachname, Geburtsdatum, Geburtsland, Wohnort, ChipNummer, Gender, Muttersprache, Sprachen, TelefonNummer, Ansprechpartner, Position) 
-                            VALUES 
-                            (@ID,@Firma, @Vorname, @Nachname, @Geburtsdatum, @Geburtsland, @Wohnort, @ChipNummer, @Gender, @Muttersprache, @Sprachen, @TelefonNummer, @Ansprechpartner, @Position)";
-                    using (SQLiteCommand cmd = new("SELECT COUNT(MitarbeiterID) FROM Mitarbeiter", conn))
+                    (Firma, Vorname, Nachname, Geburtsdatum, Geburtsland, Wohnort, ChipNummer, Gender, Position) 
+                    VALUES 
+                    (@Firma, @Vorname, @Nachname, @Geburtsdatum, @Geburtsland, @Wohnort, @ChipNummer, @Gender, @Position)";
+
+                    string idQuery = "SELECT last_insert_rowid()";
+                    using (SQLiteCommand idCmd = new(idQuery, conn))
                     {
-                        workerID = (long)cmd.ExecuteScalar() + 1;
+                        workerID = (long)idCmd.ExecuteScalar();
                     }
+
                     using (SQLiteCommand cmd = new(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@ID", workerID);
                         cmd.Parameters.AddWithValue("@Firma", tbCompany.Text.IsNullOrEmpty() ? null : tbCompany.Text);
                         cmd.Parameters.AddWithValue("@Vorname", tbName.Text.IsNullOrEmpty() ? null : tbName.Text);
                         cmd.Parameters.AddWithValue("@Nachname", tbSurname.Text.IsNullOrEmpty() ? null : tbSurname.Text);
@@ -44,14 +45,41 @@ namespace Festival_Manager
                         cmd.Parameters.AddWithValue("@Wohnort", tbLiving.Text.IsNullOrEmpty() ? null : tbLiving.Text);
                         cmd.Parameters.AddWithValue("@ChipNummer", tbChipNumber.Text.IsNullOrEmpty() ? null : tbChipNumber.Text);
                         cmd.Parameters.AddWithValue("@Gender", tbGender.Text.IsNullOrEmpty() ? null : tbGender.Text);
-                        cmd.Parameters.AddWithValue("@Muttersprache", tbMainLanguage.Text.IsNullOrEmpty() ? null : tbMainLanguage.Text);
-                        cmd.Parameters.AddWithValue("@Sprachen", tbLanguage.Text.IsNullOrEmpty() ? null : tbLanguage.Text);
-                        cmd.Parameters.AddWithValue("@TelefonNummer", tbMobileNumber.Text.IsNullOrEmpty() ? null : tbMobileNumber.Text);
-                        cmd.Parameters.AddWithValue("@Ansprechpartner", tbContact.Text.IsNullOrEmpty() ? null : tbContact.Text);
                         cmd.Parameters.AddWithValue("@Position", tbPosition.Text.IsNullOrEmpty() ? null : tbPosition.Text);
 
                         cmd.ExecuteNonQuery();
                     }
+
+                    // Insert main language as mother tongue
+                    string mainLanguage = tbMainLanguage.Text.Trim();
+                    if (!string.IsNullOrEmpty(mainLanguage))
+                    {
+                        string insertMainLanguageQuery = @"INSERT INTO MitarbeiterSprachen (MitarbeiterID, Sprache, Muttersprache) VALUES (@ID, @Sprache, 'true')";
+                        using (SQLiteCommand cmd = new(insertMainLanguageQuery, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@ID", workerID);
+                            cmd.Parameters.AddWithValue("@Sprache", mainLanguage);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    // Insert other languages
+                    string[] languages = tbLanguage.Text.Split(',');
+                    foreach (string language in languages)
+                    {
+                        string trimmedLanguage = language.Trim();
+                        if (!string.IsNullOrEmpty(trimmedLanguage))
+                        {
+                            string insertLanguageQuery = @"INSERT INTO MitarbeiterSprachen (MitarbeiterID, Sprache) VALUES (@ID, @Sprache)";
+                            using (SQLiteCommand cmd = new(insertLanguageQuery, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@ID", workerID);
+                                cmd.Parameters.AddWithValue("@Sprache", trimmedLanguage);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
                 }
                 cLogger.LogDatabaseChange($"Added New Worker {workerID}", username);
                 MessageBox.Show("Mitarbeiter erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);

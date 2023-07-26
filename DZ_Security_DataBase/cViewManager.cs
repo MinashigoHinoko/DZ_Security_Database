@@ -11,6 +11,8 @@ namespace Festival_Manager
     {
         private static string folderPath = cDataBase.DbPath;
         private static string stConnectionString = $"Data Source={folderPath}\\Dz_Security.sqlite;Version=3;";
+        private string _employeeId;
+
         public void workerOverview(object sender, EventArgs e, bool isAdmin, string username)
         {
             cPersonalOverview personalOverview = new(isAdmin, username);
@@ -207,19 +209,10 @@ namespace Festival_Manager
                 }
             }
         }
-        public void toolBorrow(object sender, EventArgs e, bool isAdmin, string username)
-        {
-            cEquipmentRent checkIn = new(isAdmin, username);
-            checkIn.ShowDialog();
-        }
-        public void checkIn(object sender, EventArgs e, bool isAdmin, string username)
-        {
-            cCheckIn checkIn = new(isAdmin, username);
-            checkIn.ShowDialog();
-        }
-        public void printReceipt(object sender, EventArgs e, string username)
+        public void printReceipt(object sender, EventArgs e, string username, string employeeID)
         {
             PrintDocument printDoc = new();
+            _employeeId = employeeID;
 
             // Stellen Sie die Papiereinstellungen ein
             printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720);
@@ -234,142 +227,137 @@ namespace Festival_Manager
             {
                 printDoc.Print();
             }
-            cLogger.LogDatabaseChange($"Laufzettel Drucken", username);
+            cLogger.LogDatabaseChange($"Laufzettel Drucken für {employeeID}", username);
         }
 
         private void printDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
-            Form prompt = new();
-            prompt.Width = 300;
-            prompt.Height = 300; // adjust the height to accommodate another TextBox
-            prompt.Text = "Wählen Sie ein Ausrüstungsteil aus und geben Sie die Mitarbeiter-ID ein";
-
-            TextBox employeeBox = new() { Dock = DockStyle.Top }; // New TextBox for employee ID
-            ListBox employeeListBox = new() { Dock = DockStyle.Top };
-
-            // Erzeugt einen neuen Button zum Einreichen der ausgewählten MitarbeiterID
-            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
-            confirmation.Width = 100; // Set the width
-            confirmation.Height = 30; // Set the height
-                                      // Set the AcceptButton property of the Form
-            prompt.AcceptButton = confirmation;
-            confirmation.Click += (sender, e) =>
-            {
-                if (employeeListBox.SelectedItem != null)
-                {
-                    prompt.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Bitte wählen Sie eine Mitarbeiter-ID ein",
-                                    "Erforderliche Informationen fehlen",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Warning);
-                }
-            };
-
-            List<cWorker> allEmployee = new();
-            // Füllen Sie die ComboBox mit den MitarbeiterIDs aus Ihrer Datenbank,
-            using (SQLiteConnection conn = new(stConnectionString))
-            {
-                conn.Open();
-                using (SQLiteCommand cmd = new("SELECT MitarbeiterID, Vorname || ' ' || Nachname AS Name FROM Mitarbeiter\r\n", conn))
-                {
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            cWorker employeeItem = new()
-                            {
-                                ID = reader.GetInt32(0).ToString(),
-                                Name = reader.GetString(1),
-                            };
-                            allEmployee.Add(employeeItem);
-                            employeeListBox.Items.Add(employeeItem);
-                        }
-                    }
-                }
-            }
-            // Füge das Event TextChanged hinzu, um die Liste zu filtern, wenn der Benutzer in die TextBox schreibt
-            employeeBox.TextChanged += (sender, e) =>
-            {
-                // Konvertiere Suchbegriffe zu Kleinbuchstaben und teile sie auf Basis von Kommas
-                string[] searchTerms = employeeBox.Text.ToLower().Split(',');
-
-                // Nur die Einträge anzeigen, die alle Suchbegriffe enthalten
-                IEnumerable<cWorker> matches = allEmployee.Where(item =>
-                    searchTerms.All(term => item.ID.Contains(term.Trim())
-                                        || item.Name.ToLower().Contains(term.Trim())
-                                    )
-                );
-                employeeListBox.Items.Clear();
-                foreach (cWorker? match in matches)
-                {
-                    employeeListBox.Items.Add(match);
-                }
-            };
-
-            prompt.Controls.Add(employeeBox);
-            prompt.Controls.Add(employeeListBox);
-            prompt.Controls.Add(confirmation);
-            prompt.ShowDialog();
-
-
             // Nach dem Schließen des Dialogs ist das ausgewählte Ausrüstungsteil das in der ListBox ausgewählte Ausrüstungsteil
-            if (employeeListBox.SelectedItem != null)
+            if (_employeeId != null)
             {
-                cWorker selectedWorker = employeeListBox.SelectedItem as cWorker;
-                string oCurrentID = selectedWorker.ID;
-
                 using (SQLiteConnection conn = new(stConnectionString))
                 {
+                    string text = "";
+                    string positionNr = "";
+                    string vorname = "";
+                    string nachname = "";
+                    string ansprechpartnerPosition = "";
+                    string ansprechpartnerVorname = "";
+                    string ansprechpartnerNachname = "";
+                    string checkedIn = "";
+                    string checkedOut = "";
                     conn.Open();
                     using (SQLiteCommand cmd = new(
-                        @"SELECT m.CheckInState, m.Position, m.Vorname, m.Nachname, 
-                      m.Ansprechpartner, a.Position, a.Vorname, a.Nachname
-                      FROM Mitarbeiter m 
-                      LEFT JOIN Mitarbeiter a ON m.Ansprechpartner = a.MitarbeiterID
-                      LEFT JOIN Position p ON m.Position = p.Nr
-                      WHERE m.MitarbeiterID = @MitarbeiterID", conn))
+                        @"
+                        SELECT 
+                        CheckInState, Position, Vorname, Nachname
+                        FROM Mitarbeiter 
+                        WHERE MitarbeiterID = @mitarbeiterID
+                        ", conn))
                     {
-                        cmd.Parameters.AddWithValue("@MitarbeiterID", oCurrentID);
-
+                        cmd.Parameters.AddWithValue("@mitarbeiterID", _employeeId);
                         using (SQLiteDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                string text = reader.GetString(0) == "true" ? "Laufzettel: CheckIn\n\n" : "Laufzettel: CheckOut\n\n";
-                                string positionNr = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-                                //string quadrant = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
-                                string vorname = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
-                                string nachname = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
-                                string ansprechpartnerId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
-                                //string ansprechpartnerPosition = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
-                                string ansprechpartnerVorname = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
-                                string ansprechpartnerNachname = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
-
-                                // Fügt die abgerufenen Werte zum Text hinzu.
-                                text += "Positions Nr: " + positionNr + "\n";
-                                //text += "Quadrant: " + quadrant + "\n";
-                                text += "Vorname: " + vorname + "\n";
-                                text += "Nachname: " + nachname + "\n";
-                                text += "Ansprechpartner Name: " + ansprechpartnerVorname + " " + ansprechpartnerNachname + "\n";
-                                //text += "Ansprechpartner Positions Nr: " + ansprechpartnerPosition + "\n";
-
-                                // Erzeugt das Font-Objekt.
-                                Font printFont = new("Arial", 10);
-
-                                // Zeichnet den Text.
-                                e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);
+                                text = reader.GetString(0) == "true" ? "Laufzettel: CheckIn\n\n" : "Laufzettel: CheckOut\n\n";
+                                positionNr = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                                vorname = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                                nachname = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
                             }
                         }
                     }
-                    conn.Close();
+                    using (SQLiteCommand cmd = new(
+                         @"
+                        SELECT 
+                        CheckedIn, CheckedOut
+                        FROM Arbeitszeiten
+                        Where MitarbeiterID = @mitarbeiterID
+                        ", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@mitarbeiterID", _employeeId);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                checkedIn = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                                checkedOut = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                            }
+                        }
+                    }
+                    using (SQLiteCommand cmd = new(
+                        @"
+                        SELECT 
+                        Vorgesetzter
+                        FROM Position
+                        Where Nr = @posID
+                        ", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@posID", positionNr);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader.IsDBNull(0))
+                                {
+                                    ansprechpartnerPosition = string.Empty;
+                                }
+                                else
+                                {
+                                    object value = reader.GetValue(0);
+                                    ansprechpartnerPosition = value.ToString();
+                                }
+                            }
+                        }
+                    }
+                    using (SQLiteCommand cmd = new(
+    @"
+                        SELECT 
+                        MitarbeiterID,Vorname,Nachname
+                        FROM Mitarbeiter
+                        Where Position = @posID
+                        ", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@posID", positionNr);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                ansprechpartnerVorname = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                                ansprechpartnerNachname = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                            }
+                        }
+                        // Fügt die abgerufenen Werte zum Text hinzu.
+                        text += "Positions Nr: " + positionNr + "\n";
+                        text += "Nachname: " + nachname + "\n";
+                        text += "Vorname: " + vorname + "\n";
+                        if (ansprechpartnerPosition != "")
+                        {
+                            text += "Ansprechpartner Name: " + ansprechpartnerNachname + " " + ansprechpartnerVorname + "\n";
+                            text += "Ansprechpartner Position: " + ansprechpartnerPosition + "\n";
+                        }
+                        if (checkedIn != "")
+                        {
+                            text += "Eingechecked: " + checkedIn + "\n";
+                        }
+                        if (checkedOut != "")
+                        {
+                            text += "Ausgechecked: " + checkedOut + "\n";
+                        }
+
+                        // Erzeugt das Font-Objekt.
+                        Font printFont = new("Arial", 10);
+
+                        // Zeichnet den Text.
+                        e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);
+                        conn.Close();
+                        MessageBox.Show("Drucken Erfolgreich!");
+                    }
                 }
             }
+
+
+
         }
-
-
-
     }
 }

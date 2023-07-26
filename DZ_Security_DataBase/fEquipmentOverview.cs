@@ -22,7 +22,7 @@ namespace Festival_Manager
             {
                 conn.Open();
 
-                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe, Position FROM Ausruestung", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe FROM Ausruestung", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -31,10 +31,9 @@ namespace Festival_Manager
                             string id = reader["ID"].ToString();
                             string art = reader["Art"].ToString();
                             string farbe = reader["Farbe"].ToString();
-                            string position = reader["Position"].ToString();
 
                             // Create a new cWorker object
-                            cEquipment equipment = new() { ID = id, Name = art, Color = farbe, Position = position };
+                            cEquipment equipment = new() { ID = id, Name = art, Color = farbe };
                             cbEquipment.Items.Add(equipment);
                         }
                     }
@@ -55,35 +54,32 @@ namespace Festival_Manager
             {
                 conn.Open();
 
-                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'beschädigt'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBestand.Text = countRentable.ToString();
                 }
 
-                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS 'Defekt'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS 'beschädigt'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbDefect.Text = countRentable.ToString();
                 }
-                conn.Close();
-                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'blau'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'beschädigt' AND Farbe IS 'blau'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBlue.Text = countRentable.ToString();
                 }
-                conn.Close();
-                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'schwarz'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'beschädigt' AND Farbe IS 'schwarz'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
                     lbBlack.Text = countRentable.ToString();
                 }
-                conn.Close();
-                using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'Defekt' AND Farbe IS 'rot'", conn))
+                using (SQLiteCommand cmd = new("SELECT COUNT(DISTINCT ID) FROM Ausruestung WHERE Art = @art AND Zustand IS NOT 'beschädigt' AND Farbe IS 'rot'", conn))
                 {
                     cmd.Parameters.AddWithValue("@art", selectedEquipment.Name);
                     long countRentable = (long)cmd.ExecuteScalar();
@@ -133,7 +129,7 @@ namespace Festival_Manager
             using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'Defekt' \r\n", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe,Position \r\nFROM Ausruestung WHERE Zustand IS NOT 'beschädigt' \r\n", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -192,7 +188,7 @@ namespace Festival_Manager
                 {
                     conn.Open();
 
-                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE ID = @AusruestungID AND Zustand IS NOT 'Defekt'", conn))
+                    using (SQLiteCommand cmd = new("SELECT COUNT(*) FROM Ausruestung WHERE ID = @AusruestungID AND Zustand IS NOT 'beschädigt'", conn))
                     {
                         cmd.Parameters.AddWithValue("@AusruestungID", oCurrentID);
                     }
@@ -209,7 +205,7 @@ namespace Festival_Manager
                         SET Zustand = @zustand,
                         WHERE ID = @id";
                         cmd.Parameters.AddWithValue("@id", oCurrentID);
-                        cmd.Parameters.AddWithValue("@zustand", "Defekt");
+                        cmd.Parameters.AddWithValue("@zustand", "beschädigt");
 
                         cmd.ExecuteNonQuery();
                     }

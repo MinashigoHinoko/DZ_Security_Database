@@ -18,8 +18,8 @@ namespace Festival_Manager
                 using (SQLiteCommand cmd = new(conn))
                 {
                     cmd.CommandText = @"
-            INSERT INTO LogTable (Timestamp, User, Action)
-            VALUES (@timestamp, @user, @action)";
+                    INSERT INTO LogTable (Timestamp, User, Action)
+                    VALUES (@timestamp, @user, @action)";
                     cmd.Parameters.AddWithValue("@timestamp", timestamp);
                     cmd.Parameters.AddWithValue("@user", username);
                     cmd.Parameters.AddWithValue("@action", action);

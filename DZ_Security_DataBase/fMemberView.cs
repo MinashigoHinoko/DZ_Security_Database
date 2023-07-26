@@ -10,22 +10,6 @@
             this.username = username;
         }
 
-        private void bCheckin_Click(object sender, EventArgs e)
-        {
-            Hide();
-            viewManager.checkIn(sender, e, false, username);
-        }
-        private void bPrintReceipt_Click(object sender, EventArgs e)
-        {
-            viewManager.printReceipt(sender, e, username);
-        }
-
-        private void bToolBorrow_Click(object sender, EventArgs e)
-        {
-            Hide();
-            viewManager.toolBorrow(sender, e, false, username);
-        }
-
         private void cMemberView_FormClosed(object sender, FormClosedEventArgs e)
         {
             Hide();
@@ -36,6 +20,12 @@
         private void cMemberView_Load(object sender, EventArgs e)
         {
             StartPosition = FormStartPosition.CenterScreen;
+        }
+
+        private void bWorkerOverview_Click(object sender, EventArgs e)
+        {
+            Hide();
+            viewManager.workerOverview(sender, e, false, username);
         }
     }
 }
