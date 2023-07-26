@@ -21,14 +21,123 @@ namespace Festival_Manager
         private bool isFirstKeyPress = true;
         private bool userIsTyping = false;
         private bool isUpdatingData = false;
+        private bool isUserChange = true;
+        private bool orderChanged = false;
+        private Thread chipReaderThread;
+        private AutoResetEvent chipReaderWaitHandle = new(false);
+        private bool isUpdatingComboBox = false;
+
 
         public cPersonalOverview(bool isAdmin, string username)
         {
             InitializeComponent();
             this.username = username;
             this.isAdmin = isAdmin;
+
+            chipReaderThread = new Thread(ChipReaderThread);
+            chipReaderThread.Start();
         }
-        private bool isUpdatingComboBox = false;
+        // Die Methode, die auf dem Hintergrund-Thread ausgeführt wird
+        private void ChipReaderThread()
+        {
+            while (true)
+            {
+                // Warten Sie auf das Signal, dass ein Chip gelesen wurde
+                chipReaderWaitHandle.WaitOne();
+
+                // Rufen Sie die Methode zum Auslesen des Chips auf
+                string chipId = backgroundChipCheck();
+                if (chipId == string.Empty)
+                {
+                }
+                else
+                {
+                    using (SQLiteConnection conn = new(stConnectionString))
+                    {
+                        conn.Open();
+                        using (SQLiteCommand cmd = new(conn))
+                        {
+                            cmd.CommandText = @"SELECT COUNT(*) FROM Mitarbeiter WHERE ChipNummer = @chip";
+                            cmd.Parameters.AddWithValue("@chip", chipId);
+
+                            int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                            if (!(count > 0))
+                            {
+                                MessageBox.Show("Chip-Nummer nicht im System");
+                            }
+                        }
+                    }
+
+                    // Setzen Sie den ComboBox-Index auf dem Hauptthread
+                    Invoke((MethodInvoker)(() =>
+                {
+                    // Finden Sie den Index des Mitarbeiters mit der gelesenen Chipnummer
+                    int index = allWorkers.FindIndex(item => item.ChipNumber == chipId);
+                    if (index != -1)
+                    {
+                        cbMitarbeiterID.SelectedIndex = index;
+                    }
+                }));
+                }
+            }
+        }
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            // Signalisieren Sie dem Hintergrund-Thread, dass er anfangen soll zu lesen
+            chipReaderWaitHandle.Set();
+        }
+        private string backgroundChipCheck()
+        {
+            // Ihr Code zum Auslesen des Chips
+            string chipId = string.Empty;
+
+            // Start der NFC-Reader-Code
+            using (SCardContext context = new())
+            {
+                context.Establish(SCardScope.System);
+                string readerName = context.GetReaders().FirstOrDefault();
+                if (!string.IsNullOrEmpty(readerName) && readerName.Contains("ACR122"))
+                {
+                    using (SCardReader reader = new(context))
+                    {
+                        // Maximale Anzahl von Verbindungsversuchen
+                        SCardError sc;
+                        // Verbindungsversuche in einer Schleife
+                        do
+                        {
+                            // Connect to the card using T1 protocol
+                            sc = reader.Connect(readerName, SCardShareMode.Shared, SCardProtocol.T1);
+                            if (sc == SCardError.Success)
+                            {
+                                byte[] receiveBuffer = new byte[256];
+                                // Transmit the command to the card
+                                sc = reader.Transmit(
+                                    SCardPCI.T1, // Protocol Control Information (PCI) for the send protocol
+                                    new byte[] { 0xFF, 0xCA, 0x00, 0x00, 0x00 }, // Command APDU
+                                    ref receiveBuffer); // Receive buffer
+                                if (sc == SCardError.Success)
+                                {
+                                    string rawData = BitConverter.ToString(receiveBuffer).Replace("-", "");
+                                    rawData = rawData.Substring(0, rawData.Length - 4); // Entfernt die letzten 4 Zeichen (9000)
+                                    chipId = rawData; // Weisen Sie chipId hier zu
+                                }
+                                else
+                                {
+                                    // Fehler beim Auslesen der Chip-ID
+                                }
+                            }
+                        }
+                        while (sc != SCardError.Success);
+                    }
+                }
+            }
+
+            // Am Ende der Methode sollte die gelesene Chipnummer zurückgegeben werden
+            return chipId; // Die gelesene Chipnummer
+        }
         private void cbMitarbeiterID_KeyDown(object sender, KeyEventArgs e)
         {
             // Check if it's a letter or digit and it's the first key press
@@ -121,9 +230,9 @@ namespace Festival_Manager
 
             cbMitarbeiterID.DroppedDown = true;
         }
-
         private void insertDatabaseInComboBox()
         {
+            isUserChange = false;
             cbMitarbeiterID.Items.Clear();
             allWorkers.Clear(); // clear the allWorkers list
 
@@ -162,6 +271,7 @@ namespace Festival_Manager
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
+                        cbCompany.Items.Add("Alle Mitarbeiter");  // Add "All Employees" as the first item
                         while (reader.Read())
                         {
                             cbCompany.Items.Add(reader["Firma"].ToString());
@@ -171,9 +281,18 @@ namespace Festival_Manager
                 conn.Close();
             }
 
+
+            if (orderChanged)
+            {
+                cbMitarbeiterID.SelectedIndex = 0;
+                currentIndex = cbMitarbeiterID.SelectedIndex;
+                orderChanged = false;
+            }
+            isUserChange = true;
         }
         private void InsertEmployeesBasedOnCompanyIntoComboBox()
         {
+            isUserChange = false;
             selectedCompany = cbCompany.SelectedItem.ToString();
 
             // Clear the items in the cbMitarbeiterID ComboBox
@@ -203,6 +322,8 @@ namespace Festival_Manager
                 }
                 conn.Close();
             }
+            cbMitarbeiterID.DroppedDown = true;
+            isUserChange = true;
         }
         private void cbMitarbeiterID_Leave(object sender, EventArgs e)
         {
@@ -210,25 +331,31 @@ namespace Festival_Manager
         }
         private void cbMitarbeiterID_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            isUserChange = false;
             // If the data is currently being updated, do nothing
             if (isUpdatingData)
             {
                 return;
             }
+
             // Only call FillData if the SelectedIndex has actually changed
 
             if (cbMitarbeiterID.SelectedIndex != currentIndex)
             {
                 currentIndex = cbMitarbeiterID.SelectedIndex;
-                cbMitarbeiterID.DroppedDown = false;
+                if (cbMitarbeiterID.DroppedDown == true)
+                {
+                    cbMitarbeiterID.DroppedDown = false;
+                }
                 FillData();
                 isFirstKeyPress = true;
                 cbMitarbeiterID.SelectedIndex = currentIndex;
             }
+            isUserChange = true;
         }
         private void cPersonalOverview_Load(object sender, EventArgs e)
         {
+            isUserChange = false;
             bool hasRights = CheckRights();
             if (hasRights)
             {
@@ -285,15 +412,31 @@ namespace Festival_Manager
                 FillData();
             }
             isFormLoading = false;
+            isUserChange = true;
         }
         private void cbCompany_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!isUserChange)
+            {
+                return;
+            }
 
-            InsertEmployeesBasedOnCompanyIntoComboBox();
-
+            // If "Alle Mitarbeiter" is selected, show all employees
+            if (cbCompany.SelectedItem.ToString() == "Alle Mitarbeiter")
+            {
+                insertDatabaseInComboBox();
+                cbMitarbeiterID.DroppedDown = true;
+            }
+            else
+            {
+                // If a specific company is selected, show only the employees from that company
+                InsertEmployeesBasedOnCompanyIntoComboBox();
+            }
         }
+
         private void bAddWorker_Click(object sender, EventArgs e)
         {
+            orderChanged = true;
             cPersonalManuellHinzufügen cPersonalManuellHinzufügen = new(username);
             cPersonalManuellHinzufügen.ShowDialog();
             insertDatabaseInComboBox();
@@ -314,6 +457,7 @@ namespace Festival_Manager
         }
         private void UpdateEmployeeLanguages(string employeeId, string motherLanguage, List<string> otherLanguages)
         {
+            isUserChange = false;
             using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
@@ -339,12 +483,13 @@ namespace Festival_Manager
                     }
                 }
                 conn.Close();
-
+                isUserChange = true;
 
             }
         }
         private void UpdateEmployeeData(string employeeId)
         {
+            isUserChange = false;
             DateTime dt;
             object geburtsdatumValue = DBNull.Value;
             if (DateTime.TryParseExact(tbBirthday.Text, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
@@ -396,11 +541,12 @@ namespace Festival_Manager
                     UpdateEmployeeLanguages(employeeId, motherLanguage, otherLanguages);
                 }
                 conn.Close();
-
+                isUserChange = true;
             }
         }
         private void FillData()
         {
+            isUserChange = false; ;
             if (cbMitarbeiterID.Items.Count > 0)
             {
                 // Reset the ComboBox index and reload the data
@@ -414,6 +560,7 @@ namespace Festival_Manager
                 cbMitarbeiterID.SelectedIndex = currentIndex;
 
             }
+            isUserChange = true;
         }
         private void FillEmployeeData(string employeeId)
         {
@@ -461,22 +608,25 @@ namespace Festival_Manager
                         }
                     }
                 }
-                using (SQLiteCommand cmd = new(
-@"
+                if (ansprechpartnerPosition != string.Empty)
+                {
+                    using (SQLiteCommand cmd = new(
+    @"
                         SELECT 
                         Vorname,Nachname
                         FROM Mitarbeiter
                         Where Position = @posID
                         ", conn))
-                {
-                    cmd.Parameters.AddWithValue("@posID", ansprechpartnerPosition);
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
-                        while (reader.Read())
+                        cmd.Parameters.AddWithValue("@posID", ansprechpartnerPosition);
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
                         {
-                            string ansprechpartnerVorname = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
-                            string ansprechpartnerNachname = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-                            tbContact.Text = string.Concat(ansprechpartnerNachname + ", " + ansprechpartnerVorname);
+                            while (reader.Read())
+                            {
+                                string ansprechpartnerVorname = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                                string ansprechpartnerNachname = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                                tbContact.Text = string.Concat(ansprechpartnerNachname + ", " + ansprechpartnerVorname);
+                            }
                         }
                     }
                 }
@@ -524,6 +674,7 @@ namespace Festival_Manager
         }
         private bool CheckRights()
         {
+            isUserChange = false;
             bool hasRights = false;
             Form validateUser = new()
             {
@@ -574,10 +725,12 @@ namespace Festival_Manager
             {
                 hasRights = false;
             }
+            isUserChange = true;
             return hasRights;
         }
         private void button2_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             try
             {
                 selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
@@ -590,6 +743,7 @@ namespace Festival_Manager
                                                      MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
+                    orderChanged = true;
                     using (SQLiteConnection conn = new(stConnectionString))
                     {
                         conn.Open();
@@ -605,8 +759,6 @@ namespace Festival_Manager
 
                     // Refresh the data in the UI
                     insertDatabaseInComboBox();
-                    // Adjust the selected index to the next employee in the list
-                    cbMitarbeiterID.SelectedIndex = currentIndex < cbMitarbeiterID.Items.Count ? currentIndex : cbMitarbeiterID.Items.Count - 1;
                     FillData();
                 }
             }
@@ -615,9 +767,11 @@ namespace Festival_Manager
                 // Handle the exception (e.g., show an error message to the user)
                 MessageBox.Show("Fehler beim Löschen des Mitarbeiters: " + ex.Message);
             }
+            isUserChange = true;
         }
         private void CheckChipIDForCurrentEmployee()
         {
+            isUserChange = false;
             string chipId = string.Empty; // Initialisieren Sie chipId außerhalb der If-Else-Anweisung
             cbMitarbeiterID.SelectedIndex = currentIndex;
             selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
@@ -683,6 +837,7 @@ namespace Festival_Manager
                                 }
                                 if (chipIdInt == 0)
                                 {
+                                    isUserChange = true;
                                     return;
                                 }
                                 cmd.CommandText = @"UPDATE Mitarbeiter SET ChipNummer = @ChipNummer WHERE MitarbeiterID = @EmployeeId";
@@ -708,7 +863,7 @@ namespace Festival_Manager
                                     SCardError sc;
                                     bool isWindowOpen = false;
                                     // Erstellen Sie eine neue Form
-                                    Form waitingForChipForm = new Form
+                                    Form waitingForChipForm = new()
                                     {
                                         Text = "Warte auf Chip...",
                                         Size = new Size(400, 100),
@@ -716,7 +871,7 @@ namespace Festival_Manager
                                     };
 
                                     // Erstellen Sie ein neues Label-Steuerelement
-                                    Label waitingLabel = new Label
+                                    Label waitingLabel = new()
                                     {
                                         Text = "Bitte legen Sie den Chip auf das Lesegerät...",
                                         AutoSize = true,
@@ -735,7 +890,7 @@ namespace Festival_Manager
                                         {
                                             isWindowOpen = true;
                                             // Zeigen Sie die Form in einem separaten Thread an
-                                            Thread thread = new Thread(() =>
+                                            Thread thread = new(() =>
                                             {
                                                 waitingForChipForm.ShowDialog();
                                             });
@@ -772,6 +927,7 @@ namespace Festival_Manager
                                             if (sc != SCardError.Success)
                                             {
                                                 MessageBox.Show("Fehler beim Auslesen der Chip-ID.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                isUserChange = true;
                                                 return;
                                             }
                                             string rawData = BitConverter.ToString(receiveBuffer).Replace("-", "");
@@ -811,6 +967,7 @@ namespace Festival_Manager
                                         // Reset the flag to false after updating the data
                                         isUpdatingData = false;
                                         cLogger.LogDatabaseChange($"Die Chip-ID für {employeeId} wurde erfolgreich gesetzt: {chipId}", username);
+                                        isUserChange = true;
                                     }
                                     else
                                     {
@@ -845,6 +1002,7 @@ namespace Festival_Manager
                             MessageBox.Show("Die Chip-Nummer wurde erfolgreich gelöscht.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             cLogger.LogDatabaseChange($"Die Chip-ID für {employeeId} wurde gelöscht : {chipId}", username);
+                            isUserChange = true;
                         }
                         else
                         {
@@ -855,6 +1013,7 @@ namespace Festival_Manager
                     }
                 }
             }
+            isUserChange = true;
         }
         private void cPersonalOverview_Shown(object sender, EventArgs e)
         {
@@ -862,6 +1021,7 @@ namespace Festival_Manager
 
         private void cbOtherLanguage_TextChanged(object sender, EventArgs e)
         {
+            isUserChange = false;
             if (cbOtherLanguage != null)
             {
                 // Prüfen Sie, ob der Textinhalt zu einem leeren String geändert wurde
@@ -875,14 +1035,18 @@ namespace Festival_Manager
                     deleteLanguage = false;
                 }
             }
+            isUserChange = true;
         }
 
         private void cbOtherLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
+            isUserChange = false;
             langIndex = cbOtherLanguage.SelectedIndex;
+            isUserChange = true;
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             if (cbMitarbeiterID.SelectedItem is cWorker selectedWorker)
             {
                 string oCurrentID = selectedWorker.ID;
@@ -950,9 +1114,11 @@ namespace Festival_Manager
             {
                 MessageBox.Show("Keinen Mitarbeiter ausgewählt.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            isUserChange = true;
         }
         private void bCheckIn_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string oCurrentID = selectedWorker.ID;
@@ -988,6 +1154,7 @@ namespace Festival_Manager
                     else
                     {
                         MessageBox.Show("Bitte checken sie den Mitarbeiter zuerst aus");
+                        isUserChange = true;
                         return;
                     }
 
@@ -1147,10 +1314,12 @@ namespace Festival_Manager
             {
                 MessageBox.Show("Bitte trage zuerst den Aus-Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            isUserChange = true;
         }
 
         private void bCheckOut_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string oCurrentID = selectedWorker.ID;
@@ -1196,6 +1365,7 @@ namespace Festival_Manager
                         if (!(rowCount > 0))
                         {
                             MessageBox.Show("Bitte checke zuerst ein!", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            isUserChange = true;
                             return;
                         }
                     }
@@ -1295,9 +1465,11 @@ namespace Festival_Manager
             {
                 MessageBox.Show("Bitte trage zuerst den Aus-Zeitstempel ein", "Falsche Nutzung", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            isUserChange = true;
         }
         private void bRent_Click(object sender, EventArgs e)
         {
+            isUserChange = false; ;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string oCurrentID = selectedWorker.ID;
@@ -1472,10 +1644,12 @@ namespace Festival_Manager
                 }
             };
             prompt.ShowDialog();
+            isUserChange = true;
         }
 
         private void bReturn_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string employeeID = selectedWorker.ID;
@@ -1492,11 +1666,13 @@ namespace Festival_Manager
                                         "Keine ausgeliehene Ausrüstung",
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Warning);
+                        isUserChange = true;
                         return;
                     }
                 }
                 conn.Close();
             }
+
             Form prompt = new();
             prompt.Width = 300;
             prompt.Height = 200;
@@ -1530,7 +1706,7 @@ namespace Festival_Manager
             using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe FROM Ausruestung", conn))
+                using (SQLiteCommand cmd = new("SELECT ID,Art,Farbe FROM Ausruestung WHERE MitarbeiterID NOT NULL", conn))
                 {
                     using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
@@ -1628,19 +1804,23 @@ namespace Festival_Manager
                     isUpdatingData = false;
                 }
             }
+            isUserChange = true;
 
         }
 
         private void bPrintReceipt_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cViewManager viewManager = new();
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             viewManager.printReceipt(sender, e, username, selectedWorker.ID);
+            isUserChange = true;
         }
 
         private void bFRent_Click(object sender, EventArgs e)
         {
+            isUserChange = false; ;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string oCurrentID = selectedWorker.ID;
@@ -1773,13 +1953,17 @@ namespace Festival_Manager
                                 cmd.ExecuteNonQuery();
                             }
                             conn.Close();
-                            string funki = funkgeraet == "true" ? "Funkgerät" : null;
-                            string tarni = tarnHeadset == "true" ? "Tarn Headset" : null;
-                            string rasiri = rasierer == "true" ? "Rasierer" : null;
-                            string miki = mikimaus == "true" ? "Mikiemaus" : null;
-                            string bleibi = bleibt == "true" ? "bleibt" : "bleibt nicht";
-                            cLogger.LogDatabaseChange($"{funki}, {tarni}, {rasiri}, {miki} mit der {id} und {akku} batterien erfolgreich an {oCurrentID} verliehen, das gerät {bleibi} an der Position", username);
-                            MessageBox.Show($"{funki}, {tarni}, {rasiri}, {miki} mit der {id} und {akku} batterien erfolgreich an {oCurrentID} verliehen, das gerät {bleibi} an der Position", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            List<string> items = new List<string>();
+                            if (funkgeraet == "true") items.Add("Funkgerät");
+                            if (tarnHeadset == "true") items.Add("Tarn Headset");
+                            if (rasierer == "true") items.Add("Rasierer");
+                            if (mikimaus == "true") items.Add("Mikiemaus");
+
+                            string itemsString = string.Join(", ", items);
+                            string bleibtString = bleibt == "true" ? "bleibt" : "bleibt nicht";
+
+                            cLogger.LogDatabaseChange($"{itemsString} mit der {id} und {akku} Batterien erfolgreich an {oCurrentID} verliehen, das Gerät {bleibtString} an der Position", username);
+                            MessageBox.Show($"{itemsString} mit der {id} und {akku} Batterien erfolgreich an {oCurrentID} verliehen, das Gerät {bleibtString} an der Position", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             keepGoing = false;
                         }
                         idBox.Text = "";
@@ -1810,10 +1994,12 @@ namespace Festival_Manager
                 prompt.Controls.Add(confirmation);
                 prompt.ShowDialog();
             }
+            isUserChange = true;
         }
 
         private void bFReturn_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             cbMitarbeiterID.SelectedIndex = currentIndex;
             cWorker selectedWorker = cbMitarbeiterID.SelectedItem as cWorker;
             string employeeID = selectedWorker.ID;
@@ -1830,73 +2016,160 @@ namespace Festival_Manager
                                         "Keine ausgeliehenen Funkgeräte",
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Warning);
+                        isUserChange = true;
                         return;
                     }
                 }
                 conn.Close();
             }
 
-            string funkgeraetID = Microsoft.VisualBasic.Interaction.InputBox("Bitte geben Sie die ID des zurückzugebenden Funkgeräts ein", "Funkgerät Rückgabe");
+            Form prompt = new();
+            prompt.Width = 300;
+            prompt.Height = 200;
+            prompt.Text = "Wählen Sie ein Funkgerät aus.";
+            prompt.StartPosition = FormStartPosition.CenterScreen;
 
-            if (string.IsNullOrEmpty(funkgeraetID))
+            TextBox equipmentBox = new() { Dock = DockStyle.Top };
+            ListBox equipmentListBox = new() { Dock = DockStyle.Top };
+
+            Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom, Height = 50 };
+            confirmation.Click += (sender, e) =>
             {
-                MessageBox.Show("Die ID des Funkgeräts darf nicht leer sein.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                if (equipmentListBox.SelectedItem != null)
+                {
+                    prompt.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie ein Funkgerät aus",
+                                    "Erforderliche Informationen fehlen",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                }
+            };
 
-            cLogger.LogDatabaseChange($"Rückgabe Funkgerät {funkgeraetID} von {employeeID}", username);
+            List<cRadioEquipment> allEquipment = new();
 
             using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
-
-                using (SQLiteCommand cmd = new(conn))
+                using (SQLiteCommand cmd = new("SELECT ID, Bleibt, Akku, Funkgeraet, Tarn_Headset, Rasierer, Mikimaus, Verbrauchsmaterial, Sonstiges FROM Funkgeraete WHERE MitarbeiterID = @id", conn))
                 {
-                    cmd.CommandText = @"
-            UPDATE Funkgeraete
-            SET MitarbeiterID = null
-            WHERE ID = @id AND MitarbeiterID = @mitarbeiterID";
-                    cmd.Parameters.AddWithValue("@id", funkgeraetID);
-                    cmd.Parameters.AddWithValue("@mitarbeiterID", employeeID);
-
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected == 0)
+                    cmd.Parameters.AddWithValue("@id", employeeID);
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
-                        MessageBox.Show($"Es konnte kein Funkgerät mit der ID {funkgeraetID}, das an den Mitarbeiter {employeeID} verliehen wurde, gefunden werden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        while (reader.Read())
+                        {
+                            cRadioEquipment equipmentItem = new()
+                            {
+                                ID = reader.GetString(0),
+                                Permanent = reader.GetString(1),
+                                Battery = reader.GetInt32(2),
+                                Radio = reader.GetString(3),
+                                CamouflageHeadset = reader.GetString(4),
+                                Razor = reader.GetString(5),
+                                MickeyMouse = reader.GetString(6),
+                                Consumables = reader.GetString(7),
+                                Others = reader.GetString(8),
+                            };
+                            allEquipment.Add(equipmentItem);
+                            equipmentListBox.Items.Add(equipmentItem);
+                        }
                     }
                 }
+                conn.Close();
+            }
 
-                using (SQLiteCommand cmd = new(conn))
+            equipmentBox.TextChanged += (sender, e) =>
+            {
+                string[] searchTerms = equipmentBox.Text.ToLower().Split(',');
+
+                IEnumerable<cRadioEquipment> matches = allEquipment.Where(item =>
+                    searchTerms.All(term =>
+                        (item.ID != null && item.ID.Contains(term.Trim())) ||
+                        (item.Radio != null && item.Radio.ToLower().Contains(term.Trim())) ||
+                        (item.Consumables != null && item.Consumables.ToLower().Contains(term.Trim())) ||
+                        (item.Others != null && item.Others.ToLower().Contains(term.Trim()))
+                    )
+                );
+
+                equipmentListBox.Items.Clear();
+                foreach (cRadioEquipment match in matches)
                 {
-                    cmd.CommandText = @"
-            UPDATE Mitarbeiter
-            SET RentState = 'false'
-            WHERE MitarbeiterID = @id";
-                    cmd.Parameters.AddWithValue("@id", employeeID);
-
-                    cmd.ExecuteNonQuery();
+                    equipmentListBox.Items.Add(match);
                 }
 
-                conn.Close();
+                if (equipmentListBox.Items.Count == 1)
+                {
+                    equipmentListBox.SelectedIndex = 0;
+                }
+            };
 
-                MessageBox.Show($"Funkgerät {funkgeraetID} erfolgreich zurückgegeben von {employeeID}.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            prompt.Controls.Add(equipmentBox);
+            prompt.Controls.Add(equipmentListBox);
+            prompt.Controls.Add(confirmation);
+            prompt.ShowDialog();
 
-                // Set the flag to true before updating the data
-                isUpdatingData = true;
-                currentIndex = cbMitarbeiterID.SelectedIndex;
-                insertDatabaseInComboBox();
-                FillData();
+            if (equipmentListBox.SelectedItem != null)
+            {
+                cRadioEquipment selectedEquipment = equipmentListBox.SelectedItem as cRadioEquipment;
+                string oCurrentID = selectedEquipment.ID;
 
-                // Reset the flag to false after updating the data
-                isUpdatingData = false;
+                cLogger.LogDatabaseChange($"Rückgabe Funkgerät {oCurrentID} von {employeeID}", username);
+                using (SQLiteConnection conn = new(stConnectionString))
+                {
+                    conn.Open();
+
+                    using (SQLiteCommand cmd = new(conn))
+                    {
+                        cmd.CommandText = @"
+                UPDATE Funkgeraete
+                SET MitarbeiterID = null
+                WHERE ID = @id AND MitarbeiterID = @mitarbeiterID";
+                        cmd.Parameters.AddWithValue("@id", oCurrentID);
+                        cmd.Parameters.AddWithValue("@mitarbeiterID", employeeID);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+
+                        if (rowsAffected == 0)
+                        {
+                            MessageBox.Show($"Es konnte kein Funkgerät mit der ID {oCurrentID}, das an den Mitarbeiter {employeeID} verliehen wurde, gefunden werden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            isUserChange = true;
+                            return;
+                        }
+                    }
+
+                    using (SQLiteCommand cmd = new(conn))
+                    {
+                        cmd.CommandText = @"
+                UPDATE Mitarbeiter
+                SET RentState = 'false'
+                WHERE MitarbeiterID = @id";
+                        cmd.Parameters.AddWithValue("@id", employeeID);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    conn.Close();
+
+                    MessageBox.Show($"Funkgerät {oCurrentID} erfolgreich zurückgegeben von {employeeID}.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    isUpdatingData = true;
+                    currentIndex = cbMitarbeiterID.SelectedIndex;
+                    insertDatabaseInComboBox();
+                    FillData();
+
+                    isUpdatingData = false;
+                }
             }
+            isUserChange = true;
         }
 
         private void bRead_Click(object sender, EventArgs e)
         {
+            isUserChange = false;
             CheckChipIDForCurrentEmployee();
+            isUserChange = true;
         }
     }
 }

@@ -9,7 +9,7 @@
         public bool CheckInState { get; set; }
         public override string ToString()
         {
-            return $"{Name} - {ChipNumber} ({Position})";  // or just "{ID}" if you want
+            return $"{Name} - {Position} ({ChipNumber})";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)
