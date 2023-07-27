@@ -14,11 +14,26 @@
 
         public override string ToString()
         {
-            List<string> equipment = new List<string>();
-            if (Radio == "true") equipment.Add("Funkgerät");
-            if (CamouflageHeadset == "true") equipment.Add("Tarn-Headset");
-            if (Razor == "true") equipment.Add("Rasierer");
-            if (MickeyMouse == "true") equipment.Add("Mikie Maus");
+            List<string> equipment = new();
+            if (Radio == "true")
+            {
+                equipment.Add("Funkgerät");
+            }
+
+            if (CamouflageHeadset == "true")
+            {
+                equipment.Add("Tarn-Headset");
+            }
+
+            if (Razor == "true")
+            {
+                equipment.Add("Rasierer");
+            }
+
+            if (MickeyMouse == "true")
+            {
+                equipment.Add("Mikie Maus");
+            }
 
             return $"{ID} beinhaltet: {string.Join(", ", equipment)} und {Battery} Batterien";
         }

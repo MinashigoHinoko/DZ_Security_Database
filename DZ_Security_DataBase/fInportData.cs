@@ -335,7 +335,7 @@ namespace Festival_Manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            List<string> list = new();
             string excelPath = "";
 
             // Öffnet eine Dialogbox und lässt den Benutzer den Pfad auswählen
@@ -405,15 +405,42 @@ namespace Festival_Manager
                 if (row[0].ToString().ToLower() == "gesamt")
                 {
                     cLogger.LogDatabaseChange($"Importiert Mitarbeiter", username);
+                    Form prompt = new()
+                    {
+                        Width = 500,
+                        Height = 500,
+                        Text = "Error"
+                    };
+
+                    TextBox textBox = new()
+                    {
+                        Multiline = true,
+                        ScrollBars = ScrollBars.Vertical,
+                        Dock = DockStyle.Fill,
+                        ReadOnly = true, // Prevents the user from modifying the text.
+                    };
+
+                    Button confirmation = new() { Text = "Ok", Dock = DockStyle.Bottom };
+                    confirmation.Click += (sender, e) => { prompt.Close(); };
+
+                    // Build your message
+                    string message = string.Join(Environment.NewLine, list.Distinct());
+                    message += "\n" + " Konnten nicht in der Stammdaten liste gefunden werden" + "\n" + $" insgesamt: {list.Distinct().Count()} Mitarbeiter";
+                    // Set the text of the TextBox
+                    textBox.Text = message;
+
+                    prompt.Controls.Add(textBox);
+                    prompt.Controls.Add(confirmation);
+                    if (list.Distinct().Count() > 0) { prompt.ShowDialog(); }
                     MessageBox.Show("Arbeitsplan erfolgreich hinzugefügt!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     conn.Close();
                     return;
                 }
-                string name = row[4].ToString().ToLower().Trim();
+                string name = row[4].ToString().ToLower();
                 string[] splittedName = name.Split(',');
-                string nachname = splittedName[0].Trim();
-                string vorname = splittedName.Length > 1 ? splittedName[1].Trim() : "";
-                string firma = row[5].ToString().ToLower();
+                string nachname = splittedName[0].ToLower().Trim();
+                string vorname = splittedName.Length > 1 ? splittedName[1].ToLower().Trim() : "";
+                string firma = row[5].ToString().ToLower().Trim();
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     continue;
@@ -456,10 +483,19 @@ namespace Festival_Manager
                     selectCmd.Parameters.AddWithValue("@firma", firma);
                     object employeeID = selectCmd.ExecuteScalar();
 
-                    if (employeeID == null)
+                    string countSQL = @"SELECT Count(*) FROM Mitarbeiter WHERE Vorname = @vorname AND Nachname = @nachname AND Firma = @firma";
+                    using (SQLiteCommand countCMD = new(countSQL, conn))
                     {
-                        MessageBox.Show($"Personal: {nachname} {vorname}, aus der firma {firma} kann nicht in den Mitarbeiter Stammdaten gefunden werden");
-                        continue;
+                        countCMD.Parameters.AddWithValue("@vorname", vorname);
+                        countCMD.Parameters.AddWithValue("@nachname", nachname);
+                        countCMD.Parameters.AddWithValue("@firma", firma);
+                        int count = Convert.ToInt32(countCMD.ExecuteScalar());
+
+                        if (count == 0)
+                        {
+                            list.Add($"{nachname}, {vorname} aus der firma {firma} reihe {row.RowState.ToString()} checkinsoll: {checkInSoll}, checkedoutsoll: {checkOutSoll}");
+                            continue;
+                        }
                     }
                     string sql = @"INSERT INTO ArbeitszeitenSoll (MitarbeiterID,CheckedInSoll,CheckedOutSoll, Nacht, Position) 
                            VALUES (@ID,@checkin, @checkout,@nacht,@position)";
@@ -488,17 +524,25 @@ namespace Festival_Manager
                     cmdTimeSoll.Parameters.AddWithValue("@nacht", isNight ? "true" : "false");
                     cmdTimeSoll.Parameters.AddWithValue("@position", position);
                     cmdTimeSoll.ExecuteNonQuery();
-
-                    sql = @"INSERT INTO Position (Nr,Quadrant,Bezeichnung, Farbe, Zusatz) 
+                    string checkSql = @"SELECT COUNT(*) FROM Position WHERE Nr = @ID";
+                    using (SQLiteCommand checkCmd = new(checkSql, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@ID", position);
+                        int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        if (count == 0)
+                        {
+                            sql = @"INSERT INTO Position (Nr,Quadrant,Bezeichnung, Farbe, Zusatz) 
                            VALUES (@pos,@quadrant, @bezeichnung,@farbe,@zusatz)";
-                    using SQLiteCommand cmdPoss = new(sql, conn);
+                            using SQLiteCommand cmdPoss = new(sql, conn);
 
-                    cmdPoss.Parameters.AddWithValue("@pos", position);
-                    cmdPoss.Parameters.AddWithValue("@quadrant", pQuadrant);
-                    cmdPoss.Parameters.AddWithValue("@bezeichnung", posBezeichnung);
-                    cmdPoss.Parameters.AddWithValue("@farbe", pColor);
-                    cmdPoss.Parameters.AddWithValue("@zusatz", pZusatz);
-                    cmdPoss.ExecuteNonQuery();
+                            cmdPoss.Parameters.AddWithValue("@pos", position);
+                            cmdPoss.Parameters.AddWithValue("@quadrant", pQuadrant);
+                            cmdPoss.Parameters.AddWithValue("@bezeichnung", posBezeichnung);
+                            cmdPoss.Parameters.AddWithValue("@farbe", pColor);
+                            cmdPoss.Parameters.AddWithValue("@zusatz", pZusatz);
+                            cmdPoss.ExecuteNonQuery();
+                        }
+                    }
 
                 }
             }

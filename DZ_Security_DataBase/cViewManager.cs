@@ -215,7 +215,8 @@ namespace Festival_Manager
             _employeeId = employeeID;
 
             // Stellen Sie die Papiereinstellungen ein
-            printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 720);
+            printDoc.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Receipt", 316, 2000);
+            printDoc.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
 
             // Legen Sie den Handler für das PrintPage-Ereignis fest.
             printDoc.PrintPage += new PrintPageEventHandler(printDoc_PrintPage);
@@ -227,6 +228,7 @@ namespace Festival_Manager
             {
                 printDoc.Print();
             }
+            else { MessageBox.Show("Error!"); }
             cLogger.LogDatabaseChange($"Laufzettel Drucken für {employeeID}", username);
         }
 
@@ -318,7 +320,7 @@ namespace Festival_Manager
                         Where Position = @posID
                         ", conn))
                     {
-                        cmd.Parameters.AddWithValue("@posID", positionNr);
+                        cmd.Parameters.AddWithValue("@posID", ansprechpartnerPosition);
                         using (SQLiteDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -346,7 +348,7 @@ namespace Festival_Manager
                         }
 
                         // Erzeugt das Font-Objekt.
-                        Font printFont = new("Arial", 10);
+                        Font printFont = new("Calibri", 10);
 
                         // Zeichnet den Text.
                         e.Graphics.DrawString(text, printFont, Brushes.Black, 10, 10);
@@ -355,6 +357,7 @@ namespace Festival_Manager
                     }
                 }
             }
+            else { MessageBox.Show("Error!"); }
 
 
 

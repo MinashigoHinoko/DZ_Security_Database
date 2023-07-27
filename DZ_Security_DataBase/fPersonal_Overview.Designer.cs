@@ -381,9 +381,9 @@
             bCheckIn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             bCheckIn.Location = new Point(15, 395);
             bCheckIn.Name = "bCheckIn";
-            bCheckIn.Size = new Size(100, 30);
+            bCheckIn.Size = new Size(92, 30);
             bCheckIn.TabIndex = 70;
-            bCheckIn.Text = "Ein-Checken";
+            bCheckIn.Text = "Einchecken";
             bCheckIn.UseVisualStyleBackColor = true;
             bCheckIn.Click += bCheckIn_Click;
             // 
@@ -393,9 +393,9 @@
             bCheckOut.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             bCheckOut.Location = new Point(13, 431);
             bCheckOut.Name = "bCheckOut";
-            bCheckOut.Size = new Size(104, 30);
+            bCheckOut.Size = new Size(96, 30);
             bCheckOut.TabIndex = 71;
-            bCheckOut.Text = "Aus-Checken";
+            bCheckOut.Text = "Auschecken";
             bCheckOut.UseVisualStyleBackColor = true;
             bCheckOut.Click += bCheckOut_Click;
             // 
@@ -481,11 +481,11 @@
             // 
             bRead.AutoSize = true;
             bRead.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            bRead.Location = new Point(128, 269);
+            bRead.Location = new Point(144, 269);
             bRead.Name = "bRead";
-            bRead.Size = new Size(113, 30);
+            bRead.Size = new Size(107, 30);
             bRead.TabIndex = 79;
-            bRead.Text = "Chip-Einfügen";
+            bRead.Text = "Chip Eingabe";
             bRead.UseVisualStyleBackColor = true;
             bRead.Click += bRead_Click;
             // 

@@ -229,7 +229,7 @@ namespace Festival_Manager
                     }
                     // Ausrüstungs Tabelle erstellen
                     sql = @"CREATE TABLE Funkgeraete (
-                             ID TEXT PRIMARY KEY NOT NULL, 
+                             ID TEXT NOT NULL, 
                              Bleibt TEXT DEFAULT 'false' NOT NULL,
                              Akku INT DEFAULT 0 NOT NULL,
                              Funkgeraet TEXT DEFAULT 'false' NOT NULL,
