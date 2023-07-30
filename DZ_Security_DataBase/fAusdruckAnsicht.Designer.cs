@@ -81,7 +81,7 @@
             button4.Name = "button4";
             button4.Size = new Size(124, 63);
             button4.TabIndex = 17;
-            button4.Text = "Eigener";
+            button4.Text = "Mitarbeiter Tabelle";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 

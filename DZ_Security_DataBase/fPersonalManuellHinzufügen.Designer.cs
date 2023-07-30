@@ -55,7 +55,8 @@
             tbMobileNumber = new TextBox();
             tbContact = new TextBox();
             tbPosition = new TextBox();
-            tbChipNumber = new TextBox();
+            lbChip = new Label();
+            bRead = new Button();
             SuspendLayout();
             // 
             // label2
@@ -279,19 +280,34 @@
             tbPosition.Size = new Size(125, 27);
             tbPosition.TabIndex = 112;
             // 
-            // tbChipNumber
+            // lbChip
             // 
-            tbChipNumber.Location = new Point(550, 204);
-            tbChipNumber.Name = "tbChipNumber";
-            tbChipNumber.Size = new Size(125, 27);
-            tbChipNumber.TabIndex = 113;
+            lbChip.AutoSize = true;
+            lbChip.Location = new Point(560, 211);
+            lbChip.Name = "lbChip";
+            lbChip.Size = new Size(102, 20);
+            lbChip.TabIndex = 114;
+            lbChip.Text = "Keine Angabe";
+            // 
+            // bRead
+            // 
+            bRead.AutoSize = true;
+            bRead.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            bRead.Location = new Point(557, 235);
+            bRead.Name = "bRead";
+            bRead.Size = new Size(107, 30);
+            bRead.TabIndex = 113;
+            bRead.Text = "Chip Eingabe";
+            bRead.UseVisualStyleBackColor = true;
+            bRead.Click += bRead_Click;
             // 
             // cPersonalManuellHinzufügen
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 361);
-            Controls.Add(tbChipNumber);
+            Controls.Add(lbChip);
+            Controls.Add(bRead);
             Controls.Add(tbPosition);
             Controls.Add(tbContact);
             Controls.Add(tbMobileNumber);
@@ -322,7 +338,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Festival Manager Personal Hinzufügen";
             FormClosed += cPersonalManuellHinzufügen_FormClosed;
-            Load += cPersonalManuellHinzufügen_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -356,6 +371,7 @@
         private TextBox tbMobileNumber;
         private TextBox tbContact;
         private TextBox tbPosition;
-        private TextBox tbChipNumber;
+        private Label lbChip;
+        private Button bRead;
     }
 }

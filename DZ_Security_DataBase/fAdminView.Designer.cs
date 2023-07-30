@@ -45,7 +45,7 @@
             bExcelExport.Name = "bExcelExport";
             bExcelExport.Size = new Size(185, 64);
             bExcelExport.TabIndex = 9;
-            bExcelExport.Text = "Excel Export";
+            bExcelExport.Text = "EXPORT (TEST VERSION)";
             bExcelExport.UseVisualStyleBackColor = true;
             bExcelExport.Click += bExcelExport_Click;
             // 

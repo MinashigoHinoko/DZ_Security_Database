@@ -47,9 +47,9 @@
             // 
             // button3
             // 
-            button3.Location = new Point(12, 12);
+            button3.Location = new Point(6, 12);
             button3.Name = "button3";
-            button3.Size = new Size(314, 60);
+            button3.Size = new Size(320, 60);
             button3.TabIndex = 2;
             button3.Text = "Einlesen Mitarbeiter Stammdaten";
             button3.UseVisualStyleBackColor = true;

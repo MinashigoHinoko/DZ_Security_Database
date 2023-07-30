@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using NPOI.SS.UserModel;
+﻿using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Data.SQLite;
@@ -18,11 +17,6 @@ namespace Festival_Manager
             cPersonalOverview personalOverview = new(isAdmin, username);
             personalOverview.Show();
         }
-        public void toolOverview(object sender, EventArgs e, bool isAdmin, string username)
-        {
-            cEquipmentOverview equipment = new(isAdmin, username);
-            equipment.Show();
-        }
         public void printOut(object sender, EventArgs e, bool isAdmin, string username)
         {
             cPrintOutView printOut = new(isAdmin, username);
@@ -33,6 +27,49 @@ namespace Festival_Manager
             using (SQLiteConnection conn = new(stConnectionString))
             {
                 conn.Open();
+
+                // Get a list of all unique companies
+                List<string> firmenListe = new();
+                using (SQLiteCommand cmd = new("SELECT DISTINCT Firma FROM Mitarbeiter", conn))
+                {
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            firmenListe.Add(reader.GetString(0));
+                        }
+                    }
+                }
+
+                // Add the "All Employees" option at the beginning of the list
+                firmenListe.Insert(0, "Alle Mitarbeiter");
+
+                // Display the dialog box
+                Form firmaAuswahlForm = new();
+                firmaAuswahlForm.Height = 130;
+                firmaAuswahlForm.Text = "Firmen Abfrage";
+                ComboBox firmenComboBox = new();
+                firmenComboBox.Items.AddRange(firmenListe.ToArray());
+                firmenComboBox.Dock = DockStyle.Fill;
+                firmenComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                firmenComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+                firmaAuswahlForm.Controls.Add(firmenComboBox);
+                Button okButton = new();
+                okButton.Text = "OK";
+                okButton.Dock = DockStyle.Bottom;
+                okButton.Height = 50;
+                okButton.Click += (sender, e) => { firmaAuswahlForm.DialogResult = DialogResult.OK; firmaAuswahlForm.Close(); };
+                firmaAuswahlForm.Controls.Add(okButton);
+                if (firmaAuswahlForm.ShowDialog() != DialogResult.OK)
+                {
+                    // User closed the dialog box without clicking OK
+                    return;
+                }
+
+                // The selected company
+                string sChosenCompany = firmenComboBox.SelectedItem.ToString();
+
                 SaveFileDialog sfd = new();
                 sfd.Filter = "Excel Documents (*.xlsx)|*.xlsx";
                 sfd.FileName = "export.xlsx";
@@ -42,16 +79,24 @@ namespace Festival_Manager
 
                 // Überschriften
                 IRow row = sheet.CreateRow(0);
-                using (SQLiteCommand cmd = new("SELECT * FROM Mitarbeiter Where Firma = @Company", conn))
+                string query;
+                if (sChosenCompany == "Alle Mitarbeiter")
                 {
-                    string sChosenCompany = Interaction.InputBox("Für welche Firma benötigen Sie den Excel Export? ", "Firmen Abfrage", "", -1, -1);
-                    if (sChosenCompany == "")
+                    query = "SELECT * FROM Mitarbeiter";
+                }
+                else
+                {
+                    query = "SELECT * FROM Mitarbeiter Where Firma = @Company";
+                }
+
+                using (SQLiteCommand cmd = new(query, conn))
+                {
+                    if (sChosenCompany != "Alle Mitarbeiter")
                     {
-                        MessageBox.Show("Sie müssen eine Firma eingeben", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        cmd.Parameters.AddWithValue("@Company", sChosenCompany);
                     }
 
-                    cmd.Parameters.AddWithValue("@Company", sChosenCompany);
+
                     using (SQLiteDataAdapter adapter = new(cmd))
                     {
                         DataTable dt = new();
@@ -62,7 +107,7 @@ namespace Festival_Manager
                         }
                         catch (Exception)
                         {
-                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DialogResult result = MessageBox.Show("Mitarbeiter-export-fehler", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
                         cLogger.LogDatabaseChange($"Excel Export of: {sChosenCompany}", username);
@@ -88,27 +133,55 @@ namespace Festival_Manager
                     }
                 }
                 sheet = workbook.CreateSheet("Arbeitszeiten");
-
+                if (sChosenCompany == "Alle Mitarbeiter")
+                {
+                    query = @"
+    SELECT 
+        Mitarbeiter.Firma, 
+        Mitarbeiter.Nachname, 
+        Mitarbeiter.Vorname, 
+        Arbeitszeiten.CheckedIn, 
+        Arbeitszeiten.CheckedOut 
+    FROM Arbeitszeiten 
+    INNER JOIN Mitarbeiter ON Arbeitszeiten.MitarbeiterID = Mitarbeiter.MitarbeiterID";
+                }
+                else
+                {
+                    query = @"
+    SELECT 
+        Mitarbeiter.Firma, 
+        Mitarbeiter.Nachname, 
+        Mitarbeiter.Vorname, 
+        Arbeitszeiten.CheckedIn, 
+        Arbeitszeiten.CheckedOut 
+    FROM Arbeitszeiten 
+    INNER JOIN Mitarbeiter ON Arbeitszeiten.MitarbeiterID = Mitarbeiter.MitarbeiterID 
+    WHERE Mitarbeiter.Firma = @Company";
+                }
                 // Überschriften
                 row = sheet.CreateRow(0);
-                using (SQLiteCommand cmd = new("SELECT * FROM Arbeitszeiten", conn))
+                using (SQLiteCommand cmd = new(query, conn))
                 {
+                    cmd.Parameters.AddWithValue("@Company", sChosenCompany);
+
                     using (SQLiteDataAdapter adapter = new(cmd))
                     {
                         DataTable dt = new();
                         try
                         {
                             adapter.Fill(dt);
-
                         }
                         catch (Exception)
                         {
-                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DialogResult result = MessageBox.Show("Die Datei ist nicht speicherbar mit fehlenden Stop-Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
-                        for (int i = 0; i < dt.Columns.Count; i++)
+
+                        // Überschriften setzen
+                        string[] headers = { "Firma", "Nachname", "Vorname", "CheckedIn", "CheckedOut" };
+                        for (int i = 0; i < headers.Length; i++)
                         {
-                            row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            row.CreateCell(i).SetCellValue(headers[i]);
                         }
 
                         // Daten
@@ -120,33 +193,61 @@ namespace Festival_Manager
                                 row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
                         }
-
-
                     }
+                }
+                if (sChosenCompany == "Alle Mitarbeiter")
+                {
+                    query = @"
+    SELECT 
+        Mitarbeiter.Firma, 
+        Mitarbeiter.Nachname, 
+        Mitarbeiter.Vorname, 
+        Ausruestung.AusruestungID, 
+        Ausruestung.AusruestungType, 
+        Ausruestung.SerialNr
+    FROM Ausruestung
+    INNER JOIN Mitarbeiter ON Ausruestung.MitarbeiterID = Mitarbeiter.MitarbeiterID";
+                }
+                else
+                {
+                    query = @"
+    SELECT 
+        Mitarbeiter.Firma, 
+        Mitarbeiter.Nachname, 
+        Mitarbeiter.Vorname, 
+        Ausruestung.AusruestungID, 
+        Ausruestung.AusruestungType, 
+        Ausruestung.SerialNr
+    FROM Ausruestung
+    INNER JOIN Mitarbeiter ON Ausruestung.MitarbeiterID = Mitarbeiter.MitarbeiterID
+    WHERE Mitarbeiter.Firma = @Company";
                 }
                 sheet = workbook.CreateSheet("Ausruestung");
 
                 // Überschriften
                 row = sheet.CreateRow(0);
-                using (SQLiteCommand cmd = new("SELECT * FROM Ausruestung", conn))
+                using (SQLiteCommand cmd = new(query, conn))
                 {
+                    cmd.Parameters.AddWithValue("@Company", sChosenCompany);
+
                     using (SQLiteDataAdapter adapter = new(cmd))
                     {
                         DataTable dt = new();
-                        try
-                        {
-                            adapter.Fill(dt);
+                        // try
+                        //{
+                        //   adapter.Fill(dt);
+                        //}
+                        //catch (Exception)
+                        //{
+                        //    DialogResult result = MessageBox.Show("Ausruestungs-export-fehler", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        //    return;
+                        //}
 
-                        }
-                        catch (Exception)
+                        // Überschriften setzen
+                        string[] headers = { "Firma", "Nachname", "Vorname", "AusruestungID", "AusruestungType", "SerialNr" };
+                        for (int i = 0; i < headers.Length; i++)
                         {
-                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        for (int i = 0; i < dt.Columns.Count; i++)
-                        {
-                            row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                            row.CreateCell(i).SetCellValue(headers[i]);
                         }
 
                         // Daten
@@ -158,10 +259,9 @@ namespace Festival_Manager
                                 row.CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
                         }
-
-
                     }
                 }
+
                 sheet = workbook.CreateSheet("Position");
 
                 // Überschriften
@@ -178,7 +278,7 @@ namespace Festival_Manager
                         }
                         catch (Exception)
                         {
-                            DialogResult result = MessageBox.Show("Die Datei ist nicht Speicherbar mit fehlenden Stop Zeitstempeln", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DialogResult result = MessageBox.Show("Positions-Export-Fehler", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
 

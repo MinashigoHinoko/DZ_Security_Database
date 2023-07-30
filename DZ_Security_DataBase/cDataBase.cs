@@ -202,7 +202,7 @@ namespace Festival_Manager
                              Art TEXT NOT NULL,
                              Farbe TEXT NOT NULL,
                              MitarbeiterID INT,
-                             Zustand TEXT DEFAULT 'gut' NOT NULL,
+                             Zustand TEXT DEFAULT 'gut',
                              FOREIGN KEY(MitarbeiterID) REFERENCES Mitarbeiter(MitarbeiterID)
                              );";
 

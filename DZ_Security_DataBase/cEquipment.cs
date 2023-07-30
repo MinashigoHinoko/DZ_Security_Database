@@ -8,7 +8,7 @@
         public string Position { get; set; }
         public override string ToString()
         {
-            return $"{Name}";  // or just "{ID}" if you want
+            return $"{Name} mit der Farbe: {Color} und der Nummer: {ID}";  // or just "{ID}" if you want
         }
 
         public override bool Equals(object obj)

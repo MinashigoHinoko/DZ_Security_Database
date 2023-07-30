@@ -385,11 +385,11 @@ namespace Festival_Manager
             bool isNight = true;
             foreach (DataRow row in table.Rows)
             {
-                string posBezeichnung = row[8].ToString().ToLower();
+                string posBezeichnung = row[13].ToString().ToLower();
                 string position = row[2].ToString().ToLower();
                 string pQuadrant = row[3].ToString().ToLower();
-                string pColor = row[9].ToString().ToLower();
-                string pZusatz = row[10].ToString().ToLower();
+                string pColor = row[7].ToString().ToLower();
+                string pZusatz = row[14].ToString().ToLower();
 
                 if (posBezeichnung == "tag")
                 {
@@ -447,8 +447,8 @@ namespace Festival_Manager
                 }
 
                 string dateString = row[0].ToString();
-                string checkInTimeString = row[12].ToString();
-                string checkOutTimeString = row[13].ToString();
+                string checkInTimeString = row[16].ToString();
+                string checkOutTimeString = row[17].ToString();
                 bool dateParsed = DateTime.TryParseExact(dateString, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateObj);
                 if (!dateParsed)
                 {
@@ -497,6 +497,8 @@ namespace Festival_Manager
                             continue;
                         }
                     }
+
+
                     string sql = @"INSERT INTO ArbeitszeitenSoll (MitarbeiterID,CheckedInSoll,CheckedOutSoll, Nacht, Position) 
                            VALUES (@ID,@checkin, @checkout,@nacht,@position)";
                     using SQLiteCommand cmdTimeSoll = new(sql, conn);

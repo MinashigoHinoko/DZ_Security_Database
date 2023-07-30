@@ -63,8 +63,6 @@
             button2 = new Button();
             bCheckIn = new Button();
             bCheckOut = new Button();
-            bRent = new Button();
-            bReturn = new Button();
             lbRented = new Label();
             label5 = new Label();
             bPrintReceipt = new Button();
@@ -116,6 +114,8 @@
             cbMitarbeiterID.TabIndex = 16;
             cbMitarbeiterID.SelectedIndexChanged += cbMitarbeiterID_SelectedIndexChanged;
             cbMitarbeiterID.TextChanged += cbMitarbeiterID_TextChanged;
+            cbMitarbeiterID.KeyDown += cbMitarbeiterID_KeyDown;
+            cbMitarbeiterID.KeyUp += cbMitarbeiterID_KeyUp;
             // 
             // label3
             // 
@@ -399,30 +399,6 @@
             bCheckOut.UseVisualStyleBackColor = true;
             bCheckOut.Click += bCheckOut_Click;
             // 
-            // bRent
-            // 
-            bRent.AutoSize = true;
-            bRent.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            bRent.Location = new Point(330, 395);
-            bRent.Name = "bRent";
-            bRent.Size = new Size(159, 30);
-            bRent.TabIndex = 72;
-            bRent.Text = "Equipment Ausleihen";
-            bRent.UseVisualStyleBackColor = true;
-            bRent.Click += bRent_Click;
-            // 
-            // bReturn
-            // 
-            bReturn.AutoSize = true;
-            bReturn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            bReturn.Location = new Point(329, 431);
-            bReturn.Name = "bReturn";
-            bReturn.Size = new Size(160, 30);
-            bReturn.TabIndex = 73;
-            bReturn.Text = "Equipment Rückgabe";
-            bReturn.UseVisualStyleBackColor = true;
-            bReturn.Click += bReturn_Click;
-            // 
             // lbRented
             // 
             lbRented.AutoSize = true;
@@ -445,7 +421,7 @@
             // 
             bPrintReceipt.AutoSize = true;
             bPrintReceipt.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            bPrintReceipt.Location = new Point(511, 431);
+            bPrintReceipt.Location = new Point(239, 414);
             bPrintReceipt.Name = "bPrintReceipt";
             bPrintReceipt.Size = new Size(164, 30);
             bPrintReceipt.TabIndex = 76;
@@ -459,11 +435,11 @@
             bFReturn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             bFReturn.Location = new Point(150, 430);
             bFReturn.Name = "bFReturn";
-            bFReturn.Size = new Size(153, 30);
+            bFReturn.Size = new Size(84, 30);
             bFReturn.TabIndex = 78;
-            bFReturn.Text = "Funkgerät Rückgabe";
+            bFReturn.Text = "Rückgabe";
             bFReturn.UseVisualStyleBackColor = true;
-            bFReturn.Click += bFReturn_Click;
+            bFReturn.Click += bCombinedReturn_Click;
             // 
             // bFRent
             // 
@@ -471,11 +447,11 @@
             bFRent.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             bFRent.Location = new Point(150, 395);
             bFRent.Name = "bFRent";
-            bFRent.Size = new Size(152, 30);
+            bFRent.Size = new Size(83, 30);
             bFRent.TabIndex = 77;
-            bFRent.Text = "Funkgerät Ausleihen";
+            bFRent.Text = "Ausleihen";
             bFRent.UseVisualStyleBackColor = true;
-            bFRent.Click += bFRent_Click;
+            bFRent.Click += bCombinedRent_Click;
             // 
             // bRead
             // 
@@ -510,8 +486,6 @@
             Controls.Add(bPrintReceipt);
             Controls.Add(lbRented);
             Controls.Add(label5);
-            Controls.Add(bReturn);
-            Controls.Add(bRent);
             Controls.Add(bCheckOut);
             Controls.Add(bCheckIn);
             Controls.Add(button2);
@@ -593,8 +567,6 @@
         private Button button2;
         private Button bCheckIn;
         private Button bCheckOut;
-        private Button bRent;
-        private Button bReturn;
         private Label lbRented;
         private Label label5;
         private Button bPrintReceipt;
